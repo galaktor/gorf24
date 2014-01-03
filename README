@@ -5,7 +5,9 @@ TODO! More detail (on the way)
 
 The gist of it:
 
-1) install and set up golang on your RPi
+1) install and set up basic developer tools, git as well as golang on your RPi
+   e.g. on Arch ARM
+   $> sudo pacman -S base-devel git go
 2) go get github.com/galaktor/gorf24 (you will get an "ld" type error; ignore!)
 3) cd $GOPATH/src/github.com/galaktor/gorf24
 4) chmod +x build.sh
