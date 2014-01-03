@@ -1,4 +1,31 @@
 ***************************
+      HOW TO INSTALL
+***************************
+TODO! More detail (on the way)
+
+The gist of it:
+
+1) install and set up golang on your RPi
+2) go get github.com/galaktor/gorf24 (you will get an "ld" type error; ignore!)
+3) cd $GOPATH/src/github.com/galaktor/gorf24
+4) chmod +x build.sh
+5) sudo ./build.sh
+6) you might have to add /usr/local/lib to your /etc/ld.so.conf file (see below)
+7) include gorf24 in your golang source code as usual, i.e. 'import "github.com/galaktor/gorf24"'
+8) Accessing GPIO on Rpi requies elevated permissions, so it makes sense to build normally ("go build")
+   then run the executable as sudo, i.e.
+   $> go build mycode.go
+   $> sudo ./mycode
+   If you do not use sudo, you will get segfaults and panics
+
+(Tested on an overclocked (900 MHz) Model A RPi running Arch Linux for Rpi/ARM.)
+
+Note that this is project is in progress, and the golang or ansi C wrapper haven't been fully tested yet.
+Basic send/receive testing has occured, but many functions might have bugs.
+Please log any issue you might find and I will try to address it when I get a chance!
+Or even better, fork and contribute, that would be much appreciated.
+
+***************************
 ADD /USR/LOCAL/LIB LDCONFIG
 ***************************
 
