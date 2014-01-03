@@ -39,9 +39,9 @@ with gorf24 (file "LICENSE"). If not, see
 <http://opensource.org/licenses/MIT>
 
 
-***************************
-  THIRD PARTY SOFTWARE
-***************************
+****************************************
+  STANDING ON THE SHOULDERS OF GIANTS
+****************************************
 
 NOTE: gorf24 dynamiclly links to the C++ RF24 library for Raspberry
 Pi by Stanley Seow. At the time gorf24 was created, Seow's software
@@ -50,4 +50,10 @@ here applies exclusively to the software provided as part of gorf24,
 but does not extend to Seow's RF24 software.
 
 https://github.com/stanleyseow/RF24
+
+Seow's work is stronly derived from maniacbug's original RF24 library.
+Much kudos to maniacbug for the great work.
+https://github.com/maniacbug/RF24
+http://maniacbug.wordpress.com/
+
 
