@@ -77,9 +77,9 @@ with gorf24 (file "LICENSE"). If not, see
 <http://opensource.org/licenses/MIT>
 
 
-****************************************
-  STANDING ON THE SHOULDERS OF GIANTS
-****************************************
+**************************
+  THE GIANTS' SHOULDERS
+**************************
 
 NOTE: gorf24 dynamiclly links to the C++ RF24 library for Raspberry
 Pi by Stanley Seow. At the time gorf24 was created, Seow's software
