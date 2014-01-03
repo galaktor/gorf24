@@ -1,0 +1,61 @@
+***************************
+ADD /USR/LOCAL/LIB LDCONFIG
+***************************
+
+On Arch ARM for RPi, /usr/local/lib had to be added to ld.so.conf in order for golang to find the librf24*.so files at runtime.
+you can check if the librf shared objects are detected by running:
+
+$> ldconfig -v | grep librf
+
+If the result is empty, then you need to add /usr/local/lib to /etc/ld.so.conf so that the golang runtime will detect the librf libraries.
+NOTE: despite the "include ld.so.conf.d/*.conf" line in /etc/ld.so.conf, adding such a file had no effect. Needed to add directly to
+ld.so.conf!
+
+### 1. Open /etc/ld.so.conf with a text editor:
+$> sudo nano /etc/ld.so.conf
+
+### 2. Add the line "/usr/local/lib"
+
+### 3. Run ldconfig to update
+$> sudo ldconfig
+
+### 4. Verify detection of librf* shared objects using ldconfig
+$> ldconfig -v | grep rf
+   	    librf24.so.1 -> librf24.so.1.0
+	    librf24_c.so -> librf24_c.so
+
+
+
+***************************
+  COPYRIGHT AND LICENSE
+***************************
+
+Copyright 2013, Raphael Estrada
+
+gorf24 is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+gorf24 is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with gorf24.  If not, see <http://www.gnu.org/licenses/>.
+
+
+
+***************************
+  THIRD PARTY SOFTWARE
+***************************
+
+NOTE: gorf24 dynamiclly links to the C++ RF24 library for Raspberry
+Pi by Stanley Seow. At the time gorf24 was created, Seow's software
+had no apparent license included. The license for gorf24 described
+here applies exclusively to the software provided as part of gorf24,
+but does not extend to Seow's RF24 software.
+
+https://github.com/stanleyseow/RF24
+
