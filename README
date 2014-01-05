@@ -18,9 +18,9 @@ The gist of it:
    
 2) fetch gorf24 using 
    $> go get github.com/galaktor/gorf24 (you will get an "ld" type error; ignore!)
-3) cd $GOPATH/src/github.com/galaktor/gorf24
-4) chmod +x build.sh
-5) sudo ./build.sh
+3) $> cd $GOPATH/src/github.com/galaktor/gorf24
+4) $> chmod +x build.sh
+5) $> sudo ./build.sh
 6) you might have to add /usr/local/lib to your /etc/ld.so.conf file (see below)
 7) include gorf24 in your golang source code as usual, i.e. 'import "github.com/galaktor/gorf24"'
 8) Accessing GPIO on Rpi requies elevated permissions, so it makes sense to build normally ("go build")
@@ -52,7 +52,7 @@ ld.so.conf!
 ### 1. Open /etc/ld.so.conf with a text editor:
 $> sudo nano /etc/ld.so.conf
 
-### 2. Add the line "/usr/local/lib"
+### 2. Add the line "/usr/local/lib" and save (in nano, "Ctrl+X", "Y" then "Return")
 
 ### 3. Run ldconfig to update
 $> sudo ldconfig
