@@ -18,6 +18,7 @@ import (
 //	"encoding/binary"
 //	"fmt"
 	"unsafe"
+	"errors"
 )
 
 // TODO: more idiomatic:
@@ -27,10 +28,12 @@ import (
 //   more type safety?
 //   channel for available data, like time.Tick? r.Available() <-chan []byte  or so?
 
+const uint8 RF24_PAYLOAD_SIZE = 32
+
 type R struct {
 	cptr C.RF24Handle
-	buffer_size uint8
-	buffer []byte
+//	buffer_size uint8
+//	buffer []byte
 }
 
 /*
@@ -64,7 +67,7 @@ func main() {
 func New(spidevice string, spispeed uint32, cepin uint8) R {
 	var r R
 	r.cptr = C.new_rf24(C.CString(spidevice), C.uint32_t(spispeed), C.uint8_t(cepin))
-	r.buffer = make([]byte, 128) // max payload length according to nrf24 spec
+//	r.buffer = make([]byte, RF24_PAYLOAD_SIZE) // max payload length according to nrf24 spec
 
 	return r
 }
@@ -90,9 +93,18 @@ func (r *R) StopListening() {
 	C.rf24_stopListening(r.cptr)
 }
 
-// TODO: implement Reader/Writer compatible interfaces
-func (r *R) Write(data []byte, length uint8) bool {
+func (r *R) write(data []byte, length uint8) bool {
 	return gobool(C.rf24_write(r.cptr, unsafe.Pointer(&data), C.uint8_t(length)))
+}
+
+// io.Writer for golang compatibility
+// TODO; make n dynamic; currently hard-wired to const buffer size
+func (r *R) Write(p []byte) (n int, err error) {
+	n := r.buffer_size
+	if !r.write(p, n) {
+		return 0,errors.New("error writing to RF24") // TODO: more meaningful message?
+	}
+	return n,nil
 }
 
 func (r *R) StartWrite(data []byte, length uint8) {
@@ -118,10 +130,26 @@ func (r *R) IsAckPayloadAvailable() bool {
 	return gobool(C.rf24_isAckPayloadAvailable(r.cptr))
 }
 
-
+/*
 func (r *R) Read(length uint8) ([]byte, bool) {
-	ok := gobool(C.rf24_read(r.cptr, unsafe.Pointer(&r.buffer[0]), C.uint8_t(length)))
-	return r.buffer[:length],ok
+	ok := r.readTo(length, r.buffer)
+	return r.buffer,ok
+}
+*/
+
+func (r *R) readInto(length uint8, out []byte) bool {
+	ok := gobool(C.rf24_read(r.cptr, unsafe.Pointer(&out[0]), C.uint8_t(length)))
+	return out[:length],ok
+}
+
+// io.Reader for golang compatibility
+// TODO; make n dynamic; currently hard-wired to const buffer size
+func (r *R) Read(p []byte) (n int, err error) {
+	n = r.buffer_size
+	if !r.readInto(n, p) {
+		return 0,errors.New("error reading RF24 buffer") // TODO: more meaningful message?
+	}
+	return n,nil
 }
 
 func (r *R) OpenWritingPipe(address uint64) {
