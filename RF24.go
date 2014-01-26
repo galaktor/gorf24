@@ -28,7 +28,7 @@ import (
 //   more type safety?
 //   channel for available data, like time.Tick? r.Available() <-chan []byte  or so?
 
-const uint8 RF24_PAYLOAD_SIZE = 32
+const RF24_PAYLOAD_SIZE uint8 = 32
 
 type R struct {
 	cptr C.RF24Handle
@@ -100,11 +100,14 @@ func (r *R) write(data []byte, length uint8) bool {
 // io.Writer for golang compatibility
 // TODO; make n dynamic; currently hard-wired to const buffer size
 func (r *R) Write(p []byte) (n int, err error) {
-	n := r.buffer_size
-	if !r.write(p, n) {
+	l := uint8(len(p))
+	if l > RF24_PAYLOAD_SIZE {
+		l = RF24_PAYLOAD_SIZE
+	}
+	if !r.write(p, l) {
 		return 0,errors.New("error writing to RF24") // TODO: more meaningful message?
 	}
-	return n,nil
+	return int(l),nil
 }
 
 func (r *R) StartWrite(data []byte, length uint8) {
@@ -139,17 +142,21 @@ func (r *R) Read(length uint8) ([]byte, bool) {
 
 func (r *R) readInto(length uint8, out []byte) bool {
 	ok := gobool(C.rf24_read(r.cptr, unsafe.Pointer(&out[0]), C.uint8_t(length)))
-	return out[:length],ok
+	return ok
 }
 
 // io.Reader for golang compatibility
 // TODO; make n dynamic; currently hard-wired to const buffer size
 func (r *R) Read(p []byte) (n int, err error) {
-	n = r.buffer_size
-	if !r.readInto(n, p) {
+	l := uint8(len(p))
+	if l > RF24_PAYLOAD_SIZE {
+		l = RF24_PAYLOAD_SIZE
+	}
+	println(l)
+	if !r.readInto(l, p) {
 		return 0,errors.New("error reading RF24 buffer") // TODO: more meaningful message?
 	}
-	return n,nil
+	return int(l),nil
 }
 
 func (r *R) OpenWritingPipe(address uint64) {
