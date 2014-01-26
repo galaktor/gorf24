@@ -152,7 +152,6 @@ func (r *R) Read(p []byte) (n int, err error) {
 	if l > RF24_PAYLOAD_SIZE {
 		l = RF24_PAYLOAD_SIZE
 	}
-	println(l)
 	if !r.readInto(l, p) {
 		return 0,errors.New("error reading RF24 buffer") // TODO: more meaningful message?
 	}
