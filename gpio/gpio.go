@@ -32,17 +32,17 @@ case gpio.LOW:  p.SetHigh()
 */
 
 type Pin struct {
-	pinNr         int
+	pinNr         byte
 	direction     Direction
 	directionFile string
 	valueFile     string
 }
 
-func (p *Pin) Nr() int {
+func (p *Pin) Nr() byte {
 	return p.pinNr
 }
 
-func Open(pin int, d Direction) (*Pin, error) {
+func Open(pin byte, d Direction) (*Pin, error) {
 	p := &Pin{pinNr: pin,
 		direction:     d,
 		directionFile: fmt.Sprintf("/sys/class/gpio/gpio%d/direction", pin),

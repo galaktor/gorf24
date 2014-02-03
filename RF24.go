@@ -5,70 +5,160 @@
 
 package gorf24
 
-/*
-  #cgo LDFLAGS: -L./RF24_c
-  #cgo LDFLAGS: -lrf24_c
-  #cgo CFLAGS: -I./RF24_c
-  #include "RF24_c.h"
-  #include <stdio.h>
-*/
-import "C"
-
 import (
-//	"encoding/binary"
-//	"fmt"
-	"unsafe"
+	"time"
+
+	"./gpio"
+	"./spi"
 )
 
-// TODO: more idiomatic:
-//   error handling
-//   Read/Write interfaces
-//   possibly more conventional byte slice passing
-//   more type safety?
-//   channel for available data, like time.Tick? r.Available() <-chan []byte  or so?
+type PA_DBM byte
+
+const (
+	PA_MIN PA_DBM = iota
+	PA_LOW
+	PA_HIGH
+	PA_MAX
+	PA_ERROR // what is this for?
+)
+
+type DATARATE byte
+
+const (
+	RATE_1MBPS DATARATE = iota
+	RATE_2MBPS
+	RATE_250KBPS
+)
+
+type CRCLENGTH byte
+
+const (
+	CRC_DISABLED = iota
+	CRC_8BIT
+	CRC_16BIT
+)
+
+const RF24_PAYLOAD_SIZE = 32
 
 type R struct {
-	cptr C.RF24Handle
-	buffer_size uint8
 	buffer []byte
+	spi    *spi.SPI
+	ce     *gpio.Pin
+	csn    *gpio.Pin
+}
+
+func New(spidevice string, spispeed uint32, cepin, csnpin uint8) (r *R, err error) {
+	r = &R{}
+
+	r.buffer = make([]byte, RF24_PAYLOAD_SIZE)
+	r.spi, err = spi.New(spidevice, 0, 8, spi.SPD_02MHz)
+	if err != nil {
+		return
+	}
+
+	r.ce, err = gpio.Open(cepin, gpio.OUT)
+	if err != nil {
+		return
+	}
+	ce.SetLow()
+	csn.SetHigh()
+
+	r.csn, err = gpio.Open(csnpin, gpio.OUT)
+	if err != nil {
+		return
+	}
+
+	// ** FROM RF24.cpp **
+	// Must allow the radio time to settle else configuration bits will not necessarily stick.
+	// This is actually only required following power up but some settling time also appears to
+	// be required after resets too. For full coverage, we'll always assume the worst.
+	// Enabling 16b CRC is by far the most obvious case if the wrong timing is used - or skipped.
+	// Technically we require 4.5ms + 14us as a worst case. We'll just call it 5ms for good measure.
+	// WARNING: Delay is based on P-variant whereby non-P *may* require different timing.
+	<-time.After(5 * time.Millisecond)
+
+	return
+}
+
+
+
+func (r *R) readRegister(reg byte, buf []byte) bool {
+	r.csn.SetLow()
+	defer r.csn.SetHigh()
+
+	ok := r.spi.Transfer(R_REGISTER | (REGISTER_MASK & reg))
+	for n, _ := range buf {
+		// doesn't matter what we send
+		// just pumping the BUS to get data
+		buf[n] = r.spi.Transfer(0xFF)
+	}
+}
+
+func (r *R) writeRegister(reg byte, buf []byte) bool {
+	r.csn.SetLow()
+	defer r.csn.SetHigh()
+
+	ok := r.spi.Transfer(W_REGISTER | (REGISTER_MASK & reg))
+
+}
+
+type Status struct {
+	bits byte
+}
+
+/* TX_FULL (bit 0)
+  TX FIFO full flag.
+  1: TX FIFO full.
+  0: Available locations in TX FIFO. */
+func (s *Status) TxFull() bool {
+	return (s.bits & 1) == 1
+}
+
+/* RX_P_NO (bits 3:1)
+  Data pipe number for the payload available for
+  reading from RX_FIFO 
+  000-101: Data Pipe Number
+  110: Not Used
+  111: RX FIFO Empty */
+func (s *Status) RxPipeNumber() uint8 {
+	return (s.bits >> 1) & 7
+}
+
+/* RX_P_NO bits from '000' up to '101' */
+func (s *Status) RxPipeNumberUsed() bool {
+	return s.RxPipeNumber() < 6
+}
+
+/* RX_P_NO bits are '111' */
+func (s *Status) RxFifoEmpty() bool {
+	return s.RxPipeNumber() == 7
+}
+
+/* MAX_RT (bit 4)
+  Maximum number of TX retransmits interrupt
+  Write 1 to clear bit. If MAX_RT is asserted it must
+  be cleared to enable further communication. */
+func (s *Status) MaxTxRetransmits() bool {
+	return (s.bits & 8) == 1
+}
+
+/* TX_DS (bit 5)
+  Data Sent TX FIFO interrupt. Asserted when
+  packet transmitted on TX. If AUTO_ACK is acti-
+  vated, this bit is set high only when ACK is
+  received. */
+func (s *Status) TxDataSent() bool {
+	return (s.bits & 16) == 1
+}
+
+/* RX_DR (bit 6)
+  Data Ready RX FIFO interrupt. Asserted when
+  new data arrives RX FIFO. */
+func (s *Status) RxDataReady() bool {
+	return (s.bits & 32) == 1
 }
 
 /*
-func main() {
-	var pipe uint64 = 0xF0F0F0F0E1
-
-	r := New("/dev/spidev0.0", 8000000, 25)
-	defer r.Delete()
-
-	r.Begin()
-	r.SetRetries(15, 15)
-	r.SetAutoAck(true)
-	r.OpenReadingPipe(1, pipe)
-	r.StartListening()
-	r.PrintDetails()
-
-	for {
-		if r.Available() {
-			data, _ := r.Read(4)
-//			fmt.Printf("data: %v\n", data)
-			payload := binary.LittleEndian.Uint32(data)
-			fmt.Printf("Received %v\n", payload)
-
-		} else {
-			//
-		}
-	}
-}
-*/
-
-func New(spidevice string, spispeed uint32, cepin uint8) R {
-	var r R
-	r.cptr = C.new_rf24(C.CString(spidevice), C.uint32_t(spispeed), C.uint8_t(cepin))
-	r.buffer = make([]byte, 128) // max payload length according to nrf24 spec
-
-	return r
-}
-
 func (r *R) Delete() {
 	C.rf24_delete(r.cptr)
 	r.cptr = nil
@@ -172,16 +262,7 @@ func (r *R) SetAutoAckPipe(pipe uint8, enable bool) {
 	C.rf24_setAutoAck_pipe(r.cptr, C.uint8_t(pipe), cbool(enable))
 }
 
-// TODO: move to named package
-type PA_DBM byte
 
-const (
-	PA_MIN PA_DBM = iota
-	PA_LOW
-	PA_HIGH
-	PA_MAX
-	PA_ERROR // what is this for?
-)
 
 // Is there any way to use the rf24_pa_dbm_e enum type directly
 func (r *R) SetPALevel(level PA_DBM) {
@@ -192,13 +273,7 @@ func (r *R) GetPALevel() PA_DBM {
 	return PA_DBM(C.rf24_getPALevel(r.cptr))
 }
 
-type DATARATE byte
 
-const (
-	RATE_1MBPS DATARATE = iota
-	RATE_2MBPS
-	RATE_250KBPS
-)
 
 func (r *R) SetDataRate(rate DATARATE) {
 	C.rf24_setDataRate(r.cptr, C.rf24_datarate_val(rate))
@@ -208,13 +283,7 @@ func (r *R) GetDataRate() DATARATE {
 	return DATARATE(C.rf24_getDataRate(r.cptr))
 }
 
-type CRCLENGTH byte
 
-const (
-	CRC_DISABLED = iota
-	CRC_8BIT
-	CRC_16BIT
-)
 
 func (r *R) SetCRCLength(length CRCLENGTH) {
 	C.rf24_setCRCLength(r.cptr, C.rf24_crclength_val(length))
@@ -272,3 +341,32 @@ func cbool(b bool) C.cbool {
 
 	return C.cbool(0)
 }
+*/
+
+/*
+func main() {
+	var pipe uint64 = 0xF0F0F0F0E1
+
+	r := New("/dev/spidev0.0", 8000000, 25)
+	defer r.Delete()
+
+	r.Begin()
+	r.SetRetries(15, 15)
+	r.SetAutoAck(true)
+	r.OpenReadingPipe(1, pipe)
+	r.StartListening()
+	r.PrintDetails()
+
+	for {
+		if r.Available() {
+			data, _ := r.Read(4)
+//			fmt.Printf("data: %v\n", data)
+			payload := binary.LittleEndian.Uint32(data)
+			fmt.Printf("Received %v\n", payload)
+
+		} else {
+			//
+		}
+	}
+}
+*/

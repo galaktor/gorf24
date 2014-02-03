@@ -1,4 +1,4 @@
-package gorf24
+package spi
 
 /*
 #include <sys/ioctl.h>
