@@ -1,15 +1,10 @@
+// see: https://sites.google.com/site/semilleroadt/raspberry-pi-tutorials/gpio
 package gpio
-/*
-#include <stdio.h>
-*/
-import "C"
 
 import (
-	"os"
 	"fmt"
+	"os"
 )
-
-// see: https://sites.google.com/site/semilleroadt/raspberry-pi-tutorials/gpio
 
 type Direction byte
 
@@ -21,10 +16,119 @@ const (
 // TODO: const( PINS ? )
 
 type PinState byte
+
 const (
 	LOW  PinState = 0
 	HIGH PinState = 1
 )
+
+/*
+var p := gpio.Open(gpio.RPI_11) // provide alias for SPI etc?
+defer p.Close()
+switch p.Read() {
+case gpio.HIGH: p.SetLow()
+case gpio.LOW:  p.SetHigh()
+}
+*/
+
+type Pin struct {
+	pinNr         int
+	direction     Direction
+	directionFile string
+	valueFile     string
+}
+
+func (p *Pin) Nr() int {
+	return p.pinNr
+}
+
+func Open(pin int, d Direction) (*Pin, error) {
+	p := &Pin{pinNr: pin,
+		direction:     d,
+		directionFile: fmt.Sprintf("/sys/class/gpio/gpio%d/direction", pin),
+		valueFile:     fmt.Sprintf("/sys/class/gpio/gpio%d/value", pin)}
+	err := p.open()
+	if err != nil {
+		return p, err
+	}
+
+	err = p.setDirection(d)
+	return p, err
+}
+
+func (p *Pin) open() error {
+	f, err := os.Open("/sys/class/gpio/export")
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+	_, err = f.WriteString(fmt.Sprintf("%d\n", p.pinNr))
+	return err
+}
+
+func (p *Pin) setDirection(d Direction) error {
+	f, err := os.Open(p.directionFile)
+	if err != nil {
+		return err
+	}
+	switch d {
+	case IN:
+		f.WriteString("in\n")
+	case OUT:
+		f.WriteString("out\n")
+	}
+	err = f.Close()
+	return err
+}
+
+func (p *Pin) Close() error {
+	f, err := os.Open("/sys/class/gpio/unexport")
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+	_, err = f.WriteString(fmt.Sprintf("%d\n", p.pinNr))
+	return err
+}
+
+func (p *Pin) Read() (PinState, error) {
+	f, err := os.Open(p.valueFile)
+	if err != nil {
+		return LOW, err
+	}
+	defer f.Close()
+	var out PinState
+	_, err = fmt.Fscanf(f, "%d", &out)
+	if err != nil {
+		return LOW, err
+	}
+	return out, nil
+}
+
+func (p *Pin) SetLow() error {
+	return p.set(LOW)
+}
+
+func (p *Pin) SetHigh() error {
+	return p.set(HIGH)
+}
+
+func (p *Pin) set(s PinState) error {
+	f, err := os.Open(p.valueFile)
+	if err != nil {
+		return err
+	}
+	switch s {
+	case LOW:
+		f.WriteString("0\n")
+	case HIGH:
+		f.WriteString("1\n")
+	}
+	err = f.Close()
+	return err
+}
+
+/* OLD CODE
 
 func Open(port int, d Direction) error {
 	// TODO: portString = "%d",port
@@ -32,11 +136,11 @@ func Open(port int, d Direction) error {
 	// BENCHMARKS
 
 	// OPEN PIN
-	f,err := os.Open("/sys/class/gpio/export")
+	f, err := os.Open("/sys/class/gpio/export")
 	if err != nil {
 		return err
 	}
-	_,err = f.WriteString(fmt.Sprintf("%d\n", port))
+	_, err = f.WriteString(fmt.Sprintf("%d\n", port))
 	if err != nil {
 		return err
 	}
@@ -48,8 +152,10 @@ func Open(port int, d Direction) error {
 		return err
 	}
 	switch d {
-	case IN:  f.WriteString("in\n")
-	case OUT: f.WriteString("out\n")
+	case IN:
+		f.WriteString("in\n")
+	case OUT:
+		f.WriteString("out\n")
 	}
 	f.Close()
 
@@ -58,48 +164,45 @@ func Open(port int, d Direction) error {
 
 func Close(port int) error {
 	// CLOSE PIN
-	f,err := os.Open("/sys/class/gpio/unexport")
+	f, err := os.Open("/sys/class/gpio/unexport")
 	if err != nil {
 		return err
 	}
 	f.WriteString(fmt.Sprintf("%d\n", port))
 	f.Close()
-	
+
 	return nil
 }
 
-func Read(port int) (int,error) {
-	f,err := os.Open(fmt.Sprintf("/sys/class/gpio/gpio%d/value", port))
+func Read(port int) (int, error) {
+	f, err := os.Open(fmt.Sprintf("/sys/class/gpio/gpio%d/value", port))
 	if err != nil {
-		return 0,err
+		return 0, err
 	}
 	defer f.Close()
 	var out int
-	_,err = fmt.Fscanf(f, "%d", &out)
+	_, err = fmt.Fscanf(f, "%d", &out)
 	if err != nil {
-		return 0,err
+		return 0, err
 	}
-	
-	return out,nil
+
+	return out, nil
 }
 
 func Write(port, value PinState) error {
 	// WRITE VALUE TO PIN
-	f,err := os.Open(fmt.Sprintf("/sys/class/gpio/gpio%d/value", port))
+	f, err := os.Open(fmt.Sprintf("/sys/class/gpio/gpio%d/value", port))
 	if err != nil {
 		return err
 	}
 	switch value {
-	case LOW: f.WriteString("0\n")
-	case HIGH: f.WriteString("1\n")
+	case LOW:
+		f.WriteString("0\n")
+	case HIGH:
+		f.WriteString("1\n")
 	}
 	f.Close()
 
 	return nil
 }
-
-
-
-
-
-
+*/
