@@ -45,6 +45,7 @@ type R struct {
 	spi    *spi.SPI
 	ce     *gpio.Pin
 	csn    *gpio.Pin
+	status Status
 }
 
 func New(spidevice string, spispeed uint32, cepin, csnpin uint8) (r *R, err error) {
@@ -93,6 +94,8 @@ func (r Register) WriteCmd() Command {
 
 type Command byte
 
+const NIL_CMD = Command(0)
+
 // overkill? maybe just cast inline?
 func (c Command) Byte() byte {
 	return byte(c)
@@ -105,43 +108,60 @@ func ReadReg(r Register) Command {
 }
 */
 
-func (r *R) sendSpi(c Command) (Status,error) {
+func (r *R) sendSpi(c Command) error {
 	s,err := r.spi.Transfer(c.Byte())
-	return Status(s),err
+	if err != nil {
+		return err
+	}
+	// set if no errors
+	r.status = s
+	return err
 }
 
-func (r *R) readRegister(reg Register, buf []byte) bool {
+func (r *R) readRegister(reg Register, buf []byte) error {
 	r.csn.SetLow()
 	defer r.csn.SetHigh()
 	
-	_,err := r.sendSpi(reg.ReadCmd())
+	err := r.sendSpi(reg.ReadCmd())
 	if err != nil {
-		// TODO: HANDLE
+		// SPI error!
+		return err
 	}
-	// TODO: check status?
 	
-	// RF24 SPI sends LSByte first, so iterate backward
+	// RF24 SPI does LSByte first, so iterate backward
 	for n := len(buf); n >= 0; n-- {
 		// doesn't matter what we send
 		// just pumping the BUS to get data
-		buf[n],_ = r.spi.Transfer(0xFF)
-		// TODO: handle error
+		buf[n],err = r.spi.Transfer(NIL_CMD)
+		if err != nil {
+			// SPI error! stop pumping, get out of here
+			return err 
+		}
 	}
 
-	return true // TODO fix this
+	return nil
 }
 
 func (r *R) writeRegister(reg byte, buf []byte) bool {
 	r.csn.SetLow()
 	defer r.csn.SetHigh()
 	
-
-//	ok := r.spi.Transfer(W_REGISTER | (REGISTER_MASK & reg))
-
-	for n := len(buf); n >= 0; n-- { 
+	err := r.sendSpi(reg.WriteCmd())
+	if err != nil {
+		// SPI error!
+		return err
 	}
 
-	return true // TODO: fix this
+	// RF24 SPI does LSByte first, so iterate backward
+	for n := len(buf); n >= 0; n-- { 
+		_,err := r.spi.Transfer(Command(buf[n])) // TODO: arbitrary "command" required
+		if err != nil {
+			// SPI error! stop pumping, get out of here
+			return err 
+		}
+	}
+
+	return nil
 }
 
 
