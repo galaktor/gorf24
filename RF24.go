@@ -60,13 +60,14 @@ func New(spidevice string, spispeed uint32, cepin, csnpin uint8) (r *R, err erro
 	if err != nil {
 		return
 	}
-	ce.SetLow()
-	csn.SetHigh()
-
+	
 	r.csn, err = gpio.Open(csnpin, gpio.OUT)
 	if err != nil {
 		return
 	}
+
+	r.ce.SetLow()
+	r.csn.SetHigh()
 
 	// ** FROM RF24.cpp **
 	// Must allow the radio time to settle else configuration bits will not necessarily stick.
@@ -80,14 +81,35 @@ func New(spidevice string, spispeed uint32, cepin, csnpin uint8) (r *R, err erro
 	return
 }
 
+type Register byte
 
+func (r Register) ReadCmd() Command {
+	return Command(0x1F & r)
+}
 
-func (r *R) readRegister(reg byte, buf []byte) bool {
+func (r Register) WriteCmd() Command {
+	return Command(0x20 | (0x1F & r))
+}
+
+type Command byte
+
+func (c Command) byte() byte {
+	return byte(c)
+}
+
+func (r *R) readRegister(reg Register, buf []byte) bool {
 	r.csn.SetLow()
 	defer r.csn.SetHigh()
-
-	ok := r.spi.Transfer(R_REGISTER | (REGISTER_MASK & reg))
-	for n, _ := range buf {
+	
+	s,err := r.spi.Transfer(reg.ReadCmd().byte())
+	if err != nil {
+		// TODO: HANDLE
+	}
+	status := Status(s)
+	// TODO: check status?
+//	ok := r.spi.Transfer(R_REGISTER | (REGISTER_MASK & reg))
+	
+	for n := len(buf); n >= 0; n-- {
 		// doesn't matter what we send
 		// just pumping the BUS to get data
 		buf[n] = r.spi.Transfer(0xFF)
@@ -97,66 +119,16 @@ func (r *R) readRegister(reg byte, buf []byte) bool {
 func (r *R) writeRegister(reg byte, buf []byte) bool {
 	r.csn.SetLow()
 	defer r.csn.SetHigh()
+	
 
-	ok := r.spi.Transfer(W_REGISTER | (REGISTER_MASK & reg))
+//	ok := r.spi.Transfer(W_REGISTER | (REGISTER_MASK & reg))
+
+	for n := len(buf); n >= 0; n-- { 
+	}
 
 }
 
-type Status struct {
-	bits byte
-}
 
-/* TX_FULL (bit 0)
-  TX FIFO full flag.
-  1: TX FIFO full.
-  0: Available locations in TX FIFO. */
-func (s *Status) TxFull() bool {
-	return (s.bits & 1) == 1
-}
-
-/* RX_P_NO (bits 3:1)
-  Data pipe number for the payload available for
-  reading from RX_FIFO 
-  000-101: Data Pipe Number
-  110: Not Used
-  111: RX FIFO Empty */
-func (s *Status) RxPipeNumber() uint8 {
-	return (s.bits >> 1) & 7
-}
-
-/* RX_P_NO bits from '000' up to '101' */
-func (s *Status) RxPipeNumberUsed() bool {
-	return s.RxPipeNumber() < 6
-}
-
-/* RX_P_NO bits are '111' */
-func (s *Status) RxFifoEmpty() bool {
-	return s.RxPipeNumber() == 7
-}
-
-/* MAX_RT (bit 4)
-  Maximum number of TX retransmits interrupt
-  Write 1 to clear bit. If MAX_RT is asserted it must
-  be cleared to enable further communication. */
-func (s *Status) MaxTxRetransmits() bool {
-	return (s.bits & 8) == 1
-}
-
-/* TX_DS (bit 5)
-  Data Sent TX FIFO interrupt. Asserted when
-  packet transmitted on TX. If AUTO_ACK is acti-
-  vated, this bit is set high only when ACK is
-  received. */
-func (s *Status) TxDataSent() bool {
-	return (s.bits & 16) == 1
-}
-
-/* RX_DR (bit 6)
-  Data Ready RX FIFO interrupt. Asserted when
-  new data arrives RX FIFO. */
-func (s *Status) RxDataReady() bool {
-	return (s.bits & 32) == 1
-}
 
 /*
 func (r *R) Delete() {
