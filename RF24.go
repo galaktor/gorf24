@@ -93,27 +93,42 @@ func (r Register) WriteCmd() Command {
 
 type Command byte
 
-func (c Command) byte() byte {
+// overkill? maybe just cast inline?
+func (c Command) Byte() byte {
 	return byte(c)
+}
+
+/*
+// IDEA, but I kinda like calling Cmd() on the reg for now a bit more...
+func ReadReg(r Register) Command {
+	return Command(0x1F & r)
+}
+*/
+
+func (r *R) sendSpi(c Command) (Status,error) {
+	s,err := r.spi.Transfer(c.Byte())
+	return Status(s),err
 }
 
 func (r *R) readRegister(reg Register, buf []byte) bool {
 	r.csn.SetLow()
 	defer r.csn.SetHigh()
 	
-	s,err := r.spi.Transfer(reg.ReadCmd().byte())
+	_,err := r.sendSpi(reg.ReadCmd())
 	if err != nil {
 		// TODO: HANDLE
 	}
-	status := Status(s)
 	// TODO: check status?
-//	ok := r.spi.Transfer(R_REGISTER | (REGISTER_MASK & reg))
 	
+	// RF24 SPI sends LSByte first, so iterate backward
 	for n := len(buf); n >= 0; n-- {
 		// doesn't matter what we send
 		// just pumping the BUS to get data
-		buf[n] = r.spi.Transfer(0xFF)
+		buf[n],_ = r.spi.Transfer(0xFF)
+		// TODO: handle error
 	}
+
+	return true // TODO fix this
 }
 
 func (r *R) writeRegister(reg byte, buf []byte) bool {
@@ -126,6 +141,7 @@ func (r *R) writeRegister(reg byte, buf []byte) bool {
 	for n := len(buf); n >= 0; n-- { 
 	}
 
+	return true // TODO: fix this
 }
 
 
