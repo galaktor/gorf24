@@ -7,6 +7,10 @@ import (
 	"."
 )
 
+/* 
+ parse a string representation of bits into
+ a byte; for easier testing
+*/
 func b(bits string) byte {
 	i,_ := strconv.ParseUint(bits, 2, 8)
 	return byte(i)
@@ -41,7 +45,7 @@ func TestRxPipeNumber_RelevantBitsZero_ReturnsZero(t *testing.T) {
 	result := s.RxPipeNumber()
 
 	if result != expected {
-		t.Errorf("expected '%v' but found '%v' with status '%v'", expected, result, s)
+		t.Errorf("expected '%b' but found '%b' with status '%b'", expected, result, s)
 	}
 }
 
@@ -52,7 +56,7 @@ func TestRxPipeNumber_RelevantBitsOne_ReturnsSeven(t *testing.T) {
 	result := s.RxPipeNumber()
 
 	if result != expected {
-		t.Errorf("expected '%v' but found '%v' with status '%v'", expected, result, s)
+		t.Errorf("expected '%b' but found '%b' with status '%b'", expected, result, s)
 	}
 }
 
