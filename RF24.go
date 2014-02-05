@@ -7,6 +7,7 @@ package gorf24
 
 import (
 	"time"
+	"strconv"
 
 	"./gpio"
 	"./spi"
@@ -82,23 +83,59 @@ func New(spidevice string, spispeed uint32, cepin, csnpin uint8) (r *R, err erro
 	return
 }
 
+// 0 through 5, giving 6 data pipe ids
+type Pipe byte
+
 type Register byte
 
-func (r Register) ReadCmd() Command {
-	return Command(0x1F & r)
-}
-
-func (r Register) WriteCmd() Command {
-	return Command(0x20 | (0x1F & r))
-}
-
 type Command byte
-
-const NIL_CMD = Command(0)
 
 // overkill? maybe just cast inline?
 func (c Command) Byte() byte {
 	return byte(c)
+}
+
+var (
+	CMD_NOP = Command(B("11111111"))
+	// CMD_R_REGISTER - is a function, see below
+	// CMD_W_REGSITER - is a function, see below
+	CMD_R_RX_PAYLOAD = Command(B("01100001"))
+	CMD_W_RX_PAYLOAD = Command(B("10100000"))
+	CMD_FLUSH_TX = Command(B("11100001"))
+	CMD_FLUSH_RX = Command(B("11100010"))
+	CMD_REUSE_TX_PL = Command(B("11100011"))
+	CMD_ACTIVATE = Command(B("01010000"))
+	// CMD_W_ACK_PAYLOAD - ?maybe use function like with R/W_REGISTER?
+	CMD_W_ACK_PAYLOAD_PIPE0 = Command(B("10101000"))
+	CMD_W_ACK_PAYLOAD_PIPE1 = Command(B("10101001"))
+	CMD_W_ACK_PAYLOAD_PIPE2 = Command(B("10101010"))
+	CMD_W_ACK_PAYLOAD_PIPE3 = Command(B("10101011"))
+	CMD_W_ACK_PAYLOAD_PIPE4 = Command(B("10101100"))
+	CMD_W_ACK_PAYLOAD_PIPE5 = Command(B("10101101"))
+	CMD_R_RX_PL_WID = Command(B("01100000"))
+)
+
+func CMD_R_REGISTER(r Register) Command {
+	return Command(0x1F & r)
+}
+
+func CMD_W_REGISTER(r Register) Command {
+	return Command(0x20 | (0x1F & r))
+}
+
+/* torn here; have vars like above for every pipe?
+   it's only 6 pipes after all...
+func CMD_W_ACK_PAYLOAD(p Pipe) Command {
+	return Command(0xA8 | p)
+}*/
+
+/* 
+ parse a string representation of bits into
+ a byte; for easier testing
+*/
+func B(bits string) byte {
+	i,_ := strconv.ParseUint(bits, 2, 8)
+	return byte(i)
 }
 
 /*
@@ -114,7 +151,7 @@ func (r *R) sendSpi(c Command) error {
 		return err
 	}
 	// set if no errors
-	r.status = s
+	r.status = Status(s)
 	return err
 }
 
@@ -122,7 +159,7 @@ func (r *R) readRegister(reg Register, buf []byte) error {
 	r.csn.SetLow()
 	defer r.csn.SetHigh()
 	
-	err := r.sendSpi(reg.ReadCmd())
+	err := r.sendSpi(CMD_R_REGISTER(reg))
 	if err != nil {
 		// SPI error!
 		return err
@@ -132,7 +169,8 @@ func (r *R) readRegister(reg Register, buf []byte) error {
 	for n := len(buf); n >= 0; n-- {
 		// doesn't matter what we send
 		// just pumping the BUS to get data
-		buf[n],err = r.spi.Transfer(NIL_CMD)
+		// TODO: USE SENDSPI?
+		buf[n],err = r.spi.Transfer(CMD_NOP.Byte())
 		if err != nil {
 			// SPI error! stop pumping, get out of here
 			return err 
@@ -142,11 +180,11 @@ func (r *R) readRegister(reg Register, buf []byte) error {
 	return nil
 }
 
-func (r *R) writeRegister(reg byte, buf []byte) bool {
+func (r *R) writeRegister(reg Register, buf []byte) error {
 	r.csn.SetLow()
 	defer r.csn.SetHigh()
 	
-	err := r.sendSpi(reg.WriteCmd())
+	err := r.sendSpi(CMD_W_REGISTER(reg))
 	if err != nil {
 		// SPI error!
 		return err
@@ -154,7 +192,8 @@ func (r *R) writeRegister(reg byte, buf []byte) bool {
 
 	// RF24 SPI does LSByte first, so iterate backward
 	for n := len(buf); n >= 0; n-- { 
-		_,err := r.spi.Transfer(Command(buf[n])) // TODO: arbitrary "command" required
+		// TODO: USE SENDSPI?
+		_,err := r.spi.Transfer(buf[n]) // TODO: arbitrary "command" required
 		if err != nil {
 			// SPI error! stop pumping, get out of here
 			return err 
