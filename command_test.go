@@ -2,23 +2,13 @@ package gorf24
 
 import (
 	"testing"
-	"strconv"
 
 	"."
 )
 
-/* 
- parse a string representation of bits into
- a byte; for easier testing
-*/
-func b(bits string) byte {
-	i,_ := strconv.ParseUint(bits, 2, 8)
-	return byte(i)
-}
-
 func TestByte_Zero_ReturnsZero(t *testing.T) {
-	c := gorf24.Command(b("00000000"))
-	expected := b("00000000")
+	c := gorf24.Command(gorf24.B("00000000"))
+	expected := gorf24.B("00000000")
 
 	result := c.Byte()
 
@@ -28,8 +18,8 @@ func TestByte_Zero_ReturnsZero(t *testing.T) {
 }
 
 func TestByte_AllOnes_ReturnsSame(t *testing.T) {
-	c := gorf24.Command(b("11111111"))
-	expected := b("11111111")
+	c := gorf24.Command(gorf24.B("11111111"))
+	expected := gorf24.B("11111111")
 
 	result := c.Byte()
 
@@ -39,8 +29,8 @@ func TestByte_AllOnes_ReturnsSame(t *testing.T) {
 }
 
 func TestByte_LSByteZero_ReturnsSame(t *testing.T) {
-	c := gorf24.Command(b("11110000"))
-	expected := b("11110000")
+	c := gorf24.Command(gorf24.B("11110000"))
+	expected := gorf24.B("11110000")
 
 	result := c.Byte()
 
@@ -50,8 +40,8 @@ func TestByte_LSByteZero_ReturnsSame(t *testing.T) {
 }
 
 func TestByte_MSByteZero_ReturnsSame(t *testing.T) {
-	c := gorf24.Command(b("00001111"))
-	expected := b("00001111")
+	c := gorf24.Command(gorf24.B("00001111"))
+	expected := gorf24.B("00001111")
 
 	result := c.Byte()
 
