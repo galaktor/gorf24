@@ -42,7 +42,6 @@ const (
 const RF24_PAYLOAD_SIZE = 32
 
 type R struct {
-	buffer []byte
 	spi    *spi.SPI
 	ce     *gpio.Pin
 	csn    *gpio.Pin
@@ -52,7 +51,6 @@ type R struct {
 func New(spidevice string, spispeed uint32, cepin, csnpin uint8) (r *R, err error) {
 	r = &R{}
 
-	r.buffer = make([]byte, RF24_PAYLOAD_SIZE)
 	r.spi, err = spi.New(spidevice, 0, 8, spi.SPD_02MHz)
 	if err != nil {
 		return
@@ -83,64 +81,76 @@ func New(spidevice string, spispeed uint32, cepin, csnpin uint8) (r *R, err erro
 	return
 }
 
-func (r *R) sendSpi(c Command) error {
+// sends Command, then buf byte-by-byte over SPI
+// if buf is null, sends only command
+// WARNING: destructive - overwrites content of buf while pumping
+func (r *R) spiPump(c Command, buf []byte) error {
+	r.csn.SetLow()
+	defer r.csn.SetHigh()
+
+	// send cmd first
 	s,err := r.spi.Transfer(c.Byte())
 	if err != nil {
 		return err
 	}
-	// set if no errors
 	r.status = Status(s)
-	return err
-}
 
-func (r *R) readRegister(reg Register, buf []byte) error {
-	r.csn.SetLow()
-	defer r.csn.SetHigh()
-	
-	err := r.sendSpi(CMD_R_REGISTER(reg))
-	if err != nil {
-		// SPI error!
-		return err
-	}
-	
-	// RF24 SPI does LSByte first, so iterate backward
-	for n := len(buf); n >= 0; n-- {
-		// doesn't matter what we send
-		// just pumping the BUS to get data
-		// TODO: USE SENDSPI?
-		buf[n],err = r.spi.Transfer(CMD_NOP.Byte())
-		if err != nil {
-			// SPI error! stop pumping, get out of here
-			return err 
+	if buf != nil {
+		// pump buf data, overwriting content with returned date
+		// RF24 SPI does LSByte first, so iterate backward
+		for n := len(buf); n >= 0; n-- {
+			buf[n],err = r.spi.Transfer(buf[n])
+			if err != nil {
+				return err
+			}
 		}
 	}
 
 	return nil
+}
+
+// ?TODO: cap data sizes allowed for []byte?
+
+// ?TODO: use buffer(s) pre-allocated on R?
+
+func (r *R) readRegister(reg Register, buf []byte) error {
+	return r.spiPump(CMD_R_REGISTER(reg), buf)
 }
 
 func (r *R) writeRegister(reg Register, buf []byte) error {
-	r.csn.SetLow()
-	defer r.csn.SetHigh()
-	
-	err := r.sendSpi(CMD_W_REGISTER(reg))
-	if err != nil {
-		// SPI error!
-		return err
-	}
-
-	// RF24 SPI does LSByte first, so iterate backward
-	for n := len(buf); n >= 0; n-- { 
-		// TODO: USE SENDSPI?
-		_,err := r.spi.Transfer(buf[n]) // TODO: arbitrary "command" required
-		if err != nil {
-			// SPI error! stop pumping, get out of here
-			return err 
-		}
-	}
-
-	return nil
+	return r.spiPump(CMD_W_REGISTER(reg), buf)
 }
 
+func (r *R) writePayload(buf []byte) {
+	// ?TODO: set to TX mode?
+	return r.spiPump(CMD_W_TX_PAYLOAD.Byte(), buf)
+}
+
+func (r *R) readPayload(buf []byte) {
+	// ?TODO: set to RX mode?
+	return r.spiPump(CMD_R_RX_PAYLOAD.Byte(), buf)
+}
+
+// ?TODO: enum for modes, MD_RX and MD_TX?
+
+func (r *R) flushTx() {
+	// ?TODO: enforce/check mode?
+	return r.spiPump(CMD_FLUSH_TX, nil)
+}
+
+func (r *R) flushRx() {
+	// ?TODO: enforce/check mode?
+	// from spec:
+        //   Should not be executed during transmission of
+	//   acknowledge, that is, acknowledge package will
+	//   not be completed.
+	return r.spiPump(CMD_FLUSH_RX, nil)
+}
+
+func (r *R) getStatus() {
+	// spiPump will update status on every cmd sent
+	return r.spiPump(CMD_NOP, nil)
+}
 
 
 
@@ -166,7 +176,7 @@ var (
 	// CMD_R_REGISTER - is a function, see below
 	// CMD_W_REGSITER - is a function, see below
 	CMD_R_RX_PAYLOAD = Command(B("01100001"))
-	CMD_W_RX_PAYLOAD = Command(B("10100000"))
+	CMD_W_TX_PAYLOAD = Command(B("10100000"))
 	CMD_FLUSH_TX = Command(B("11100001"))
 	CMD_FLUSH_RX = Command(B("11100010"))
 	CMD_REUSE_TX_PL = Command(B("11100011"))
