@@ -93,3 +93,91 @@ func TestCMD_W_REGISTER_AllOnes_MasksTwoMSBits(t *testing.T) {
 		t.Errorf("expected '%b' but found '%b' with register '%b'", expected, result, r)
 	}
 }
+
+func TestCMD_W_ACK_PAYLOAD_PipeZero_MaskedCorrectly(t *testing.T) {
+	p := gorf24.Pipe(0)
+	expected := gorf24.B("10101000")
+	
+	result := gorf24.CMD_W_ACK_PAYLOAD(p).Byte()
+
+	if result != expected {
+		t.Errorf("expected '%b' but found '%b' with pipe '%b'", expected, result, p)
+	}
+}
+
+func TestCMD_W_ACK_PAYLOAD_PipeOne_MaskedCorrectly(t *testing.T) {
+	p := gorf24.Pipe(1)
+	expected := gorf24.B("10101001")
+	
+	result := gorf24.CMD_W_ACK_PAYLOAD(p).Byte()
+
+	if result != expected {
+		t.Errorf("expected '%b' but found '%b' with pipe '%b'", expected, result, p)
+	}
+}
+
+func TestCMD_W_ACK_PAYLOAD_PipeTwo_MaskedCorrectly(t *testing.T) {
+	p := gorf24.Pipe(2)
+	expected := gorf24.B("10101010")
+	
+	result := gorf24.CMD_W_ACK_PAYLOAD(p).Byte()
+
+	if result != expected {
+		t.Errorf("expected '%b' but found '%b' with pipe '%b'", expected, result, p)
+	}
+}
+
+func TestCMD_W_ACK_PAYLOAD_PipeThree_MaskedCorrectly(t *testing.T) {
+	p := gorf24.Pipe(3)
+	expected := gorf24.B("10101011")
+	
+	result := gorf24.CMD_W_ACK_PAYLOAD(p).Byte()
+
+	if result != expected {
+		t.Errorf("expected '%b' but found '%b' with pipe '%b'", expected, result, p)
+	}
+}
+
+func TestCMD_W_ACK_PAYLOAD_PipeFour_MaskedCorrectly(t *testing.T) {
+	p := gorf24.Pipe(4)
+	expected := gorf24.B("10101100")
+	
+	result := gorf24.CMD_W_ACK_PAYLOAD(p).Byte()
+
+	if result != expected {
+		t.Errorf("expected '%b' but found '%b' with pipe '%b'", expected, result, p)
+	}
+}
+
+func TestCMD_W_ACK_PAYLOAD_PipeFive_MaskedCorrectly(t *testing.T) {
+	p := gorf24.Pipe(5)
+	expected := gorf24.B("10101101")
+	
+	result := gorf24.CMD_W_ACK_PAYLOAD(p).Byte()
+
+	if result != expected {
+		t.Errorf("expected '%b' but found '%b' with pipe '%b'", expected, result, p)
+	}
+}
+
+func TestCMD_W_ACK_PAYLOAD_PipeHigherThanFive_ThreeBits_MasksCorrectlyAlthoughInvalid(t *testing.T) {
+	p := gorf24.Pipe(6)
+	expected := gorf24.B("10101110")
+	
+	result := gorf24.CMD_W_ACK_PAYLOAD(p).Byte()
+
+	if result != expected {
+		t.Errorf("expected '%b' but found '%b' with pipe '%b'", expected, result, p)
+	}
+}
+
+func TestCMD_W_ACK_PAYLOAD_PipeHigherThanFive_OverThreeBits_TruncatesAndMasksCorrectlyAlthoughInvalid(t *testing.T) {
+	p := gorf24.Pipe(10)
+	expected := gorf24.B("10101010")
+	
+	result := gorf24.CMD_W_ACK_PAYLOAD(p).Byte()
+
+	if result != expected {
+		t.Errorf("expected '%b' but found '%b' with pipe '%b'", expected, result, p)
+	}
+}
