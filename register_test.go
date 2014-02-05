@@ -59,23 +59,3 @@ func TestWriteCmd_AllOnes_MasksTwoMSBits(t *testing.T) {
 		t.Errorf("expected '%b' but found '%b' with register '%b'", expected, result, r)
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
