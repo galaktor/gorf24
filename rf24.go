@@ -81,6 +81,10 @@ func New(spidevice string, spispeed uint32, cepin, csnpin uint8) (r *R, err erro
 	return
 }
 
+func (r *R) Status() Status {
+	return r.status
+}
+
 // sends Command, then buf byte-by-byte over SPI
 // if buf is null, sends only command
 // WARNING: destructive - overwrites content of buf while pumping
@@ -113,32 +117,60 @@ func (r *R) spiPump(c Command, buf []byte) error {
 
 // ?TODO: use buffer(s) pre-allocated on R?
 
+/*
+Read command and status registers. AAAAA =
+5 bit Register Map Address
+*/
 func (r *R) readRegister(reg Register, buf []byte) error {
 	return r.spiPump(CMD_R_REGISTER(reg), buf)
 }
 
+/*
+Write command and status registers. AAAAA = 5
+bit Register Map Address
+Executable in power down or standby modes
+only.
+*/
 func (r *R) writeRegister(reg Register, buf []byte) error {
 	return r.spiPump(CMD_W_REGISTER(reg), buf)
 }
 
-func (r *R) writePayload(buf []byte) {
-	// ?TODO: set to TX mode?
-	return r.spiPump(CMD_W_TX_PAYLOAD.Byte(), buf)
-}
-
-func (r *R) readPayload(buf []byte) {
+/*
+Read RX-payload: 1 – 32 bytes. A read operation
+always starts at byte 0. Payload is deleted from
+FIFO after it is read. Used in RX mode
+*/
+func (r *R) readPayload(buf []byte) error {
 	// ?TODO: set to RX mode?
 	return r.spiPump(CMD_R_RX_PAYLOAD.Byte(), buf)
 }
 
+/*
+Write TX-payload: 1 – 32 bytes. A write operation
+always starts at byte 0 used in TX payload.
+*/
+func (r *R) writePayload(buf []byte) error {
+	// ?TODO: set to TX mode?
+	return r.spiPump(CMD_W_TX_PAYLOAD.Byte(), buf)
+}
+
 // ?TODO: enum for modes, MD_RX and MD_TX?
 
-func (r *R) flushTx() {
+/*
+Flush TX FIFO, used in TX mode
+*/
+func (r *R) flushTx() error {
 	// ?TODO: enforce/check mode?
 	return r.spiPump(CMD_FLUSH_TX, nil)
 }
 
-func (r *R) flushRx() {
+/*
+Flush RX FIFO, used in RX mode
+Should not be executed during transmission of
+acknowledge, that is, acknowledge package will
+not be completed.
+*/
+func (r *R) flushRx() error {
 	// ?TODO: enforce/check mode?
 	// from spec:
         //   Should not be executed during transmission of
@@ -147,11 +179,39 @@ func (r *R) flushRx() {
 	return r.spiPump(CMD_FLUSH_RX, nil)
 }
 
-func (r *R) getStatus() {
+/*
+No Operation. Might be used to read the STATUS
+register
+*/
+func (r *R) refreshStatus() (Status,error)  {
 	// spiPump will update status on every cmd sent
-	return r.spiPump(CMD_NOP, nil)
+	err := r.spiPump(CMD_NOP, nil)
+	return r.status,err
 }
 
+/*
+This write command followed by data 0x73 acti-
+vates the following features:
+• R_RX_PL_WID
+• W_ACK_PAYLOAD
+• W_TX_PAYLOAD_NOACK
+A new ACTIVATE command with the same data
+deactivates them again. This is executable in
+power down or stand by modes only.
+The R_RX_PL_WID, W_ACK_PAYLOAD, and
+W_TX_PAYLOAD_NOACK features registers are
+initially in a deactivated state; a write has no
+effect, a read only results in zeros on MISO. To
+activate these registers, use the ACTIVATE com-
+mand followed by data 0x73. Then they can be
+accessed as any other register in nRF24L01. Use
+the same command and data to deactivate the
+registers again.
+*/
+func (r *R) toggleActivate() error {
+	// TODO: keep activated bool state, make de/activate() funcs
+	return r.spiPump(CMD_ACTIVATE, 0x73...)
+}
 
 
 /***** pipe.go *****/
