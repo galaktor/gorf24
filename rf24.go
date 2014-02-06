@@ -240,14 +240,104 @@ var (
 	   Enable ‘Auto Acknowledgment’ Function Dis-
 	   able this functionality to be compatible with
 	   nRF2401 */
-	REG_EN_AA = Register(1)
+	REG_EN_AA = Register(0x1)
 
 	/* Enabled RX Addresses */
-	REG_EN_RXADDR = Register(2)
+	REG_EN_RXADDR = Register(0x2)
 
 	/* Setup of Address Widths
 	(common for all data pipes) */
-	REG_SETUP_AW = Register(3)
+	REG_SETUP_AW = Register(0x3)
+
+	/* Setup of Automatic Retransmission */
+	REG_SETUP_RETR = Register(0x4)
+
+	/* RF Channel */
+	REG_RF_CH = Register(0x5)
+
+	/* RF Setup Register */
+	REG_RF_SETUP = Register(0x6)
+
+	/* Status Register (In parallel to the SPI command
+	           word applied on the MOSI pin, the STATUS reg-
+		   ister is shifted serially out on the MISO pin)
+		   (bit 7 reserved)*/
+	REG_STATUS = Register(0x7)
+
+	/* Transmit observe register */
+	REG_OBSERVE_TX = Register(0x8)
+
+	/* Carrier detect
+	   (bits 7:1 reserved) */
+	REG_CD = Register(0x9)
+
+	/* Receive address data pipe 0. 5 Bytes maximum
+	   length. (LSByte is written first. Write the number
+	   of bytes defined by SETUP_AW) */
+	REG_RX_ADDR_P0 = Register(0x0A)
+
+	/* Receive address data pipe 1. 5 Bytes maximum
+	   length. (LSByte is written first. Write the number
+	   of bytes defined by SETUP_AW) */
+	REG_RX_ADDR_P1 = Register(0x0B)
+
+	/* Receive address data pipe 2. Only LSB. MSBy-
+	   tes is equal to RX_ADDR_P1[39:8] */
+	REG_RX_ADDR_P2 = Register(0x0C)
+
+	/* Receive address data pipe 3. Only LSB. MSBy-
+	   tes is equal to RX_ADDR_P1[39:8] */
+	REG_RX_ADDR_P3 = Register(0x0D)
+
+	/* Receive address data pipe 4. Only LSB. MSBy-
+	   tes is equal to RX_ADDR_P1[39:8] */
+	REG_RX_ADDR_P4 = Register(0x0E)
+
+	/* Receive address data pipe 5. Only LSB. MSBy-
+	   tes is equal to RX_ADDR_P1[39:8] */
+	REG_RX_ADDR_P5 = Register(0x0F)
+
+	/* Transmit address. Used for a PTX device only.
+	   (LSByte is written first)
+	   Set RX_ADDR_P0 equal to this address to han-
+	   dle automatic acknowledge if this is a PTX
+	   device with Enhanced ShockBurstTM enabled. */
+	REG_TX_ADDR = Register(0x10)
+
+	/* Number of bytes in RX payload in data pipe 0-5
+	   (1 to 32 bytes).
+	   0 Pipe not used
+	   1 = 1 byte
+	   ...
+	   32 = 32 bytes
+	   (bits 7:6 reserved)*/
+	REG_RX_PW_P0 = Register(0x11)
+	REG_RX_PW_P1 = Register(0x12)
+	REG_RX_PW_P2 = Register(0x13)
+	REG_RX_PW_P3 = Register(0x14)
+	REG_RX_PW_P4 = Register(0x15)
+	REG_RX_PW_P5 = Register(0x16)
+
+	/* FIFO Status Register
+	   (bits 7,3:2 reserved)*/
+	REG_FIFO_STATUS = Register(0x17)
+
+	/* n/a = separate SPI commands
+	   REG_ACK_PLD
+	   REG_TX_PLD
+	   REG_RX_PLD
+	*/
+
+	/* Enable dynamic payload length
+	   (bits 7:6 reserved) */
+	REG_DYNPD = Register(0x1C)
+
+	/* Feature register
+	   To activate this feature use the ACTIVATE SPI command followed by
+	   data 0x73. The corresponding bits in the FEATURE register must
+	   be set.
+	   (bits 7:3 reserved) */
+	REG_FEATURE = Register(0x1D)
 )
 
 type ConfigReg struct {
@@ -263,8 +353,19 @@ func (c *ConfigReg) Byte() byte {
 	return c.flags
 }
 
-func (c *ConfigReg) SetPrimaryReader() {
-	c.flags = c.flags | 1
+/* PRIM_RX */
+func (c *ConfigReg) SetPrimaryReceiver() {
+	c.flags =  c.flags | 1
+}
+func (c *ConfigReg) IsPrimaryReader() bool {
+	return c.flags & 1 == 1
+}
+/* PRIM_TX */
+func (c *ConfigReg) SetPrimaryTransmitter() {
+	c.flags = c.flags | 0
+}
+func (c *ConfigReg) IsPrimaryTransmitter() bool {
+	return c.flags & 1 == 0 
 }
 
 /***** EOF reg.go *****/
