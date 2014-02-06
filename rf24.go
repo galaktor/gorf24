@@ -360,12 +360,25 @@ func (c *ConfigReg) SetPrimaryReceiver() {
 func (c *ConfigReg) IsPrimaryReceiver() bool {
 	return c.flags & 1 == 1
 }
-/* PRIM_TX */
 func (c *ConfigReg) SetPrimaryTransmitter() {
 	c.flags = c.flags & 0xFE
 }
 func (c *ConfigReg) IsPrimaryTransmitter() bool {
 	return c.flags & 1 == 0 
+}
+
+/* PWR_UP */
+func (c *ConfigReg) SetPowerUp() {
+	c.flags = c.flags | 2
+}
+func (c *ConfigReg) IsPowerUp() bool {
+	return c.flags & 2 == 2
+}
+func (c *ConfigReg) SetPowerDown() {
+	c.flags = c.flags & 0xFD
+}
+func (c *ConfigReg) IsPowerDown() bool {
+	return c.flags & 2 == 0
 }
 
 /***** EOF reg.go *****/
