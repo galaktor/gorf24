@@ -404,6 +404,24 @@ func (c *ConfigReg) SetCrcEnabled(enable bool) {
 	}
 }
 
+/* MASK_MAX_RT */
+func (c *ConfigReg) SetMaxRtInterruptEnabled(enable bool) {
+	if enable {
+		c.flags = c.flags & 0xEF
+	} else {
+		c.flags = c.flags | 16
+	}
+}
+
+/* MASK_TX_DS */
+func (c *ConfigReg) SetTxDsInterruptEnabled(enable bool) {
+	if enable {
+		c.flags = c.flags & 0xDF
+	} else {
+		c.flags = c.flags | 32
+	}
+}
+
 /***** EOF reg.go *****/
 
 /***** cmd.go *****/
