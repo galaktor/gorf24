@@ -31,7 +31,7 @@ const (
 	RATE_250KBPS
 )
 
-type CRCLENGTH byte
+type CrcLength byte
 
 const (
 	CRC_DISABLED = iota
@@ -381,6 +381,21 @@ func (c *ConfigReg) IsPowerDown() bool {
 	return c.flags & 2 == 0
 }
 
+/* CRCO */
+func (c *ConfigReg) SetCrcLength(l CrcLength) {
+	switch l {
+	case CRC_8BIT:  c.flags = c.flags & 0xFB
+	case CRC_16BIT: c.flags = c.flags | 4
+	}
+}
+func (c *ConfigReg) GetCrcLength() CrcLength {
+	if c.flags & 4 == 4 {
+		return CRC_16BIT
+	} else {
+		return CRC_8BIT
+	}
+}
+
 /***** EOF reg.go *****/
 
 /***** cmd.go *****/
@@ -566,12 +581,12 @@ func (r *R) GetDataRate() DATARATE {
 
 
 
-func (r *R) SetCRCLength(length CRCLENGTH) {
+func (r *R) SetCRCLength(length CrcLength) {
 	C.rf24_setCRCLength(r.cptr, C.rf24_crclength_val(length))
 }
 
-func (r *R) GetCRCLength() CRCLENGTH {
-	return CRCLENGTH(C.rf24_getCRCLength(r.cptr))
+func (r *R) GetCRCLength() CrcLength {
+	return CrcLength(C.rf24_getCRCLength(r.cptr))
 }
 
 func (r *R) DisableCRC() {

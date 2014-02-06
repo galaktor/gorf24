@@ -190,11 +190,77 @@ func TestConfigReg_IsPowerDown_FlagOne_ReturnsFalse(t *testing.T) {
 	}
 }
 
+func TestConfigReg_SetCrcLength_To16bits_SetsFlagToOne(t *testing.T) {
+	c := gorf24.NewConfigReg(gorf24.B("11111011"))
+	expected := gorf24.B("11111111")
 
+	c.SetCrcLength(gorf24.CRC_16BIT)
 
+	actual := c.Byte()
+	if actual != expected {
+		t.Errorf("expected '%b' but found '%b' with configreg '%v'", expected, actual, c)
+	}
+}
 
+func TestConfigReg_SetCrcLength_To16bits_DoesNotFlipOtherBits(t *testing.T) {
+	c := gorf24.NewConfigReg(gorf24.B("10101010"))
+	expected := gorf24.B("10101110")
 
+	c.SetCrcLength(gorf24.CRC_16BIT)
 
+	actual := c.Byte()
+	if actual != expected {
+		t.Errorf("expected '%b' but found '%b' with configreg '%v'", expected, actual, c)
+	}
+}
+
+func TestConfigReg_SetCrcLength_To8bits_SetsFlagToZero(t *testing.T) {
+	c := gorf24.NewConfigReg(gorf24.B("00000100"))
+	expected := gorf24.B("00000000")
+
+	c.SetCrcLength(gorf24.CRC_8BIT)
+
+	actual := c.Byte()
+	if actual != expected {
+		t.Errorf("expected '%b' but found '%b' with configreg '%v'", expected, actual, c)
+	}
+}
+
+func TestConfigReg_SetCrcLength_To8bits_DoesNotFlipOtherBits(t *testing.T) {
+	c := gorf24.NewConfigReg(gorf24.B("01010101"))
+	expected := gorf24.B("01010001")
+
+	c.SetCrcLength(gorf24.CRC_8BIT)
+
+	actual := c.Byte()
+	if actual != expected {
+		t.Errorf("expected '%b' but found '%b' with configreg '%v'", expected, actual, c)
+	}
+}
+
+func TestConfigReg_GetCrcLength_8bits_Returns8bits(t *testing.T) {
+	c := gorf24.NewConfigReg(0)
+	expected := gorf24.CrcLength(gorf24.CRC_8BIT)
+	c.SetCrcLength(expected)
+
+	actual := c.GetCrcLength()
+
+	if actual != expected {
+		t.Errorf("expected '%v' but found '%v' with configreg '%v'", expected, actual, c)
+	}
+}
+
+func TestConfigReg_GetCrcLength_16bits_Returns16bits(t *testing.T) {
+	c := gorf24.NewConfigReg(0)
+	expected := gorf24.CrcLength(gorf24.CRC_16BIT)
+	c.SetCrcLength(expected)
+
+	actual := c.GetCrcLength()
+
+	if actual != expected {
+		t.Errorf("expected '%v' but found '%v' with configreg '%v'", expected, actual, c)
+	}
+}
 
 
 
