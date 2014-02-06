@@ -368,17 +368,16 @@ func (c *ConfigReg) IsPrimaryTransmitter() bool {
 }
 
 /* PWR_UP */
-func (c *ConfigReg) SetPowerUp() {
-	c.flags = c.flags | 2
+func (c *ConfigReg) SetPowerUp(up bool) {
+	if up {
+		c.flags = c.flags | 2
+	} else {
+		c.flags = c.flags & 0xFD
+	}
+	
 }
 func (c *ConfigReg) IsPowerUp() bool {
 	return c.flags & 2 == 2
-}
-func (c *ConfigReg) SetPowerDown() {
-	c.flags = c.flags & 0xFD
-}
-func (c *ConfigReg) IsPowerDown() bool {
-	return c.flags & 2 == 0
 }
 
 /* CRCO */
@@ -393,6 +392,15 @@ func (c *ConfigReg) GetCrcLength() CrcLength {
 		return CRC_16BIT
 	} else {
 		return CRC_8BIT
+	}
+}
+
+/* EN_CRC */
+func (c *ConfigReg) SetCrcEnabled(enable bool) {
+	if enable {
+		c.flags = c.flags | 8
+	} else {
+		c.flags = c.flags & 0xF7
 	}
 }
 

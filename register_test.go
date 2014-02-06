@@ -18,7 +18,7 @@ func TestConfigReg_SetPrimaryReceiver_RelevantFlagZero_SetsFlagToOne(t *testing.
 	}
 }
 
-func TestConfigReg_SetPrimaryReceiver_SomeIrrelevantFlagsFlipped_ChangesOnlyRelevantBit(t *testing.T) {
+func TestConfigReg_SetPrimaryReceiver_DoesNotFlipOtherBits(t *testing.T) {
 	c := gorf24.NewConfigReg(gorf24.B("10101010"))
 	expected := gorf24.B("10101011")
 
@@ -64,7 +64,7 @@ func TestConfigReg_SetPrimaryTransmitter_SetsBitToZero(t *testing.T) {
 	}
 }
 
-func TestConfigReg_SetPrimaryTransmitter_SomeOtherBitsFlipped_DoesntChangeThose(t *testing.T) {
+func TestConfigReg_SetPrimaryTransmitter_DoesntFlipOtherBits(t *testing.T) {
 	c := gorf24.NewConfigReg(gorf24.B("10101010"))
 	expected := gorf24.B("10101010")
 
@@ -98,11 +98,11 @@ func TestConfigReg_IsPrimaryTransmitter_FlagOne_ReturnsTrue(t *testing.T) {
 	}
 }
 
-func TestConfigReg_SetPowerUp_FlagZero_SetsFlagToOne(t *testing.T) {
+func TestConfigReg_SetPowerUp_True_SetsFlagToOne(t *testing.T) {
 	c := gorf24.NewConfigReg(gorf24.B("11111101"))
 	expected := gorf24.B("11111111")
 
-	c.SetPowerUp()
+	c.SetPowerUp(true)
 	
 	actual := c.Byte()
 	if actual != expected {
@@ -110,13 +110,33 @@ func TestConfigReg_SetPowerUp_FlagZero_SetsFlagToOne(t *testing.T) {
 	}
 }
 
-func TestConfigReg_SetPowerUp_OtherBitsSet_LeavesThoseAlone(t *testing.T) {
-	c := gorf24.NewConfigReg(gorf24.B("01010101"))
-	expected := gorf24.B("01010111")
+func TestConfigReg_SetPowerUp_False_SetsFlagToZero(t *testing.T) {
+	c := gorf24.NewConfigReg(gorf24.B("00000010"))
+	expected := gorf24.B("00000000")
 
-	c.SetPowerUp()
+	c.SetPowerUp(false)
 	
 	actual := c.Byte()
+	if actual != expected {
+		t.Errorf("expected '%b' but found '%b' with configreg '%v'", expected, actual, c)
+	}
+}
+
+func TestConfigReg_SetPowerUp_DoesNotFlipOtherBits(t *testing.T) {
+	c := gorf24.NewConfigReg(gorf24.B("01010101"))
+
+	expected := gorf24.B("01010111")
+	c.SetPowerUp(true)
+	actual := c.Byte()
+
+	if actual != expected {
+		t.Errorf("expected '%b' but found '%b' with configreg '%v'", expected, actual, c)
+	}
+
+	expected = gorf24.B("01010101")
+	c.SetPowerUp(false)
+	actual = c.Byte()
+
 	if actual != expected {
 		t.Errorf("expected '%b' but found '%b' with configreg '%v'", expected, actual, c)
 	}
@@ -144,52 +164,6 @@ func TestConfigReg_IsPowerUp_FlagOne_ReturnsTrue(t *testing.T) {
 	}
 }
 
-func TestConfigReg_SetPowerDown_FlagOne_SetsFlagToZero(t *testing.T) {
-	c := gorf24.NewConfigReg(gorf24.B("00000010"))
-	expected := gorf24.B("00000000")
-
-	c.SetPowerDown()
-	
-	actual := c.Byte()
-	if actual != expected {
-		t.Errorf("expected '%b' but found '%b' with configreg '%v'", expected, actual, c)
-	}
-}
-
-func TestConfigReg_SetPowerDown_OtherBitsFlipped_LeavesThemAlone(t *testing.T) {
-	c := gorf24.NewConfigReg(gorf24.B("10101010"))
-	expected := gorf24.B("10101000")
-
-	c.SetPowerDown()
-	
-	actual := c.Byte()
-	if actual != expected {
-		t.Errorf("expected '%b' but found '%b' with configreg '%v'", expected, actual, c)
-	}
-}
-
-func TestConfigReg_IsPowerDown_FlagZero_ReturnsTrue(t *testing.T) {
-	c := gorf24.NewConfigReg(gorf24.B("11111101"))
-	expected := true
-
-	actual := c.IsPowerDown()
-	
-	if actual != expected {
-		t.Errorf("expected '%v' but found '%v' with configreg '%v'", expected, actual, c)
-	}
-}
-
-func TestConfigReg_IsPowerDown_FlagOne_ReturnsFalse(t *testing.T) {
-	c := gorf24.NewConfigReg(gorf24.B("00000010"))
-	expected := false
-
-	actual := c.IsPowerDown()
-	
-	if actual != expected {
-		t.Errorf("expected '%v' but found '%v' with configreg '%v'", expected, actual, c)
-	}
-}
-
 func TestConfigReg_SetCrcLength_To16bits_SetsFlagToOne(t *testing.T) {
 	c := gorf24.NewConfigReg(gorf24.B("11111011"))
 	expected := gorf24.B("11111111")
@@ -202,13 +176,21 @@ func TestConfigReg_SetCrcLength_To16bits_SetsFlagToOne(t *testing.T) {
 	}
 }
 
-func TestConfigReg_SetCrcLength_To16bits_DoesNotFlipOtherBits(t *testing.T) {
-	c := gorf24.NewConfigReg(gorf24.B("10101010"))
-	expected := gorf24.B("10101110")
+func TestConfigReg_SetCrcLength_DoesNotFlipOtherBits(t *testing.T) {
+	c := gorf24.NewConfigReg(gorf24.B("01010101"))
 
-	c.SetCrcLength(gorf24.CRC_16BIT)
-
+	expected := gorf24.B("01010001")
+	c.SetCrcLength(gorf24.CRC_8BIT)
 	actual := c.Byte()
+
+	if actual != expected  {
+		t.Errorf("expected '%b' but found '%b' with configreg '%v'", expected, actual, c)
+	}
+
+	expected = gorf24.B("01010101")
+	c.SetCrcLength(gorf24.CRC_16BIT)
+	actual = c.Byte()
+
 	if actual != expected {
 		t.Errorf("expected '%b' but found '%b' with configreg '%v'", expected, actual, c)
 	}
@@ -217,18 +199,6 @@ func TestConfigReg_SetCrcLength_To16bits_DoesNotFlipOtherBits(t *testing.T) {
 func TestConfigReg_SetCrcLength_To8bits_SetsFlagToZero(t *testing.T) {
 	c := gorf24.NewConfigReg(gorf24.B("00000100"))
 	expected := gorf24.B("00000000")
-
-	c.SetCrcLength(gorf24.CRC_8BIT)
-
-	actual := c.Byte()
-	if actual != expected {
-		t.Errorf("expected '%b' but found '%b' with configreg '%v'", expected, actual, c)
-	}
-}
-
-func TestConfigReg_SetCrcLength_To8bits_DoesNotFlipOtherBits(t *testing.T) {
-	c := gorf24.NewConfigReg(gorf24.B("01010101"))
-	expected := gorf24.B("01010001")
 
 	c.SetCrcLength(gorf24.CRC_8BIT)
 
@@ -261,6 +231,38 @@ func TestConfigReg_GetCrcLength_16bits_Returns16bits(t *testing.T) {
 		t.Errorf("expected '%v' but found '%v' with configreg '%v'", expected, actual, c)
 	}
 }
+
+func TestConfigReg_SetCrcEnabled_True_SetsFlagToOne(t *testing.T) {
+	c := gorf24.NewConfigReg(gorf24.B("11110111"))
+	expected := gorf24.B("11111111")
+
+	c.SetCrcEnabled(true)
+
+	actual := c.Byte()
+	if actual != expected {
+		t.Errorf("expected '%v' but found '%v' with configreg '%v'", expected, actual, c)
+	}
+}
+
+func TestConfigReg_SetCrcEnabled_False_SetsFlagToZero(t *testing.T) {
+	c := gorf24.NewConfigReg(gorf24.B("00001000"))
+	expected := gorf24.B("00000000")
+
+	c.SetCrcEnabled(false)
+
+	actual := c.Byte()
+	if actual != expected {
+		t.Errorf("expected '%v' but found '%v' with configreg '%v'", expected, actual, c)
+	}
+}
+
+//func TestConfigReg_SetCrcEnabled
+
+
+
+
+
+
 
 
 
