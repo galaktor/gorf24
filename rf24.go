@@ -422,6 +422,15 @@ func (c *ConfigReg) SetTxDsInterruptEnabled(enable bool) {
 	}
 }
 
+/* MASK_RX_DR */
+func (c *ConfigReg) SetRxDrInterruptEnabled(enable bool) {
+	if enable {
+		c.flags = c.flags & 0xBF
+	} else {
+		c.flags = c.flags | 64
+	}
+}
+
 /***** EOF reg.go *****/
 
 /***** cmd.go *****/

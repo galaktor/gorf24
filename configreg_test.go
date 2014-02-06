@@ -364,6 +364,50 @@ func TestSetTxDsInterruptEnabled_DoesNotFlipOtherBits(t *testing.T) {
 	}
 }
 
+func TestSetRxDrInterruptEnabled_True_SetsBitToZero(t *testing.T) {
+	c := gorf24.NewConfigReg(gorf24.B("01000000"))
+	expected := gorf24.B("00000000")
+
+	c.SetRxDrInterruptEnabled(true)
+
+	actual := c.Byte()
+	if actual != expected {
+		t.Errorf("expected '%b' but found '%b' with configreg '%v'", expected, actual, c)
+	}
+}
+
+func TestSetRxDrInterruptEnabled_False_SetsBitToOne(t *testing.T) {
+	c := gorf24.NewConfigReg(gorf24.B("10111111"))
+	expected := gorf24.B("11111111")
+
+	c.SetRxDrInterruptEnabled(false)
+
+	actual := c.Byte()
+	if actual != expected {
+		t.Errorf("expected '%b' but found '%b' with configreg '%v'", expected, actual, c)
+	}
+}
+
+func TestSetRxDrInterruptEnabled_DoesNotFlipOtherBits(t *testing.T) {
+	c := gorf24.NewConfigReg(gorf24.B("10101010"))
+
+	expected := gorf24.B("11101010")
+	c.SetRxDrInterruptEnabled(false)
+	actual := c.Byte()
+
+	if actual != expected {
+		t.Errorf("expected '%b' but found '%b' with configreg '%v'", expected, actual, c)
+	}
+
+	expected = gorf24.B("10101010")
+	c.SetRxDrInterruptEnabled(true)
+	actual = c.Byte()
+
+	if actual != expected {
+		t.Errorf("expected '%b' but found '%b' with configreg '%v'", expected, actual, c)
+	}
+}
+
 
 
 
