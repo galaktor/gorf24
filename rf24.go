@@ -355,16 +355,16 @@ func (c *ConfigReg) Byte() byte {
 
 /* PRIM_RX */
 func (c *ConfigReg) SetPrimaryReceiver() {
-	c.flags =  c.flags | 1
+	c.flags = c.flags | 1
 }
 func (c *ConfigReg) IsPrimaryReceiver() bool {
-	return c.flags & 1 == 1
+	return c.flags&1 == 1
 }
 func (c *ConfigReg) SetPrimaryTransmitter() {
 	c.flags = c.flags & 0xFE
 }
 func (c *ConfigReg) IsPrimaryTransmitter() bool {
-	return c.flags & 1 == 0 
+	return c.flags&1 == 0
 }
 
 /* PWR_UP */
@@ -374,21 +374,23 @@ func (c *ConfigReg) SetPowerUp(up bool) {
 	} else {
 		c.flags = c.flags & 0xFD
 	}
-	
+
 }
 func (c *ConfigReg) IsPowerUp() bool {
-	return c.flags & 2 == 2
+	return c.flags&2 == 2
 }
 
 /* CRCO */
 func (c *ConfigReg) SetCrcLength(l CrcLength) {
 	switch l {
-	case CRC_8BIT:  c.flags = c.flags & 0xFB
-	case CRC_16BIT: c.flags = c.flags | 4
+	case CRC_8BIT:
+		c.flags = c.flags & 0xFB
+	case CRC_16BIT:
+		c.flags = c.flags | 4
 	}
 }
 func (c *ConfigReg) GetCrcLength() CrcLength {
-	if c.flags & 4 == 4 {
+	if c.flags&4 == 4 {
 		return CRC_16BIT
 	} else {
 		return CRC_8BIT

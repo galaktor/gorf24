@@ -11,7 +11,7 @@ func TestSetPrimaryReceiver_RelevantFlagZero_SetsFlagToOne(t *testing.T) {
 	expected := gorf24.B("00000001")
 
 	c.SetPrimaryReceiver()
-	
+
 	actual := c.Byte()
 	if actual != expected {
 		t.Errorf("expected '%b' but found '%b' with configreg '%v'", expected, actual, c)
@@ -23,7 +23,7 @@ func TestSetPrimaryReceiver_DoesNotFlipOtherBits(t *testing.T) {
 	expected := gorf24.B("10101011")
 
 	c.SetPrimaryReceiver()
-	
+
 	actual := c.Byte()
 	if actual != expected {
 		t.Errorf("expected '%b' but found '%b' with configreg '%v'", expected, actual, c)
@@ -35,7 +35,7 @@ func TestIsPrimaryReceiver_FlagZero_ReturnsFalse(t *testing.T) {
 	expected := false
 
 	actual := c.IsPrimaryReceiver()
-	
+
 	if actual != expected {
 		t.Errorf("expected '%v' but found '%v' with configreg '%v'", expected, actual, c)
 	}
@@ -46,7 +46,7 @@ func TestIsPrimaryReceiver_FlagOne_ReturnsTrue(t *testing.T) {
 	expected := true
 
 	actual := c.IsPrimaryReceiver()
-	
+
 	if actual != expected {
 		t.Errorf("expected '%v' but found '%v' with configreg '%v'", expected, actual, c)
 	}
@@ -57,7 +57,7 @@ func TestSetPrimaryTransmitter_SetsBitToZero(t *testing.T) {
 	expected := gorf24.B("00000000")
 
 	c.SetPrimaryTransmitter()
-	
+
 	actual := c.Byte()
 	if actual != expected {
 		t.Errorf("expected '%b' but found '%b' with configreg '%v'", expected, actual, c)
@@ -69,7 +69,7 @@ func TestSetPrimaryTransmitter_DoesntFlipOtherBits(t *testing.T) {
 	expected := gorf24.B("10101010")
 
 	c.SetPrimaryTransmitter()
-	
+
 	actual := c.Byte()
 	if actual != expected {
 		t.Errorf("expected '%b' but found '%b' with configreg '%v'", expected, actual, c)
@@ -81,7 +81,7 @@ func TestIsPrimaryTransmitter_FlagZero_ReturnsTrue(t *testing.T) {
 	expected := true
 
 	actual := c.IsPrimaryTransmitter()
-	
+
 	if actual != expected {
 		t.Errorf("expected '%v' but found '%v' with configreg '%v'", expected, actual, c)
 	}
@@ -92,7 +92,7 @@ func TestIsPrimaryTransmitter_FlagOne_ReturnsTrue(t *testing.T) {
 	expected := false
 
 	actual := c.IsPrimaryTransmitter()
-	
+
 	if actual != expected {
 		t.Errorf("expected '%v' but found '%v' with configreg '%v'", expected, actual, c)
 	}
@@ -103,7 +103,7 @@ func TestSetPowerUp_True_SetsFlagToOne(t *testing.T) {
 	expected := gorf24.B("11111111")
 
 	c.SetPowerUp(true)
-	
+
 	actual := c.Byte()
 	if actual != expected {
 		t.Errorf("expected '%b' but found '%b' with configreg '%v'", expected, actual, c)
@@ -115,7 +115,7 @@ func TestSetPowerUp_False_SetsFlagToZero(t *testing.T) {
 	expected := gorf24.B("00000000")
 
 	c.SetPowerUp(false)
-	
+
 	actual := c.Byte()
 	if actual != expected {
 		t.Errorf("expected '%b' but found '%b' with configreg '%v'", expected, actual, c)
@@ -147,7 +147,7 @@ func TestIsPowerUp_FlagZero_ReturnsFalse(t *testing.T) {
 	expected := false
 
 	actual := c.IsPowerUp()
-	
+
 	if actual != expected {
 		t.Errorf("expected '%v' but found '%v' with configreg '%v'", expected, actual, c)
 	}
@@ -158,7 +158,7 @@ func TestIsPowerUp_FlagOne_ReturnsTrue(t *testing.T) {
 	expected := true
 
 	actual := c.IsPowerUp()
-	
+
 	if actual != expected {
 		t.Errorf("expected '%v' but found '%v' with configreg '%v'", expected, actual, c)
 	}
@@ -183,7 +183,7 @@ func TestSetCrcLength_DoesNotFlipOtherBits(t *testing.T) {
 	c.SetCrcLength(gorf24.CRC_8BIT)
 	actual := c.Byte()
 
-	if actual != expected  {
+	if actual != expected {
 		t.Errorf("expected '%b' but found '%b' with configreg '%v'", expected, actual, c)
 	}
 
@@ -407,11 +407,3 @@ func TestSetRxDrInterruptEnabled_DoesNotFlipOtherBits(t *testing.T) {
 		t.Errorf("expected '%b' but found '%b' with configreg '%v'", expected, actual, c)
 	}
 }
-
-
-
-
-
-
-
-
