@@ -6,7 +6,7 @@ import (
 	"."
 )
 
-func TestConfigReg_SetPrimaryReceiver_RelevantFlagZero_SetsFlagToOne(t *testing.T) {
+func TestSetPrimaryReceiver_RelevantFlagZero_SetsFlagToOne(t *testing.T) {
 	c := gorf24.NewConfigReg(gorf24.B("00000000"))
 	expected := gorf24.B("00000001")
 
@@ -18,7 +18,7 @@ func TestConfigReg_SetPrimaryReceiver_RelevantFlagZero_SetsFlagToOne(t *testing.
 	}
 }
 
-func TestConfigReg_SetPrimaryReceiver_DoesNotFlipOtherBits(t *testing.T) {
+func TestSetPrimaryReceiver_DoesNotFlipOtherBits(t *testing.T) {
 	c := gorf24.NewConfigReg(gorf24.B("10101010"))
 	expected := gorf24.B("10101011")
 
@@ -30,7 +30,7 @@ func TestConfigReg_SetPrimaryReceiver_DoesNotFlipOtherBits(t *testing.T) {
 	}
 }
 
-func TestConfigReg_IsPrimaryReceiver_FlagZero_ReturnsFalse(t *testing.T) {
+func TestIsPrimaryReceiver_FlagZero_ReturnsFalse(t *testing.T) {
 	c := gorf24.NewConfigReg(gorf24.B("11111110"))
 	expected := false
 
@@ -41,7 +41,7 @@ func TestConfigReg_IsPrimaryReceiver_FlagZero_ReturnsFalse(t *testing.T) {
 	}
 }
 
-func TestConfigReg_IsPrimaryReceiver_FlagOne_ReturnsTrue(t *testing.T) {
+func TestIsPrimaryReceiver_FlagOne_ReturnsTrue(t *testing.T) {
 	c := gorf24.NewConfigReg(gorf24.B("00000001"))
 	expected := true
 
@@ -52,7 +52,7 @@ func TestConfigReg_IsPrimaryReceiver_FlagOne_ReturnsTrue(t *testing.T) {
 	}
 }
 
-func TestConfigReg_SetPrimaryTransmitter_SetsBitToZero(t *testing.T) {
+func TestSetPrimaryTransmitter_SetsBitToZero(t *testing.T) {
 	c := gorf24.NewConfigReg(gorf24.B("00000001"))
 	expected := gorf24.B("00000000")
 
@@ -64,7 +64,7 @@ func TestConfigReg_SetPrimaryTransmitter_SetsBitToZero(t *testing.T) {
 	}
 }
 
-func TestConfigReg_SetPrimaryTransmitter_DoesntFlipOtherBits(t *testing.T) {
+func TestSetPrimaryTransmitter_DoesntFlipOtherBits(t *testing.T) {
 	c := gorf24.NewConfigReg(gorf24.B("10101010"))
 	expected := gorf24.B("10101010")
 
@@ -76,7 +76,7 @@ func TestConfigReg_SetPrimaryTransmitter_DoesntFlipOtherBits(t *testing.T) {
 	}
 }
 
-func TestConfigReg_IsPrimaryTransmitter_FlagZero_ReturnsTrue(t *testing.T) {
+func TestIsPrimaryTransmitter_FlagZero_ReturnsTrue(t *testing.T) {
 	c := gorf24.NewConfigReg(gorf24.B("11111110"))
 	expected := true
 
@@ -87,7 +87,7 @@ func TestConfigReg_IsPrimaryTransmitter_FlagZero_ReturnsTrue(t *testing.T) {
 	}
 }
 
-func TestConfigReg_IsPrimaryTransmitter_FlagOne_ReturnsTrue(t *testing.T) {
+func TestIsPrimaryTransmitter_FlagOne_ReturnsTrue(t *testing.T) {
 	c := gorf24.NewConfigReg(gorf24.B("00000001"))
 	expected := false
 
@@ -98,7 +98,7 @@ func TestConfigReg_IsPrimaryTransmitter_FlagOne_ReturnsTrue(t *testing.T) {
 	}
 }
 
-func TestConfigReg_SetPowerUp_True_SetsFlagToOne(t *testing.T) {
+func TestSetPowerUp_True_SetsFlagToOne(t *testing.T) {
 	c := gorf24.NewConfigReg(gorf24.B("11111101"))
 	expected := gorf24.B("11111111")
 
@@ -110,7 +110,7 @@ func TestConfigReg_SetPowerUp_True_SetsFlagToOne(t *testing.T) {
 	}
 }
 
-func TestConfigReg_SetPowerUp_False_SetsFlagToZero(t *testing.T) {
+func TestSetPowerUp_False_SetsFlagToZero(t *testing.T) {
 	c := gorf24.NewConfigReg(gorf24.B("00000010"))
 	expected := gorf24.B("00000000")
 
@@ -122,7 +122,7 @@ func TestConfigReg_SetPowerUp_False_SetsFlagToZero(t *testing.T) {
 	}
 }
 
-func TestConfigReg_SetPowerUp_DoesNotFlipOtherBits(t *testing.T) {
+func TestSetPowerUp_DoesNotFlipOtherBits(t *testing.T) {
 	c := gorf24.NewConfigReg(gorf24.B("01010101"))
 
 	expected := gorf24.B("01010111")
@@ -142,7 +142,7 @@ func TestConfigReg_SetPowerUp_DoesNotFlipOtherBits(t *testing.T) {
 	}
 }
 
-func TestConfigReg_IsPowerUp_FlagZero_ReturnsFalse(t *testing.T) {
+func TestIsPowerUp_FlagZero_ReturnsFalse(t *testing.T) {
 	c := gorf24.NewConfigReg(gorf24.B("11111101"))
 	expected := false
 
@@ -153,7 +153,7 @@ func TestConfigReg_IsPowerUp_FlagZero_ReturnsFalse(t *testing.T) {
 	}
 }
 
-func TestConfigReg_IsPowerUp_FlagOne_ReturnsTrue(t *testing.T) {
+func TestIsPowerUp_FlagOne_ReturnsTrue(t *testing.T) {
 	c := gorf24.NewConfigReg(gorf24.B("00000010"))
 	expected := true
 
@@ -164,7 +164,7 @@ func TestConfigReg_IsPowerUp_FlagOne_ReturnsTrue(t *testing.T) {
 	}
 }
 
-func TestConfigReg_SetCrcLength_To16bits_SetsFlagToOne(t *testing.T) {
+func TestSetCrcLength_To16bits_SetsFlagToOne(t *testing.T) {
 	c := gorf24.NewConfigReg(gorf24.B("11111011"))
 	expected := gorf24.B("11111111")
 
@@ -176,7 +176,7 @@ func TestConfigReg_SetCrcLength_To16bits_SetsFlagToOne(t *testing.T) {
 	}
 }
 
-func TestConfigReg_SetCrcLength_DoesNotFlipOtherBits(t *testing.T) {
+func TestSetCrcLength_DoesNotFlipOtherBits(t *testing.T) {
 	c := gorf24.NewConfigReg(gorf24.B("01010101"))
 
 	expected := gorf24.B("01010001")
@@ -196,7 +196,7 @@ func TestConfigReg_SetCrcLength_DoesNotFlipOtherBits(t *testing.T) {
 	}
 }
 
-func TestConfigReg_SetCrcLength_To8bits_SetsFlagToZero(t *testing.T) {
+func TestSetCrcLength_To8bits_SetsFlagToZero(t *testing.T) {
 	c := gorf24.NewConfigReg(gorf24.B("00000100"))
 	expected := gorf24.B("00000000")
 
@@ -208,7 +208,7 @@ func TestConfigReg_SetCrcLength_To8bits_SetsFlagToZero(t *testing.T) {
 	}
 }
 
-func TestConfigReg_GetCrcLength_8bits_Returns8bits(t *testing.T) {
+func TestGetCrcLength_8bits_Returns8bits(t *testing.T) {
 	c := gorf24.NewConfigReg(0)
 	expected := gorf24.CrcLength(gorf24.CRC_8BIT)
 	c.SetCrcLength(expected)
@@ -220,7 +220,7 @@ func TestConfigReg_GetCrcLength_8bits_Returns8bits(t *testing.T) {
 	}
 }
 
-func TestConfigReg_GetCrcLength_16bits_Returns16bits(t *testing.T) {
+func TestGetCrcLength_16bits_Returns16bits(t *testing.T) {
 	c := gorf24.NewConfigReg(0)
 	expected := gorf24.CrcLength(gorf24.CRC_16BIT)
 	c.SetCrcLength(expected)
@@ -232,7 +232,7 @@ func TestConfigReg_GetCrcLength_16bits_Returns16bits(t *testing.T) {
 	}
 }
 
-func TestConfigReg_SetCrcEnabled_True_SetsFlagToOne(t *testing.T) {
+func TestSetCrcEnabled_True_SetsFlagToOne(t *testing.T) {
 	c := gorf24.NewConfigReg(gorf24.B("11110111"))
 	expected := gorf24.B("11111111")
 
@@ -244,7 +244,7 @@ func TestConfigReg_SetCrcEnabled_True_SetsFlagToOne(t *testing.T) {
 	}
 }
 
-func TestConfigReg_SetCrcEnabled_False_SetsFlagToZero(t *testing.T) {
+func TestSetCrcEnabled_False_SetsFlagToZero(t *testing.T) {
 	c := gorf24.NewConfigReg(gorf24.B("00001000"))
 	expected := gorf24.B("00000000")
 
@@ -256,7 +256,7 @@ func TestConfigReg_SetCrcEnabled_False_SetsFlagToZero(t *testing.T) {
 	}
 }
 
-func TestConfigReg_SetCrcEnabled_DoesNotFlipOtherBits(t *testing.T) {
+func TestSetCrcEnabled_DoesNotFlipOtherBits(t *testing.T) {
 	c := gorf24.NewConfigReg(gorf24.B("01010101"))
 
 	expected := gorf24.B("01011101")
