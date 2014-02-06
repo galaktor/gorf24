@@ -256,9 +256,25 @@ func TestConfigReg_SetCrcEnabled_False_SetsFlagToZero(t *testing.T) {
 	}
 }
 
-//func TestConfigReg_SetCrcEnabled
+func TestConfigReg_SetCrcEnabled_DoesNotFlipOtherBits(t *testing.T) {
+	c := gorf24.NewConfigReg(gorf24.B("01010101"))
 
+	expected := gorf24.B("01011101")
+	c.SetCrcEnabled(true)
+	actual := c.Byte()
 
+	if actual != expected {
+		t.Errorf("expected '%v' but found '%v' with configreg '%v'", expected, actual, c)
+	}
+
+	expected = gorf24.B("01010101")
+	c.SetCrcEnabled(false)
+	actual = c.Byte()
+
+	if actual != expected {
+		t.Errorf("expected '%v' but found '%v' with configreg '%v'", expected, actual, c)
+	}
+}
 
 
 
