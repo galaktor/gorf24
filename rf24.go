@@ -6,8 +6,8 @@
 package gorf24
 
 import (
-	"time"
 	"strconv"
+	"time"
 
 	"./gpio"
 	"./spi"
@@ -60,7 +60,7 @@ func New(spidevice string, spispeed uint32, cepin, csnpin uint8) (r *R, err erro
 	if err != nil {
 		return
 	}
-	
+
 	r.csn, err = gpio.Open(csnpin, gpio.OUT)
 	if err != nil {
 		return
@@ -93,7 +93,7 @@ func (r *R) spiPump(c Command, buf []byte) error {
 	defer r.csn.SetHigh()
 
 	// send cmd first
-	s,err := r.spi.Transfer(c.Byte())
+	s, err := r.spi.Transfer(c.Byte())
 	if err != nil {
 		return err
 	}
@@ -103,7 +103,7 @@ func (r *R) spiPump(c Command, buf []byte) error {
 		// pump buf data, overwriting content with returned date
 		// RF24 SPI does LSByte first, so iterate backward
 		for n := len(buf); n >= 0; n-- {
-			buf[n],err = r.spi.Transfer(buf[n])
+			buf[n], err = r.spi.Transfer(buf[n])
 			if err != nil {
 				return err
 			}
@@ -142,7 +142,7 @@ FIFO after it is read. Used in RX mode
 */
 func (r *R) readPayload(buf []byte) error {
 	// ?TODO: set to RX mode?
-	return r.spiPump(CMD_R_RX_PAYLOAD.Byte(), buf)
+	return r.spiPump(CMD_R_RX_PAYLOAD, buf)
 }
 
 /*
@@ -151,7 +151,7 @@ always starts at byte 0 used in TX payload.
 */
 func (r *R) writePayload(buf []byte) error {
 	// ?TODO: set to TX mode?
-	return r.spiPump(CMD_W_TX_PAYLOAD.Byte(), buf)
+	return r.spiPump(CMD_W_TX_PAYLOAD, buf)
 }
 
 // ?TODO: enum for modes, MD_RX and MD_TX?
@@ -173,7 +173,7 @@ not be completed.
 func (r *R) flushRx() error {
 	// ?TODO: enforce/check mode?
 	// from spec:
-        //   Should not be executed during transmission of
+	//   Should not be executed during transmission of
 	//   acknowledge, that is, acknowledge package will
 	//   not be completed.
 	return r.spiPump(CMD_FLUSH_RX, nil)
@@ -183,10 +183,10 @@ func (r *R) flushRx() error {
 No Operation. Might be used to read the STATUS
 register
 */
-func (r *R) refreshStatus() (Status,error)  {
+func (r *R) refreshStatus() (Status, error) {
 	// spiPump will update status on every cmd sent
 	err := r.spiPump(CMD_NOP, nil)
-	return r.status,err
+	return r.status, err
 }
 
 /*
@@ -210,23 +210,68 @@ registers again.
 */
 func (r *R) toggleActivate() error {
 	// TODO: keep activated bool state, make de/activate() funcs
-	return r.spiPump(CMD_ACTIVATE, 0x73...)
+	return r.spiPump(CMD_ACTIVATE, []byte{0x73})
 }
-
 
 /***** pipe.go *****/
 // 0 through 5, giving 6 data pipe ids
 type Pipe byte
+
 /***** EOF pipe.go *****/
 
 /***** reg.go *****/
+
+/*
+Note: Addresses 18 to 1B are reserved for test purposes, altering them will make the chip malfunc-
+tion.
+*/
+
 type Register byte
+
+func (r Register) Byte() byte {
+	return byte(r)
+}
+
+var (
+	/* Configuration Register */
+	REG_CONFIG = Register(0)
+
+	/* Enhanced ShockBurst
+	   Enable ‘Auto Acknowledgment’ Function Dis-
+	   able this functionality to be compatible with
+	   nRF2401 */
+	REG_EN_AA = Register(1)
+
+	/* Enabled RX Addresses */
+	REG_EN_RXADDR = Register(2)
+
+	/* Setup of Address Widths
+	(common for all data pipes) */
+	REG_SETUP_AW = Register(3)
+)
+
+type ConfigReg struct {
+	address Register
+	flags   byte
+}
+
+func NewConfigReg(flags byte) *ConfigReg {
+	return &ConfigReg{address: Register(0), flags: 0}
+}
+
+func (c *ConfigReg) Byte() byte {
+	return c.flags
+}
+
+func (c *ConfigReg) SetPrimaryReader() {
+	c.flags = c.flags | 1
+}
+
 /***** EOF reg.go *****/
 
 /***** cmd.go *****/
 type Command byte
 
-// overkill? maybe just cast inline?
 func (c Command) Byte() byte {
 	return byte(c)
 }
@@ -237,10 +282,10 @@ var (
 	// CMD_W_REGSITER - is a function, see below
 	CMD_R_RX_PAYLOAD = Command(B("01100001"))
 	CMD_W_TX_PAYLOAD = Command(B("10100000"))
-	CMD_FLUSH_TX = Command(B("11100001"))
-	CMD_FLUSH_RX = Command(B("11100010"))
-	CMD_REUSE_TX_PL = Command(B("11100011"))
-	CMD_ACTIVATE = Command(B("01010000"))
+	CMD_FLUSH_TX     = Command(B("11100001"))
+	CMD_FLUSH_RX     = Command(B("11100010"))
+	CMD_REUSE_TX_PL  = Command(B("11100011"))
+	CMD_ACTIVATE     = Command(B("01010000"))
 	// CMD_W_ACK_PAYLOAD - is a function, see below
 	CMD_W_ACK_PAYLOAD_PIPE0 = Command(B("10101000"))
 	CMD_W_ACK_PAYLOAD_PIPE1 = Command(B("10101001"))
@@ -248,7 +293,7 @@ var (
 	CMD_W_ACK_PAYLOAD_PIPE3 = Command(B("10101011"))
 	CMD_W_ACK_PAYLOAD_PIPE4 = Command(B("10101100"))
 	CMD_W_ACK_PAYLOAD_PIPE5 = Command(B("10101101"))
-	CMD_R_RX_PL_WID = Command(B("01100000"))
+	CMD_R_RX_PL_WID         = Command(B("01100000"))
 )
 
 func CMD_R_REGISTER(r Register) Command {
@@ -262,28 +307,20 @@ func CMD_W_REGISTER(r Register) Command {
 func CMD_W_ACK_PAYLOAD(p Pipe) Command {
 	return Command(0xA8 | p)
 }
+
 /***** EOF cmd.go *****/
 
-
 /***** util.go *****/
-/* 
+/*
  parse a string representation of bits into
  a byte; for easier testing
 */
 func B(bits string) byte {
-	i,_ := strconv.ParseUint(bits, 2, 8)
+	i, _ := strconv.ParseUint(bits, 2, 8)
 	return byte(i)
 }
+
 /***** EOF util.go *****/
-
-
-
-
-
-
-
-
-
 
 /**********************/
 /***** OLD STUFF! *****/
