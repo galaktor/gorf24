@@ -346,7 +346,7 @@ type ConfigReg struct {
 }
 
 func NewConfigReg(flags byte) *ConfigReg {
-	return &ConfigReg{address: Register(0), flags: 0}
+	return &ConfigReg{address: Register(0), flags: flags}
 }
 
 func (c *ConfigReg) Byte() byte {
@@ -357,12 +357,12 @@ func (c *ConfigReg) Byte() byte {
 func (c *ConfigReg) SetPrimaryReceiver() {
 	c.flags =  c.flags | 1
 }
-func (c *ConfigReg) IsPrimaryReader() bool {
+func (c *ConfigReg) IsPrimaryReceiver() bool {
 	return c.flags & 1 == 1
 }
 /* PRIM_TX */
 func (c *ConfigReg) SetPrimaryTransmitter() {
-	c.flags = c.flags | 0
+	c.flags = c.flags & 0xFE
 }
 func (c *ConfigReg) IsPrimaryTransmitter() bool {
 	return c.flags & 1 == 0 
