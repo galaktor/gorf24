@@ -1,4 +1,6 @@
-package gorf24
+package reg
+
+// TODO: fix to be status
 
 type Status byte
 

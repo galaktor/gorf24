@@ -1,14 +1,15 @@
-package gorf24
+package reg
 
 import (
-	"testing"
+//	"testing"
 
-	"."
+//	"github.com/galaktor/gorf24/util"
 )
 
+/*
 func Test(t *testing.T) {
-	c := gorf24.NewConfigReg(gorf24.B("00000000"))
-	expected := gorf24.B("00000001")
+	//c := NewConfigReg(util.B("00000000"))
+	expected := util.B("00000001")
 
 	// TODO act
 
@@ -17,3 +18,4 @@ func Test(t *testing.T) {
 		t.Errorf("expected '%b' but found '%b' with configreg '%v'", expected, actual, c)
 	}
 }
+*/

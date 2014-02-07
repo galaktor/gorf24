@@ -1,23 +1,13 @@
-package gorf24
+package reg
 
 import (
 	"testing"
-	"strconv"
 
-	"."
+	"github.com/galaktor/gorf24/util"
 )
 
-/* 
- parse a string representation of bits into
- a byte; for easier testing
-*/
-func b(bits string) byte {
-	i,_ := strconv.ParseUint(bits, 2, 8)
-	return byte(i)
-}
-
 func TestTxFull_RelevantBitZero_ReturnsFalse(t *testing.T) {
-	s := gorf24.Status(b("11111110"))
+	s := Status(util.B("11111110"))
 	expected := false
 
 	result := s.TxFull()
@@ -28,7 +18,7 @@ func TestTxFull_RelevantBitZero_ReturnsFalse(t *testing.T) {
 }
 
 func TestTxFull_RelevantBitsOne_ReturnsTrue(t *testing.T) {
-	s := gorf24.Status(b("00000001"))
+	s := Status(util.B("00000001"))
 	expected := true
 
 	result := s.TxFull()
@@ -39,7 +29,7 @@ func TestTxFull_RelevantBitsOne_ReturnsTrue(t *testing.T) {
 }
 
 func TestRxPipeNumber_RelevantBitsZero_ReturnsZero(t *testing.T) {
-	s := gorf24.Status(b("11110001"))
+	s := Status(util.B("11110001"))
 	expected := uint8(0)
 
 	result := s.RxPipeNumber()
@@ -50,7 +40,7 @@ func TestRxPipeNumber_RelevantBitsZero_ReturnsZero(t *testing.T) {
 }
 
 func TestRxPipeNumber_RelevantBitsOne_ReturnsSeven(t *testing.T) {
-	s := gorf24.Status(b("00001110"))
+	s := Status(util.B("00001110"))
 	expected := uint8(7)
 	
 	result := s.RxPipeNumber()
@@ -61,7 +51,7 @@ func TestRxPipeNumber_RelevantBitsOne_ReturnsSeven(t *testing.T) {
 }
 
 func TestRxPipeNumberUsed_RelevantBitsFive_ReturnsTrue(t *testing.T) {
-	s := gorf24.Status(b("00001010"))
+	s := Status(util.B("00001010"))
 	expected := true
 
 	result := s.RxPipeNumberUsed()
@@ -72,7 +62,7 @@ func TestRxPipeNumberUsed_RelevantBitsFive_ReturnsTrue(t *testing.T) {
 }
 
 func TestRxPipeNumberUsed_RelevantBitsSix_ReturnsFalse(t *testing.T) {
-	s := gorf24.Status(b("00001100"))
+	s := Status(util.B("00001100"))
 	expected := false
 
 	result := s.RxPipeNumberUsed()
@@ -83,7 +73,7 @@ func TestRxPipeNumberUsed_RelevantBitsSix_ReturnsFalse(t *testing.T) {
 }
 
 func TestRxFifoEmpty_RelevantBitsSix_ReturnsFalse(t *testing.T) {
-	s := gorf24.Status(b("00001100"))
+	s := Status(util.B("00001100"))
 	expected := false
 
 	result := s.RxFifoEmpty()
@@ -94,7 +84,7 @@ func TestRxFifoEmpty_RelevantBitsSix_ReturnsFalse(t *testing.T) {
 }
 
 func TestRxFifoEmpty_RelevantBitsSeven_ReturnsFalse(t *testing.T) {
-	s := gorf24.Status(b("00001110"))
+	s := Status(util.B("00001110"))
 	expected := true
 
 	result := s.RxFifoEmpty()
@@ -105,7 +95,7 @@ func TestRxFifoEmpty_RelevantBitsSeven_ReturnsFalse(t *testing.T) {
 }
 
 func TestMaxTxRetransmits_RelevantBitZero_ReturnsFalse(t *testing.T) {
-	s := gorf24.Status(b("11110111"))
+	s := Status(util.B("11110111"))
 	expected := false
 
 	result := s.MaxTxRetransmits()
@@ -116,7 +106,7 @@ func TestMaxTxRetransmits_RelevantBitZero_ReturnsFalse(t *testing.T) {
 }
 
 func TestMaxTxRetransmits_RelevantBitOne_ReturnsTrue(t *testing.T) {
-	s := gorf24.Status(b("00001000"))
+	s := Status(util.B("00001000"))
 	expected := true
 
 	result := s.MaxTxRetransmits()
@@ -127,7 +117,7 @@ func TestMaxTxRetransmits_RelevantBitOne_ReturnsTrue(t *testing.T) {
 }
 
 func TestTxDataSent_RelevantBitZero_ReturnsFalse(t *testing.T) {
-	s := gorf24.Status(b("11101111"))
+	s := Status(util.B("11101111"))
 	expected := false
 
 	result := s.TxDataSent()
@@ -138,7 +128,7 @@ func TestTxDataSent_RelevantBitZero_ReturnsFalse(t *testing.T) {
 }
 
 func TestTxDataSent_RelevantBitOne_ReturnsTrue(t *testing.T) {
-	s := gorf24.Status(b("00010000"))
+	s := Status(util.B("00010000"))
 	expected := true
 
 	result := s.TxDataSent()
@@ -149,7 +139,7 @@ func TestTxDataSent_RelevantBitOne_ReturnsTrue(t *testing.T) {
 }
 
 func TestRxDataReady_RelevantBitZero_ReturnsFalse(t *testing.T) {
-	s := gorf24.Status(b("11011111"))
+	s := Status(util.B("11011111"))
 	expected := false
 
 	result := s.RxDataReady()
@@ -160,7 +150,7 @@ func TestRxDataReady_RelevantBitZero_ReturnsFalse(t *testing.T) {
 }
 
 func TestRxDataReady_RelevantBitOne_ReturnsTrue(t *testing.T) {
-	s := gorf24.Status(b("00100000"))
+	s := Status(util.B("00100000"))
 	expected := true
 
 	result := s.RxDataReady()

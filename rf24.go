@@ -6,37 +6,12 @@
 package gorf24
 
 import (
-	"strconv"
 	"time"
 
-	"./gpio"
-	"./spi"
-)
-
-type PowerLevel byte
-
-const (
-	PA_MIN PowerLevel = iota
-	PA_LOW
-	PA_HIGH
-	PA_MAX
-	PA_ERROR // what is this for?
-)
-
-type Datarate byte
-
-const (
-	RATE_1MBPS Datarate = iota
-	RATE_2MBPS
-	RATE_250KBPS
-)
-
-type CrcLength byte
-
-const (
-	CRC_DISABLED = iota
-	CRC_8BIT
-	CRC_16BIT
+	"github.com/galaktor/gorf24/cmd"
+	"github.com/galaktor/gorf24/reg"
+	"github.com/galaktor/gorf24/gpio"
+	"github.com/galaktor/gorf24/spi"
 )
 
 const RF24_PAYLOAD_SIZE = 32
@@ -45,7 +20,7 @@ type R struct {
 	spi    *spi.SPI
 	ce     *gpio.Pin
 	csn    *gpio.Pin
-	status Status
+	status reg.Status
 }
 
 func New(spidevice string, spispeed uint32, cepin, csnpin uint8) (r *R, err error) {
@@ -81,14 +56,14 @@ func New(spidevice string, spispeed uint32, cepin, csnpin uint8) (r *R, err erro
 	return
 }
 
-func (r *R) Status() Status {
+func (r *R) Status() reg.Status {
 	return r.status
 }
 
 // sends Command, then buf byte-by-byte over SPI
 // if buf is null, sends only command
 // WARNING: destructive - overwrites content of buf while pumping
-func (r *R) spiPump(c Command, buf []byte) error {
+func (r *R) spiPump(c cmd.C, buf []byte) error {
 	r.csn.SetLow()
 	defer r.csn.SetHigh()
 
@@ -97,7 +72,7 @@ func (r *R) spiPump(c Command, buf []byte) error {
 	if err != nil {
 		return err
 	}
-	r.status = Status(s)
+	r.status = reg.Status(s)
 
 	if buf != nil {
 		// pump buf data, overwriting content with returned date
@@ -121,8 +96,8 @@ func (r *R) spiPump(c Command, buf []byte) error {
 Read command and status registers. AAAAA =
 5 bit Register Map Address
 */
-func (r *R) readRegister(reg Register, buf []byte) error {
-	return r.spiPump(CMD_R_REGISTER(reg), buf)
+func (r *R) readRegister(a reg.Address, buf []byte) error {
+	return r.spiPump(cmd.R_REGISTER(a), buf)
 }
 
 /*
@@ -131,8 +106,8 @@ bit Register Map Address
 Executable in power down or standby modes
 only.
 */
-func (r *R) writeRegister(reg Register, buf []byte) error {
-	return r.spiPump(CMD_W_REGISTER(reg), buf)
+func (r *R) writeRegister(a reg.Address, buf []byte) error {
+	return r.spiPump(cmd.W_REGISTER(a), buf)
 }
 
 /*
@@ -142,7 +117,7 @@ FIFO after it is read. Used in RX mode
 */
 func (r *R) readPayload(buf []byte) error {
 	// ?TODO: set to RX mode?
-	return r.spiPump(CMD_R_RX_PAYLOAD, buf)
+	return r.spiPump(cmd.R_RX_PAYLOAD, buf)
 }
 
 /*
@@ -151,7 +126,7 @@ always starts at byte 0 used in TX payload.
 */
 func (r *R) writePayload(buf []byte) error {
 	// ?TODO: set to TX mode?
-	return r.spiPump(CMD_W_TX_PAYLOAD, buf)
+	return r.spiPump(cmd.W_TX_PAYLOAD, buf)
 }
 
 // ?TODO: enum for modes, MD_RX and MD_TX?
@@ -161,7 +136,7 @@ Flush TX FIFO, used in TX mode
 */
 func (r *R) flushTx() error {
 	// ?TODO: enforce/check mode?
-	return r.spiPump(CMD_FLUSH_TX, nil)
+	return r.spiPump(cmd.FLUSH_TX, nil)
 }
 
 /*
@@ -176,16 +151,16 @@ func (r *R) flushRx() error {
 	//   Should not be executed during transmission of
 	//   acknowledge, that is, acknowledge package will
 	//   not be completed.
-	return r.spiPump(CMD_FLUSH_RX, nil)
+	return r.spiPump(cmd.FLUSH_RX, nil)
 }
 
 /*
 No Operation. Might be used to read the STATUS
 register
 */
-func (r *R) refreshStatus() (Status, error) {
+func (r *R) refreshStatus() (reg.Status, error) {
 	// spiPump will update status on every cmd sent
-	err := r.spiPump(CMD_NOP, nil)
+	err := r.spiPump(cmd.NOP, nil)
 	return r.status, err
 }
 
@@ -210,318 +185,9 @@ registers again.
 */
 func (r *R) toggleActivate() error {
 	// TODO: keep activated bool state, make de/activate() funcs
-	return r.spiPump(CMD_ACTIVATE, []byte{0x73})
+	return r.spiPump(cmd.ACTIVATE, []byte{0x73})
 }
 
-/***** pipe.go *****/
-// 0 through 5, giving 6 data pipe ids
-type Pipe byte
-
-const (
-	PIPE_0 Pipe = iota
-	PIPE_1
-	PIPE_2
-	PIPE_3
-	PIPE_4
-	PIPE_5
-)
-
-/***** EOF pipe.go *****/
-
-/***** reg/reg.go *****/
-
-/*
-Note: Addresses 18 to 1B are reserved for test purposes, altering them will make the chip malfunc-
-tion.
-*/
-
-type Register byte
-
-func (r Register) Byte() byte {
-	return byte(r)
-}
-
-var (
-	/* Configuration Register */
-	REG_CONFIG = Register(0)
-
-	/* Enhanced ShockBurst
-	   Enable ‘Auto Acknowledgment’ Function Dis-
-	   able this functionality to be compatible with
-	   nRF2401 */
-	REG_EN_AA = Register(0x1)
-
-	/* Enabled RX Addresses */
-	REG_EN_RXADDR = Register(0x2)
-
-	/* Setup of Address Widths
-	(common for all data pipes) */
-	REG_SETUP_AW = Register(0x3)
-
-	/* Setup of Automatic Retransmission */
-	REG_SETUP_RETR = Register(0x4)
-
-	/* RF Channel */
-	REG_RF_CH = Register(0x5)
-
-	/* RF Setup Register */
-	REG_RF_SETUP = Register(0x6)
-
-	/* Status Register (In parallel to the SPI command
-	           word applied on the MOSI pin, the STATUS reg-
-		   ister is shifted serially out on the MISO pin)
-		   (bit 7 reserved)*/
-	REG_STATUS = Register(0x7)
-
-	/* Transmit observe register */
-	REG_OBSERVE_TX = Register(0x8)
-
-	/* Carrier detect
-	   (bits 7:1 reserved) */
-	REG_CD = Register(0x9)
-
-	// REG_RX_ADDR is a function - see below
-
-	/* Receive address data pipe 0. 5 Bytes maximum
-	   length. (LSByte is written first. Write the number
-	   of bytes defined by SETUP_AW) */
-//	REG_RX_ADDR_P0 = Register(0x0A)
-
-	/* Receive address data pipe 1. 5 Bytes maximum
-	   length. (LSByte is written first. Write the number
-	   of bytes defined by SETUP_AW) */
-//	REG_RX_ADDR_P1 = Register(0x0B)
-
-	/* Receive address data pipe 2. Only LSB. MSBy-
-	   tes is equal to RX_ADDR_P1[39:8] */
-//	REG_RX_ADDR_P2 = Register(0x0C)
-
-	/* Receive address data pipe 3. Only LSB. MSBy-
-	   tes is equal to RX_ADDR_P1[39:8] */
-//	REG_RX_ADDR_P3 = Register(0x0D)
-
-	/* Receive address data pipe 4. Only LSB. MSBy-
-	   tes is equal to RX_ADDR_P1[39:8] */
-//	REG_RX_ADDR_P4 = Register(0x0E)
-
-	/* Receive address data pipe 5. Only LSB. MSBy-
-	   tes is equal to RX_ADDR_P1[39:8] */
-//	REG_RX_ADDR_P5 = Register(0x0F)
-
-	/* Transmit address. Used for a PTX device only.
-	   (LSByte is written first)
-	   Set RX_ADDR_P0 equal to this address to han-
-	   dle automatic acknowledge if this is a PTX
-	   device with Enhanced ShockBurstTM enabled. */
-	REG_TX_ADDR = Register(0x10)
-
-	// REG_RX_PW is a function - see below
-
-
-//	REG_RX_PW_P0 = Register(0x11)
-//	REG_RX_PW_P1 = Register(0x12)
-//	REG_RX_PW_P2 = Register(0x13)
-//	REG_RX_PW_P3 = Register(0x14)
-//	REG_RX_PW_P4 = Register(0x15)
-//	REG_RX_PW_P5 = Register(0x16)
-
-	/* FIFO Status Register
-	   (bits 7,3:2 reserved)*/
-	REG_FIFO_STATUS = Register(0x17)
-
-	/* n/a = separate SPI commands
-	   REG_ACK_PLD
-	   REG_TX_PLD
-	   REG_RX_PLD
-	*/
-
-	/* Enable dynamic payload length
-	   (bits 7:6 reserved) */
-	REG_DYNPD = Register(0x1C)
-
-	/* Feature register
-	   To activate this feature use the ACTIVATE SPI command followed by
-	   data 0x73. The corresponding bits in the FEATURE register must
-	   be set.
-	   (bits 7:3 reserved) */
-	REG_FEATURE = Register(0x1D)
-)
-
-/* Receive address data pipe 0. 5 Bytes maximum
-   length. (LSByte is written first. Write the number
-   of bytes defined by SETUP_AW) */
-func REG_RX_ADDR(p Pipe) Register {
-	return Register(0x0A + p)
-} 
-
-/* Number of bytes in RX payload in data pipe 0-5
-   (1 to 32 bytes).
-   0 Pipe not used
-   1 = 1 byte
-   ...
-   32 = 32 bytes
-   (bits 7:6 reserved)*/
-func REG_RX_PW(p Pipe) Register {
-	return Register(0x11 + p)
-}
-
-/***** EOF reg/reg.go *****/
-
-/***** reg/config.go *****/
-
-type ConfigReg struct {
-	address Register
-	flags   byte
-}
-
-func NewConfigReg(flags byte) *ConfigReg {
-	return &ConfigReg{address: Register(0), flags: flags}
-}
-
-func (c *ConfigReg) Byte() byte {
-	return c.flags
-}
-
-/* PRIM_RX */
-func (c *ConfigReg) SetPrimaryReceiver() {
-	c.flags = c.flags | 1
-}
-func (c *ConfigReg) IsPrimaryReceiver() bool {
-	return c.flags&1 == 1
-}
-func (c *ConfigReg) SetPrimaryTransmitter() {
-	c.flags = c.flags & 0xFE
-}
-func (c *ConfigReg) IsPrimaryTransmitter() bool {
-	return c.flags&1 == 0
-}
-
-/* PWR_UP */
-func (c *ConfigReg) SetPowerUp(up bool) {
-	if up {
-		c.flags = c.flags | 2
-	} else {
-		c.flags = c.flags & 0xFD
-	}
-
-}
-func (c *ConfigReg) IsPowerUp() bool {
-	return c.flags&2 == 2
-}
-
-/* CRCO */
-func (c *ConfigReg) SetCrcLength(l CrcLength) {
-	switch l {
-	case CRC_8BIT:
-		c.flags = c.flags & 0xFB
-	case CRC_16BIT:
-		c.flags = c.flags | 4
-	}
-}
-func (c *ConfigReg) GetCrcLength() CrcLength {
-	if c.flags&4 == 4 {
-		return CRC_16BIT
-	} else {
-		return CRC_8BIT
-	}
-}
-
-/* EN_CRC */
-func (c *ConfigReg) SetCrcEnabled(enable bool) {
-	if enable {
-		c.flags = c.flags | 8
-	} else {
-		c.flags = c.flags & 0xF7
-	}
-}
-
-/* MASK_MAX_RT */
-func (c *ConfigReg) SetMaxRtInterruptEnabled(enable bool) {
-	if enable {
-		c.flags = c.flags & 0xEF
-	} else {
-		c.flags = c.flags | 16
-	}
-}
-
-/* MASK_TX_DS */
-func (c *ConfigReg) SetTxDsInterruptEnabled(enable bool) {
-	if enable {
-		c.flags = c.flags & 0xDF
-	} else {
-		c.flags = c.flags | 32
-	}
-}
-
-/* MASK_RX_DR */
-func (c *ConfigReg) SetRxDrInterruptEnabled(enable bool) {
-	if enable {
-		c.flags = c.flags & 0xBF
-	} else {
-		c.flags = c.flags | 64
-	}
-}
-
-/***** EOF reg/config.go *****/
-
-/***** reg/autoack.go *****/
-
-
-
-/***** EOF reg/autoack.go *****/
-
-/***** cmd.go *****/
-type Command byte
-
-func (c Command) Byte() byte {
-	return byte(c)
-}
-
-var (
-	CMD_NOP = Command(B("11111111"))
-	// CMD_R_REGISTER - is a function, see below
-	// CMD_W_REGSITER - is a function, see below
-	CMD_R_RX_PAYLOAD = Command(B("01100001"))
-	CMD_W_TX_PAYLOAD = Command(B("10100000"))
-	CMD_FLUSH_TX     = Command(B("11100001"))
-	CMD_FLUSH_RX     = Command(B("11100010"))
-	CMD_REUSE_TX_PL  = Command(B("11100011"))
-	CMD_ACTIVATE     = Command(B("01010000"))
-	// CMD_W_ACK_PAYLOAD - is a function, see below
-	CMD_W_ACK_PAYLOAD_PIPE0 = Command(B("10101000"))
-	CMD_W_ACK_PAYLOAD_PIPE1 = Command(B("10101001"))
-	CMD_W_ACK_PAYLOAD_PIPE2 = Command(B("10101010"))
-	CMD_W_ACK_PAYLOAD_PIPE3 = Command(B("10101011"))
-	CMD_W_ACK_PAYLOAD_PIPE4 = Command(B("10101100"))
-	CMD_W_ACK_PAYLOAD_PIPE5 = Command(B("10101101"))
-	CMD_R_RX_PL_WID         = Command(B("01100000"))
-)
-
-func CMD_R_REGISTER(r Register) Command {
-	return Command(0x1F & r)
-}
-
-func CMD_W_REGISTER(r Register) Command {
-	return Command(0x20 | (0x1F & r))
-}
-
-func CMD_W_ACK_PAYLOAD(p Pipe) Command {
-	return Command(0xA8 | p)
-}
-
-/***** EOF cmd.go *****/
-
-/***** util.go *****/
-/*
- parse a string representation of bits into
- a byte; for easier testing
-*/
-func B(bits string) byte {
-	i, _ := strconv.ParseUint(bits, 2, 8)
-	return byte(i)
-}
-
-/***** EOF util.go *****/
 
 /**********************/
 /***** OLD STUFF! *****/
