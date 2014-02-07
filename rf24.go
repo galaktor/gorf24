@@ -217,9 +217,18 @@ func (r *R) toggleActivate() error {
 // 0 through 5, giving 6 data pipe ids
 type Pipe byte
 
+const (
+	PIPE_0 Pipe = iota
+	PIPE_1
+	PIPE_2
+	PIPE_3
+	PIPE_4
+	PIPE_5
+)
+
 /***** EOF pipe.go *****/
 
-/***** reg.go *****/
+/***** reg/reg.go *****/
 
 /*
 Note: Addresses 18 to 1B are reserved for test purposes, altering them will make the chip malfunc-
@@ -271,31 +280,33 @@ var (
 	   (bits 7:1 reserved) */
 	REG_CD = Register(0x9)
 
+	// REG_RX_ADDR is a function - see below
+
 	/* Receive address data pipe 0. 5 Bytes maximum
 	   length. (LSByte is written first. Write the number
 	   of bytes defined by SETUP_AW) */
-	REG_RX_ADDR_P0 = Register(0x0A)
+//	REG_RX_ADDR_P0 = Register(0x0A)
 
 	/* Receive address data pipe 1. 5 Bytes maximum
 	   length. (LSByte is written first. Write the number
 	   of bytes defined by SETUP_AW) */
-	REG_RX_ADDR_P1 = Register(0x0B)
+//	REG_RX_ADDR_P1 = Register(0x0B)
 
 	/* Receive address data pipe 2. Only LSB. MSBy-
 	   tes is equal to RX_ADDR_P1[39:8] */
-	REG_RX_ADDR_P2 = Register(0x0C)
+//	REG_RX_ADDR_P2 = Register(0x0C)
 
 	/* Receive address data pipe 3. Only LSB. MSBy-
 	   tes is equal to RX_ADDR_P1[39:8] */
-	REG_RX_ADDR_P3 = Register(0x0D)
+//	REG_RX_ADDR_P3 = Register(0x0D)
 
 	/* Receive address data pipe 4. Only LSB. MSBy-
 	   tes is equal to RX_ADDR_P1[39:8] */
-	REG_RX_ADDR_P4 = Register(0x0E)
+//	REG_RX_ADDR_P4 = Register(0x0E)
 
 	/* Receive address data pipe 5. Only LSB. MSBy-
 	   tes is equal to RX_ADDR_P1[39:8] */
-	REG_RX_ADDR_P5 = Register(0x0F)
+//	REG_RX_ADDR_P5 = Register(0x0F)
 
 	/* Transmit address. Used for a PTX device only.
 	   (LSByte is written first)
@@ -304,19 +315,15 @@ var (
 	   device with Enhanced ShockBurstTM enabled. */
 	REG_TX_ADDR = Register(0x10)
 
-	/* Number of bytes in RX payload in data pipe 0-5
-	   (1 to 32 bytes).
-	   0 Pipe not used
-	   1 = 1 byte
-	   ...
-	   32 = 32 bytes
-	   (bits 7:6 reserved)*/
-	REG_RX_PW_P0 = Register(0x11)
-	REG_RX_PW_P1 = Register(0x12)
-	REG_RX_PW_P2 = Register(0x13)
-	REG_RX_PW_P3 = Register(0x14)
-	REG_RX_PW_P4 = Register(0x15)
-	REG_RX_PW_P5 = Register(0x16)
+	// REG_RX_PW is a function - see below
+
+
+//	REG_RX_PW_P0 = Register(0x11)
+//	REG_RX_PW_P1 = Register(0x12)
+//	REG_RX_PW_P2 = Register(0x13)
+//	REG_RX_PW_P3 = Register(0x14)
+//	REG_RX_PW_P4 = Register(0x15)
+//	REG_RX_PW_P5 = Register(0x16)
 
 	/* FIFO Status Register
 	   (bits 7,3:2 reserved)*/
@@ -339,6 +346,28 @@ var (
 	   (bits 7:3 reserved) */
 	REG_FEATURE = Register(0x1D)
 )
+
+/* Receive address data pipe 0. 5 Bytes maximum
+   length. (LSByte is written first. Write the number
+   of bytes defined by SETUP_AW) */
+func REG_RX_ADDR(p Pipe) Register {
+	return Register(0x0A + p)
+} 
+
+/* Number of bytes in RX payload in data pipe 0-5
+   (1 to 32 bytes).
+   0 Pipe not used
+   1 = 1 byte
+   ...
+   32 = 32 bytes
+   (bits 7:6 reserved)*/
+func REG_RX_PW(p Pipe) Register {
+	return Register(0x11 + p)
+}
+
+/***** EOF reg/reg.go *****/
+
+/***** reg/config.go *****/
 
 type ConfigReg struct {
 	address Register
@@ -433,7 +462,13 @@ func (c *ConfigReg) SetRxDrInterruptEnabled(enable bool) {
 	}
 }
 
-/***** EOF reg.go *****/
+/***** EOF reg/config.go *****/
+
+/***** reg/autoack.go *****/
+
+
+
+/***** EOF reg/autoack.go *****/
 
 /***** cmd.go *****/
 type Command byte
