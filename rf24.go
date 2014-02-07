@@ -13,20 +13,20 @@ import (
 	"./spi"
 )
 
-type PA_DBM byte
+type PowerLevel byte
 
 const (
-	PA_MIN PA_DBM = iota
+	PA_MIN PowerLevel = iota
 	PA_LOW
 	PA_HIGH
 	PA_MAX
 	PA_ERROR // what is this for?
 )
 
-type DATARATE byte
+type Datarate byte
 
 const (
-	RATE_1MBPS DATARATE = iota
+	RATE_1MBPS Datarate = iota
 	RATE_2MBPS
 	RATE_250KBPS
 )
@@ -598,22 +598,22 @@ func (r *R) SetAutoAckPipe(pipe uint8, enable bool) {
 
 
 // Is there any way to use the rf24_pa_dbm_e enum type directly
-func (r *R) SetPALevel(level PA_DBM) {
+func (r *R) SetPALevel(level PowerLevel) {
 	C.rf24_setPALevel(r.cptr, C.rf24_pa_dbm_val(level))
 }
 
-func (r *R) GetPALevel() PA_DBM {
-	return PA_DBM(C.rf24_getPALevel(r.cptr))
+func (r *R) GetPALevel() PowerLevel {
+	return PowerLevel(C.rf24_getPALevel(r.cptr))
 }
 
 
 
-func (r *R) SetDataRate(rate DATARATE) {
+func (r *R) SetDataRate(rate Datarate) {
 	C.rf24_setDataRate(r.cptr, C.rf24_datarate_val(rate))
 }
 
-func (r *R) GetDataRate() DATARATE {
-	return DATARATE(C.rf24_getDataRate(r.cptr))
+func (r *R) GetDataRate() Datarate {
+	return Datarate(C.rf24_getDataRate(r.cptr))
 }
 
 
