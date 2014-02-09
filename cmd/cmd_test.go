@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/galaktor/gorf24/reg"
+	"github.com/galaktor/gorf24/reg/addr"
 	"github.com/galaktor/gorf24/pipe"
 	"github.com/galaktor/gorf24/util"
 )
@@ -52,8 +53,8 @@ func TestByte_MSByteZero_ReturnsSame(t *testing.T) {
 	}
 }
 
-func TestR_REGISTER_ZeroBits_ReturnsZero(t *testing.T) {
-	r := reg.Address(util.B("00000000"))
+func TestR_REGISTER_AllZero_ReturnsZero(t *testing.T) {
+	r := someReg(util.B("00000000"))
 	expected := util.B("00000000")
 
 	result := R_REGISTER(r).Byte()
@@ -64,7 +65,7 @@ func TestR_REGISTER_ZeroBits_ReturnsZero(t *testing.T) {
 }
 
 func TestR_REGISTER_AllOnes_ReturnsLastFiveBits(t *testing.T) {
-	r := reg.Address(util.B("11111111"))
+	r := someReg(util.B("11111111"))
 	expected := util.B("00011111")
 
 	result := R_REGISTER(r).Byte()
@@ -75,7 +76,7 @@ func TestR_REGISTER_AllOnes_ReturnsLastFiveBits(t *testing.T) {
 }
 
 func TestW_REGISTER_ZeroBits_SetsWriteRegFlag(t *testing.T) {
-	r := reg.Address(util.B("00000000"))
+	r := someReg(util.B("00000000"))
 	expected := util.B("00100000")
 
 	result := W_REGISTER(r).Byte()
@@ -86,7 +87,7 @@ func TestW_REGISTER_ZeroBits_SetsWriteRegFlag(t *testing.T) {
 }
 
 func TestW_REGISTER_AllOnes_MasksTwoMSBits(t *testing.T) {
-	r := reg.Address(util.B("11111111"))
+	r := someReg(util.B("11111111"))
 	expected := util.B("00111111")
 
 	result := W_REGISTER(r).Byte()
@@ -183,3 +184,11 @@ func TestW_ACK_PAYLOAD_PipeHigherThanFive_OverThreeBits_TruncatesAndMasksCorrect
 		t.Errorf("expected '%b' but found '%b' with pipe '%b'", expected, result, p)
 	}
 }
+
+
+/***** helper funcs *****/
+
+func someReg(adr byte) reg.R {
+	return reg.New(addr.A(adr))
+}
+

@@ -32,12 +32,12 @@ var (
 	R_RX_PL_WID         = C(util.B("01100000"))
 )
 
-func R_REGISTER(a reg.Address) C {
-	return C(0x1F & a)
+func R_REGISTER(r reg.R) C {
+	return C(0x1F & r.Address())
 }
 
-func W_REGISTER(a reg.Address) C {
-	return C(0x20 | (0x1F & a))
+func W_REGISTER(r reg.R) C {
+	return C(0x20 | (0x1F & r.Address()))
 }
 
 func W_ACK_PAYLOAD(p pipe.P) C {

@@ -2,7 +2,7 @@
 
 
 root=$(pwd)
-for pkg in ../gorf24 ./cmd ./reg ./pipe ./util ./spi ./gpio
+for pkg in ../gorf24 ./cmd ./reg ./reg/addr ./pipe ./util ./spi ./gpio
 do
 	echo "***** TESTING PACKAGE: '$pkg' *****"
 	cd $pkg

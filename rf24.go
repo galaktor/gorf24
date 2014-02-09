@@ -96,8 +96,8 @@ func (r *R) spiPump(c cmd.C, buf []byte) error {
 Read command and status registers. AAAAA =
 5 bit Register Map Address
 */
-func (r *R) readRegister(a reg.Address, buf []byte) error {
-	return r.spiPump(cmd.R_REGISTER(a), buf)
+func (r *R) readRegister(rg reg.R, buf []byte) error {
+	return r.spiPump(cmd.R_REGISTER(rg), buf)
 }
 
 /*
@@ -106,8 +106,8 @@ bit Register Map Address
 Executable in power down or standby modes
 only.
 */
-func (r *R) writeRegister(a reg.Address, buf []byte) error {
-	return r.spiPump(cmd.W_REGISTER(a), buf)
+func (r *R) writeRegister(rg reg.R, buf []byte) error {
+	return r.spiPump(cmd.W_REGISTER(rg), buf)
 }
 
 /*

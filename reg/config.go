@@ -1,15 +1,15 @@
 package reg
 
 import (
-
+	"github.com/galaktor/gorf24/reg/addr"
 )
 
 type ConfigReg struct {
-	Register
+	R
 }
 
 func NewConfigReg(flags byte) *ConfigReg {
-	return &ConfigReg{Register{a: Address(0), flags: flags}}
+	return &ConfigReg{R{a: addr.CONFIG, flags: flags}}
 }
 
 /* PRIM_RX */
