@@ -1,12 +1,14 @@
 #!/bin/bash
 
-for pkg in cmd reg pipe util spi gpio
+
+root=$(pwd)
+for pkg in ../gorf24 ./cmd ./reg ./pipe ./util ./spi ./gpio
 do
 	echo "***** TESTING PACKAGE: '$pkg' *****"
 	cd $pkg
 	go test #-v
 	echo ""
-	cd ..
+	cd $root
 done
 
 # TODO: any way to join these in one single loop?
