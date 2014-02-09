@@ -87,7 +87,7 @@ func TestIsPrimaryTransmitter_FlagZero_ReturnsTrue(t *testing.T) {
 	}
 }
 
-func TestIsPrimaryTransmitter_FlagOne_ReturnsTrue(t *testing.T) {
+func TestIsPrimaryTransmitter_FlagOne_ReturnsFalse(t *testing.T) {
 	c := NewConfigReg(util.B("00000001"))
 	expected := false
 
