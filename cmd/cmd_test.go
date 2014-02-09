@@ -3,8 +3,7 @@ package cmd
 import (
 	"testing"
 
-	"."
-	"../util"
+	"github.com/galaktor/gorf24/util"
 )
 
 func TestByte_Zero_ReturnsZero(t *testing.T) {
