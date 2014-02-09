@@ -4,32 +4,6 @@ import (
 
 )
 
-type CrcLength byte
-
-const (
-	CRC_DISABLED = iota
-	CRC_8BIT
-	CRC_16BIT
-)
-
-type PowerLevel byte
-
-const (
-	PA_MIN PowerLevel = iota
-	PA_LOW
-	PA_HIGH
-	PA_MAX
-	PA_ERROR // what is this for?
-)
-
-type Datarate byte
-
-const (
-	RATE_1MBPS Datarate = iota
-	RATE_2MBPS
-	RATE_250KBPS
-)
-
 type ConfigReg struct {
 	Register
 }
