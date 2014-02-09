@@ -4,15 +4,13 @@ import (
 	"github.com/galaktor/gorf24/pipe"
 )
 
-/*
-Note: Addresses 18 to 1B are reserved for test purposes, altering them will make the chip malfunc-
-tion.
-*/
+type Register struct {
+	a Address
+	flags byte
+}
 
-type Address byte
-
-func (a Address) Byte() byte {
-	return byte(a)
+func (c *Register) Byte() byte {
+	return c.flags
 }
 
 var (
@@ -103,13 +101,4 @@ func REG_RX_ADDR(p pipe.P) Address {
    (bits 7:6 reserved)*/
 func REG_RX_PW(p pipe.P) Address {
 	return Address(0x11 + p)
-}
-
-type Register struct {
-	a Address
-	flags byte
-}
-
-func (c *Register) Byte() byte {
-	return c.flags
 }
