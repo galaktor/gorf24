@@ -185,10 +185,102 @@ func TestW_ACK_PAYLOAD_PipeHigherThanFive_OverThreeBits_TruncatesAndMasksCorrect
 	}
 }
 
+func TestNOP_Always_ReturnsRightBits(t *testing.T) {
+	expected := util.B("11111111")
+	
+	actual := NOP.Byte()
+
+	if actual != expected {
+		t.Errorf("expected '%b' but found '%b'", expected, actual)
+	}
+}
+
+func TestR_RX_PAYLOAD_Always_ReturnsRightBits(t *testing.T) {
+	expected := util.B("01100001")
+	
+	actual := R_RX_PAYLOAD.Byte()
+
+	if actual != expected {
+		t.Errorf("expected '%b' but found '%b'", expected, actual)
+	}
+}
+
+func TestW_TX_PAYLOAD_Always_ReturnsRightBits(t *testing.T) {
+	expected := util.B("10100000")
+
+	actual := W_TX_PAYLOAD.Byte()
+
+	if actual != expected {
+		t.Errorf("expected '%b' but found '%b'", expected, actual)
+	}
+}
+
+func TestFLUSH_TX_Always_ReturnsRightBits(t *testing.T) {
+	expected := util.B("11100001")
+
+	actual := FLUSH_TX.Byte()
+
+	if actual != expected {
+		t.Errorf("expected '%b' but found '%b'", expected, actual)
+	}
+}
+
+func TestFLUSH_RX_Always_ReturnsRightBits(t *testing.T) {
+	expected := util.B("11100010")
+
+	actual := FLUSH_RX.Byte()
+
+	if actual != expected {
+		t.Errorf("expected '%b' but found '%b'", expected, actual)
+	}
+}
+
+func TestREUSE_TX_PL_Always_ReturnsRightBits(t *testing.T) {
+	expected := util.B("11100011")
+
+	actual := REUSE_TX_PL.Byte()
+
+	if actual != expected {
+		t.Errorf("expected '%b' but found '%b'", expected, actual)
+	}
+}
+
+func TestACTIVATE_Always_ReturnsRightBits(t *testing.T) {
+	expected := util.B("01010000")
+
+	actual := ACTIVATE.Byte()
+
+	if actual != expected {
+		t.Errorf("expected '%b' but found '%b'", expected, actual)
+	}
+}
+
+func TestR_RX_PL_WID_Always_ReturnsRightBits(t *testing.T) {
+	expected := util.B("01100000")
+
+	actual := R_RX_PL_WID.Byte()
+
+	if actual != expected {
+		t.Errorf("expected '%b' but found '%b'", expected, actual)
+	}
+}
 
 /***** helper funcs *****/
 
 func someReg(adr byte) reg.R {
 	return reg.New(addr.A(adr))
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
