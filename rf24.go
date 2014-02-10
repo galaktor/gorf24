@@ -17,14 +17,39 @@ import (
 const RF24_PAYLOAD_SIZE = 32
 
 type R struct {
+	/*** I/O ***/
 	spi    *spi.SPI
 	ce     *gpio.Pin
 	csn    *gpio.Pin
+
+	/*** REGISTERS ***/
+	/* in order of appearance in spec for now */
+	config *reg.Config
+	autoAck *reg.AutoAck
+	rxAddr *reg.RxAddresses // EN_RXADDR + RX_ADDR_Px
+	addrWid *reg.AddrWidths
+	retrans *reg.SetupRetrans
+	rfchan *reg.RfChannel
+	rfsetup *reg.RfSetup
 	status *reg.Status
+	trans *reg.TransObserve
+	cd *reg.CarrierDetect
+	txAddr *reg.TxAddress
 }
 
 func New(spidevice string, spispeed uint32, cepin, csnpin uint8) (r *R, err error) {
 	r = &R{}
+	r.config = reg.NewConfig(0)
+	r.autoAck = reg.NewAutoAck(0)
+	r.rxAddr = reg.NewRxAddresses(0)
+	r.addrWid = reg.NewAddrWidths(0)
+	r.retrans = reg.NewSetupRetrans(0)
+	r.rfchan = reg.NewRfChannel(0)
+	r.rfsetup = reg.NewRfSetup(0)
+	r.status = reg.NewStatus(0)
+	r.trans = reg.NewTransObserve(0)
+	r.cd = reg.NewCarrierDetect(0)
+	r.txAddr = reg.NewTxAddress(0)
 
 	r.spi, err = spi.New(spidevice, 0, 8, spi.SPD_02MHz)
 	if err != nil {
