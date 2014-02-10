@@ -20,7 +20,7 @@ type R struct {
 	spi    *spi.SPI
 	ce     *gpio.Pin
 	csn    *gpio.Pin
-	status reg.Status
+	status *reg.Status
 }
 
 func New(spidevice string, spispeed uint32, cepin, csnpin uint8) (r *R, err error) {
@@ -56,7 +56,7 @@ func New(spidevice string, spispeed uint32, cepin, csnpin uint8) (r *R, err erro
 	return
 }
 
-func (r *R) Status() reg.Status {
+func (r *R) Status() *reg.Status {
 	return r.status
 }
 
@@ -72,7 +72,7 @@ func (r *R) spiPump(c cmd.C, buf []byte) error {
 	if err != nil {
 		return err
 	}
-	r.status = reg.Status(s)
+	r.status = reg.NewStatus(s)
 
 	if buf != nil {
 		// pump buf data, overwriting content with returned date
@@ -158,7 +158,7 @@ func (r *R) flushRx() error {
 No Operation. Might be used to read the STATUS
 register
 */
-func (r *R) refreshStatus() (reg.Status, error) {
+func (r *R) refreshStatus() (*reg.Status, error) {
 	// spiPump will update status on every cmd sent
 	err := r.spiPump(cmd.NOP, nil)
 	return r.status, err
