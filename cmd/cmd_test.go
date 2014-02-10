@@ -98,7 +98,7 @@ func TestW_REGISTER_AllOnes_MasksTwoMSBits(t *testing.T) {
 }
 
 func TestW_ACK_PAYLOAD_PipeZero_MaskedCorrectly(t *testing.T) {
-	p := pipe.P(0)
+	p := pipe.P0
 	expected := util.B("10101000")
 	
 	result := W_ACK_PAYLOAD(p).Byte()
@@ -109,7 +109,7 @@ func TestW_ACK_PAYLOAD_PipeZero_MaskedCorrectly(t *testing.T) {
 }
 
 func TestW_ACK_PAYLOAD_PipeOne_MaskedCorrectly(t *testing.T) {
-	p := pipe.P(1)
+	p := pipe.P1
 	expected := util.B("10101001")
 	
 	result := W_ACK_PAYLOAD(p).Byte()
@@ -120,7 +120,7 @@ func TestW_ACK_PAYLOAD_PipeOne_MaskedCorrectly(t *testing.T) {
 }
 
 func TestW_ACK_PAYLOAD_PipeTwo_MaskedCorrectly(t *testing.T) {
-	p := pipe.P(2)
+	p := pipe.P2
 	expected := util.B("10101010")
 	
 	result := W_ACK_PAYLOAD(p).Byte()
@@ -131,7 +131,7 @@ func TestW_ACK_PAYLOAD_PipeTwo_MaskedCorrectly(t *testing.T) {
 }
 
 func TestW_ACK_PAYLOAD_PipeThree_MaskedCorrectly(t *testing.T) {
-	p := pipe.P(3)
+	p := pipe.P3
 	expected := util.B("10101011")
 	
 	result := W_ACK_PAYLOAD(p).Byte()
@@ -142,7 +142,7 @@ func TestW_ACK_PAYLOAD_PipeThree_MaskedCorrectly(t *testing.T) {
 }
 
 func TestW_ACK_PAYLOAD_PipeFour_MaskedCorrectly(t *testing.T) {
-	p := pipe.P(4)
+	p := pipe.P4
 	expected := util.B("10101100")
 	
 	result := W_ACK_PAYLOAD(p).Byte()
@@ -153,7 +153,7 @@ func TestW_ACK_PAYLOAD_PipeFour_MaskedCorrectly(t *testing.T) {
 }
 
 func TestW_ACK_PAYLOAD_PipeFive_MaskedCorrectly(t *testing.T) {
-	p := pipe.P(5)
+	p := pipe.P5
 	expected := util.B("10101101")
 	
 	result := W_ACK_PAYLOAD(p).Byte()
