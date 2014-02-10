@@ -23,12 +23,6 @@ var (
 	REUSE_TX_PL  = C(util.B("11100011"))
 	ACTIVATE     = C(util.B("01010000"))
 	// W_ACK_PAYLOAD - is a function, see below
-	W_ACK_PAYLOAD_PIPE0 = C(util.B("10101000"))
-	W_ACK_PAYLOAD_PIPE1 = C(util.B("10101001"))
-	W_ACK_PAYLOAD_PIPE2 = C(util.B("10101010"))
-	W_ACK_PAYLOAD_PIPE3 = C(util.B("10101011"))
-	W_ACK_PAYLOAD_PIPE4 = C(util.B("10101100"))
-	W_ACK_PAYLOAD_PIPE5 = C(util.B("10101101"))
 	R_RX_PL_WID         = C(util.B("01100000"))
 )
 
