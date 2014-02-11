@@ -265,6 +265,16 @@ func TestR_RX_PL_WID_Always_ReturnsRightBits(t *testing.T) {
 	}
 }
 
+func TestW_TX_PAYLOAD_NOACK_Always_ReturnsRightBits(t *testing.T) {
+	expected := util.B("10110000")
+
+	actual := W_TX_PAYLOAD_NOACK.Byte()
+
+	if actual != expected {
+		t.Errorf("expected '%b' but found '%b'", expected, actual)
+	}
+}
+
 /***** helper funcs *****/
 
 func someReg(adr byte) reg.R {
