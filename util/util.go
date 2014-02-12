@@ -18,24 +18,18 @@ func B4(bits string) uint32 {
 	return uint32(i)
 }
 
-func B5(bits string) [5]byte {
-	i, _ := strconv.ParseUint(bits, 2, 64)
-
-	return [5]byte {
-		byte(i >> 32),
-		byte(i >> 24),
-		byte(i >> 16),
-		byte(i >> 8),
-		byte(i),
+func ItoB5(bits uint64) [5]byte {
+	return [5]byte{
+		byte(bits >> 32),
+		byte(bits >> 24),
+		byte(bits >> 16),
+		byte(bits >> 8),
+		byte(bits),
 	}
 }
 
+func B5(bits string) [5]byte {
+	i, _ := strconv.ParseUint(bits, 2, 64)
 
-
-
-
-
-
-
-
-
+	return ItoB5(i)
+}
