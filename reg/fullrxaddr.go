@@ -15,7 +15,7 @@ func NewFullRxAddress(p pipe.P, flags RxAddress) *FullRxAddress {
 	return &FullRxAddress{R{addr.RX_ADDR(p),0},flags}
 }
 
-func (r *FullRxAddress) Byte() RxAddress {
+func (r *FullRxAddress) Get() RxAddress {
 	return r.flags
 }
 

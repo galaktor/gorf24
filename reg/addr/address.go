@@ -50,9 +50,11 @@ const (
 	/* Transmit observe register */
 	OBSERVE_TX = A(0x8)
 
-	/* Carrier detect
-	   (bits 7:1 reserved) */
-	CD = A(0x9)
+	/* Received Power Detector. This register is called
+           CD (Carrier Detect) in the nRF24L01. The name is
+           different in nRF24L01+ due to the different input
+           power level threshold for this bit. */
+	RPD = A(0x09)
 
 	// RX_ADDR is a function - see below
 

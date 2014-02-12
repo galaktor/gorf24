@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/galaktor/gorf24/cmd"
+	"github.com/galaktor/gorf24/pipe"
 	"github.com/galaktor/gorf24/reg"
 	"github.com/galaktor/gorf24/gpio"
 	"github.com/galaktor/gorf24/spi"
@@ -25,31 +26,64 @@ type R struct {
 	/*** REGISTERS ***/
 	/* in order of appearance in spec for now */
 	config *reg.Config
-	autoAck *reg.AutoAck
-	rxAddr *reg.RxAddresses // EN_RXADDR + RX_ADDR_Px
+	autoAck *reg.AutoAck // ?new on nRF24L01+
+	enRxAddr *reg.EnabledRxAddresses
 	addrWid *reg.AddrWidths
 	retrans *reg.SetupRetrans
 	rfchan *reg.RfChannel
 	rfsetup *reg.RfSetup
 	status *reg.Status
 	trans *reg.TransObserve
-	cd *reg.CarrierDetect
-	txAddr *reg.TxAddress
+	rpd *reg.ReceivedPowerDetector // was 'CD' before nRF24L01+
+	rxAddrP0 *reg.FullRxAddress
+	rxAddrP1 *reg.FullRxAddress
+	rxAddrP2 *reg.PartialRxAddress
+	rxAddrP3 *reg.PartialRxAddress
+	rxAddrP4 *reg.PartialRxAddress
+	rxAddrP5 *reg.PartialRxAddress
+	txAddr *reg.FullRxAddress // name 'RxAddress' not fitting here...
+	rxPwP0 *reg.RxPayloadWidth
+	rxPwP1 *reg.RxPayloadWidth
+	rxPwP2 *reg.RxPayloadWidth
+	rxPwP3 *reg.RxPayloadWidth
+	rxPwP4 *reg.RxPayloadWidth
+	rxPwP5 *reg.RxPayloadWidth
+	fifo *reg.FifoStatus
+	// ACK_PLD set by command
+	// TX_PLD set by command
+	// RX_PLD set by command
+	dynpd *reg.DynamicPayload
+	feat *reg.Feature
 }
 
 func New(spidevice string, spispeed uint32, cepin, csnpin uint8) (r *R, err error) {
 	r = &R{}
 	r.config = reg.NewConfig(0)
 	r.autoAck = reg.NewAutoAck(0)
-	r.rxAddr = reg.NewRxAddresses()
+	r.enRxAddr = reg.NewEnabledRxAddresses(0)
 	r.addrWid = reg.NewAddrWidths(0)
 	r.retrans = reg.NewSetupRetrans(0)
 	r.rfchan = reg.NewRfChannel(0)
 	r.rfsetup = reg.NewRfSetup(0)
 	r.status = reg.NewStatus(0)
 	r.trans = reg.NewTransObserve(0)
-	r.cd = reg.NewCarrierDetect(0)
-	r.txAddr = reg.NewTxAddress(0)
+	r.rpd = reg.NewRPD(0)
+	r.rxAddrP0 = reg.NewFullRxAddress(pipe.P0, 0)
+	r.rxAddrP1 = reg.NewFullRxAddress(pipe.P1, 0)
+	r.rxAddrP2 = reg.NewPartialRxAddress(pipe.P2, r.rxAddrP1, 0)
+	r.rxAddrP3 = reg.NewPartialRxAddress(pipe.P2, r.rxAddrP1, 0)
+	r.rxAddrP4 = reg.NewPartialRxAddress(pipe.P2, r.rxAddrP1, 0)
+	r.rxAddrP5 = reg.NewPartialRxAddress(pipe.P2, r.rxAddrP1, 0)
+	r.txAddr = reg.NewFullRxAddress(pipe.P0, 0) // TODO: this is wrong; name + pipe?
+	r.rxPwP0 = reg.NewRxPayloadWidth(pipe.P0, 0)
+	r.rxPwP1 = reg.NewRxPayloadWidth(pipe.P1, 0)
+	r.rxPwP2 = reg.NewRxPayloadWidth(pipe.P2, 0)
+	r.rxPwP3 = reg.NewRxPayloadWidth(pipe.P3, 0)
+	r.rxPwP4 = reg.NewRxPayloadWidth(pipe.P4, 0)
+	r.rxPwP5 = reg.NewRxPayloadWidth(pipe.P5, 0)
+	r.fifo = reg.NewFifoStatus(0)
+	r.dynpd = reg.NewDynamicPayload(0)
+	r.feat = reg.NewFeature(0)
 
 	r.spi, err = spi.New(spidevice, 0, 8, spi.SPD_02MHz)
 	if err != nil {
