@@ -41,7 +41,7 @@ func New(spidevice string, spispeed uint32, cepin, csnpin uint8) (r *R, err erro
 	r = &R{}
 	r.config = reg.NewConfig(0)
 	r.autoAck = reg.NewAutoAck(0)
-	r.rxAddr = reg.NewRxAddresses(0)
+	r.rxAddr = reg.NewRxAddresses()
 	r.addrWid = reg.NewAddrWidths(0)
 	r.retrans = reg.NewSetupRetrans(0)
 	r.rfchan = reg.NewRfChannel(0)
