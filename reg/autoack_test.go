@@ -199,5 +199,98 @@ func TestEnable_Pipe3_FlipsCorrectBit(t *testing.T) {
 	} 
 }
 
+func TestEnable_Pipe4_FlipsCorrectBit(t *testing.T) {
+	a := NewAutoAck(util.B("00000000"))
+	expected := util.B("00010000")
 
+	a.Enable(pipe.P4)
 
+	actual := a.Byte()
+	if actual != expected {
+		t.Errorf("expected '%b' but found '%b' with autoack '%v'", expected, actual, a)
+	} 
+}
+
+func TestEnable_Pipe5_FlipsCorrectBit(t *testing.T) {
+	a := NewAutoAck(util.B("00000000"))
+	expected := util.B("00100000")
+
+	a.Enable(pipe.P5)
+
+	actual := a.Byte()
+	if actual != expected {
+		t.Errorf("expected '%b' but found '%b' with autoack '%v'", expected, actual, a)
+	} 
+}
+
+func TestDisable_Pipe0_FlipsCorrectBit(t *testing.T) {
+	a := NewAutoAck(util.B("11111111"))
+	expected := util.B("11111110")
+
+	a.Disable(pipe.P0)
+
+	actual := a.Byte()
+	if actual != expected {
+		t.Errorf("expected '%b' but found '%b' with autoack '%v'", expected, actual, a)
+	}
+}
+
+func TestDisable_Pipe1_FlipsCorrectBit(t *testing.T) {
+	a := NewAutoAck(util.B("11111111"))
+	expected := util.B("11111101")
+
+	a.Disable(pipe.P1)
+
+	actual := a.Byte()
+	if actual != expected {
+		t.Errorf("expected '%b' but found '%b' with autoack '%v'", expected, actual, a)
+	}
+}
+
+func TestDisable_Pipe2_FlipsCorrectBit(t *testing.T) {
+	a := NewAutoAck(util.B("11111111"))
+	expected := util.B("11111011")
+
+	a.Disable(pipe.P2)
+
+	actual := a.Byte()
+	if actual != expected {
+		t.Errorf("expected '%b' but found '%b' with autoack '%v'", expected, actual, a)
+	}
+}
+
+func TestDisable_Pipe3_FlipsCorrectBit(t *testing.T) {
+	a := NewAutoAck(util.B("11111111"))
+	expected := util.B("11110111")
+
+	a.Disable(pipe.P3)
+
+	actual := a.Byte()
+	if actual != expected {
+		t.Errorf("expected '%b' but found '%b' with autoack '%v'", expected, actual, a)
+	}
+}
+
+func TestDisable_Pipe4_FlipsCorrectBit(t *testing.T) {
+	a := NewAutoAck(util.B("11111111"))
+	expected := util.B("11101111")
+
+	a.Disable(pipe.P4)
+
+	actual := a.Byte()
+	if actual != expected {
+		t.Errorf("expected '%b' but found '%b' with autoack '%v'", expected, actual, a)
+	}
+}
+
+func TestDisable_Pipe5_FlipsCorrectBit(t *testing.T) {
+	a := NewAutoAck(util.B("11111111"))
+	expected := util.B("11011111")
+
+	a.Disable(pipe.P5)
+
+	actual := a.Byte()
+	if actual != expected {
+		t.Errorf("expected '%b' but found '%b' with autoack '%v'", expected, actual, a)
+	}
+}
