@@ -64,6 +64,9 @@ func (c *Config) SetCrcEnabled(enable bool) {
 		c.flags = c.flags & 0xF7
 	}
 }
+func (c *Config) IsCrcEnabled() bool {
+	return c.flags & 8 == 8
+}
 
 /* MASK_MAX_RT */
 func (c *Config) SetMaxRtInterruptEnabled(enable bool) {
@@ -73,6 +76,10 @@ func (c *Config) SetMaxRtInterruptEnabled(enable bool) {
 		c.flags = c.flags | 16
 	}
 }
+func (c *Config) IsMaxRtInterruptEnabled() bool {
+	return c.flags & 16 == 0
+}
+
 
 /* MASK_TX_DS */
 func (c *Config) SetTxDsInterruptEnabled(enable bool) {
@@ -82,6 +89,9 @@ func (c *Config) SetTxDsInterruptEnabled(enable bool) {
 		c.flags = c.flags | 32
 	}
 }
+func (c *Config) IsTxDsInterruptEnabled() bool {
+	return c.flags & 32 == 0
+}
 
 /* MASK_RX_DR */
 func (c *Config) SetRxDrInterruptEnabled(enable bool) {
@@ -90,4 +100,7 @@ func (c *Config) SetRxDrInterruptEnabled(enable bool) {
 	} else {
 		c.flags = c.flags | 64
 	}
+}
+func (c *Config) IsRxDrInterruptEnabled() bool {
+	return c.flags & 64 == 0
 }

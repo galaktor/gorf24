@@ -276,6 +276,28 @@ func TestSetCrcEnabled_DoesNotFlipOtherBits(t *testing.T) {
 	}
 }
 
+func TestIsCrcEnabled_Disabled_ReturnsFalse(t *testing.T) {
+	c := NewConfig(util.B("11110111"))
+	expected := false
+
+	actual := c.IsCrcEnabled()
+
+	if actual != expected {
+		t.Errorf("expected '%v'but found '%v' with configreg '%v'", expected, actual, c)
+	}
+}
+
+func TestIsCrcEnabled_Enabled_ReturnsTrue(t *testing.T) {
+	c := NewConfig(util.B("00001000"))
+	expected := true
+
+	actual := c.IsCrcEnabled()
+
+	if actual != expected {
+		t.Errorf("expected '%v'but found '%v' with configreg '%v'", expected, actual, c)
+	}
+}
+
 func TestSetMaxRtInterruptEnabled_True_SetsBitToZero(t *testing.T) {
 	c := NewConfig(util.B("00010000"))
 	expected := util.B("00000000")
@@ -317,6 +339,28 @@ func TestSetMaxRtInterruptEnabled_DoesNotFlipOtherBits(t *testing.T) {
 
 	if actual != expected {
 		t.Errorf("expected '%b' but found '%b' with configreg '%v'", expected, actual, c)
+	}
+}
+
+func TestIsMaxRtInterruptEnabled_Disabled_ReturnsFalse(t *testing.T) {
+	c := NewConfig(util.B("00010000"))
+	expected := false
+
+	actual := c.IsMaxRtInterruptEnabled()
+
+	if actual != expected {
+		t.Errorf("expected '%v'but found '%v' with configreg '%v'", expected, actual, c)
+	}
+}
+
+func TestIsMaxRtInterruptEnabled_Enabled_ReturnsTrue(t *testing.T) {
+	c := NewConfig(util.B("11101111"))
+	expected := true
+
+	actual := c.IsMaxRtInterruptEnabled()
+
+	if actual != expected {
+		t.Errorf("expected '%v'but found '%v' with configreg '%v'", expected, actual, c)
 	}
 }
 
@@ -364,6 +408,28 @@ func TestSetTxDsInterruptEnabled_DoesNotFlipOtherBits(t *testing.T) {
 	}
 }
 
+func TestIsTxDsInterruptEnabled_Disabled_ReturnsFalse(t *testing.T) {
+	c := NewConfig(util.B("00100000"))
+	expected := false
+
+	actual := c.IsTxDsInterruptEnabled()
+
+	if actual != expected {
+		t.Errorf("expected '%v'but found '%v' with configreg '%v'", expected, actual, c)
+	}
+}
+
+func TestIsTxDsInterruptEnabled_Enabled_ReturnsTrue(t *testing.T) {
+	c := NewConfig(util.B("11011111"))
+	expected := true
+
+	actual := c.IsTxDsInterruptEnabled()
+
+	if actual != expected {
+		t.Errorf("expected '%v'but found '%v' with configreg '%v'", expected, actual, c)
+	}
+}
+
 func TestSetRxDrInterruptEnabled_True_SetsBitToZero(t *testing.T) {
 	c := NewConfig(util.B("01000000"))
 	expected := util.B("00000000")
@@ -405,5 +471,27 @@ func TestSetRxDrInterruptEnabled_DoesNotFlipOtherBits(t *testing.T) {
 
 	if actual != expected {
 		t.Errorf("expected '%b' but found '%b' with configreg '%v'", expected, actual, c)
+	}
+}
+
+func TestIsRxDrInterruptEnabled_Disabled_ReturnsFalse(t *testing.T) {
+	c := NewConfig(util.B("01000000"))
+	expected := false
+
+	actual := c.IsRxDrInterruptEnabled()
+
+	if actual != expected {
+		t.Errorf("expected '%v'but found '%v' with configreg '%v'", expected, actual, c)
+	}
+}
+
+func TestIsRxDrInterruptEnabled_Enabled_ReturnsTrue(t *testing.T) {
+	c := NewConfig(util.B("10111111"))
+	expected := true
+
+	actual := c.IsRxDrInterruptEnabled()
+
+	if actual != expected {
+		t.Errorf("expected '%v'but found '%v' with configreg '%v'", expected, actual, c)
 	}
 }
