@@ -139,6 +139,17 @@ func TestIsEnabled_Pipe5_FlagOne_ReturnsTrue(t *testing.T) {
 	}
 }
 
+func TestEnable_Pipe0_FlipsCorrectBit(t *testing.T) {
+	e := NewEnabledRxAddresses(util.B("00000000"))
+	expected := util.B("00000001")
+
+	actual := e.Enable(pipe.P0)
+
+	if actual != expected {
+		t.Errorf("expected '%b' but found '%b' with enRxaddr '%v'", expected, actual, e)
+	}
+}
+
 
 
 
