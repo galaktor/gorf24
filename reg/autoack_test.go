@@ -151,11 +151,47 @@ func TestIsEnabled_Pipe6_InvalidButBitIsFlipped_ReturnsFalseAnyway(t *testing.T)
 	}
 }
 
-func TestSetEnabled_Pipe0_FlipsCorrectBit(t *testing.T) {
+func TestEnable_Pipe0_FlipsCorrectBit(t *testing.T) {
 	a := NewAutoAck(util.B("00000000"))
 	expected := util.B("00000001")
 
-	a.SetEnabled(pipe.P0, true)
+	a.Enable(pipe.P0)
+
+	actual := a.Byte()
+	if actual != expected {
+		t.Errorf("expected '%b' but found '%b' with autoack '%v'", expected, actual, a)
+	} 
+}
+
+func TestEnable_Pipe1_FlipsCorrectBit(t *testing.T) {
+	a := NewAutoAck(util.B("00000000"))
+	expected := util.B("00000010")
+
+	a.Enable(pipe.P1)
+
+	actual := a.Byte()
+	if actual != expected {
+		t.Errorf("expected '%b' but found '%b' with autoack '%v'", expected, actual, a)
+	} 
+}
+
+func TestEnable_Pipe2_FlipsCorrectBit(t *testing.T) {
+	a := NewAutoAck(util.B("00000000"))
+	expected := util.B("00000100")
+
+	a.Enable(pipe.P2)
+
+	actual := a.Byte()
+	if actual != expected {
+		t.Errorf("expected '%b' but found '%b' with autoack '%v'", expected, actual, a)
+	} 
+}
+
+func TestEnable_Pipe3_FlipsCorrectBit(t *testing.T) {
+	a := NewAutoAck(util.B("00000000"))
+	expected := util.B("00001000")
+
+	a.Enable(pipe.P3)
 
 	actual := a.Byte()
 	if actual != expected {

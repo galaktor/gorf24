@@ -14,6 +14,17 @@ func NewAutoAck(flags byte) *AutoAck {
 }
 
 /* ENAA_Px */
+func (a *AutoAck) Enable(p pipe.P) {
+	switch p {
+	case pipe.P0: a.flags = a.flags | 1
+	case pipe.P1: a.flags = a.flags | 2
+	case pipe.P2: a.flags = a.flags | 4
+	case pipe.P3: a.flags = a.flags | 8
+	}
+}
+/*func (a *AutoAck) Disable(p pipe.P) {
+
+}*/
 func (a *AutoAck) IsEnabled(p pipe.P) bool {
 	var result bool
 
