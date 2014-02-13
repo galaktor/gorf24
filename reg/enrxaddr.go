@@ -29,8 +29,22 @@ func (e *EnabledRxAddresses) IsEnabled(p pipe.P) bool {
 	return result
 }
 func (e *EnabledRxAddresses) Enable(p pipe.P) {
-	// TODO
+	switch p {
+	case pipe.P0: e.flags = e.flags | 1
+	case pipe.P1: e.flags = e.flags | 2
+	case pipe.P2: e.flags = e.flags | 4
+	case pipe.P3: e.flags = e.flags | 8
+	case pipe.P4: e.flags = e.flags | 16
+	case pipe.P5: e.flags = e.flags | 32
+	}
 }
 func (e *EnabledRxAddresses) Disable(p pipe.P) {
-	// TODO
+	switch p {
+	case pipe.P0: e.flags = e.flags & 0xFE
+	case pipe.P1: e.flags = e.flags & 0xFD
+	case pipe.P2: e.flags = e.flags & 0xFB
+	case pipe.P3: e.flags = e.flags & 0xF7
+	case pipe.P4: e.flags = e.flags & 0xEF
+	case pipe.P5: e.flags = e.flags & 0xDF
+	}
 }

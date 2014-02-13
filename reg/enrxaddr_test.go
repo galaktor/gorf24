@@ -139,16 +139,153 @@ func TestIsEnabled_Pipe5_FlagOne_ReturnsTrue(t *testing.T) {
 	}
 }
 
-func TestEnable_Pipe0_FlipsCorrectBit(t *testing.T) {
+/****** test func name conflict becaus all this stuff is in same pkg "reg"
+        need to split it out more! */
+
+func TestEnable_RxAddr_Pipe0_FlipsCorrectBit(t *testing.T) {
 	e := NewEnabledRxAddresses(util.B("00000000"))
 	expected := util.B("00000001")
 
-	actual := e.Enable(pipe.P0)
+	e.Enable(pipe.P0)
 
+	actual := e.Byte()
 	if actual != expected {
 		t.Errorf("expected '%b' but found '%b' with enRxaddr '%v'", expected, actual, e)
 	}
 }
+
+func TestDisable_RxAddr_Pipe0_FlipsCorrectBit(t *testing.T) {
+	e := NewEnabledRxAddresses(util.B("11111111"))
+	expected := util.B("11111110")
+
+	e.Disable(pipe.P0)
+
+	actual := e.Byte()
+	if actual != expected {
+		t.Errorf("expected '%b' but found '%b' with enRxaddr '%v'", expected, actual, e)
+	}
+}
+
+func TestEnable_RxAddr_Pipe1_FlipsCorrectBit(t *testing.T) {
+	e := NewEnabledRxAddresses(util.B("00000000"))
+	expected := util.B("00000010")
+
+	e.Enable(pipe.P1)
+
+	actual := e.Byte()
+	if actual != expected {
+		t.Errorf("expected '%b' but found '%b' with enRxaddr '%v'", expected, actual, e)
+	}
+}
+
+func TestDisable_RxAddr_Pipe1_FlipsCorrectBit(t *testing.T) {
+	e := NewEnabledRxAddresses(util.B("11111111"))
+	expected := util.B("11111101")
+
+	e.Disable(pipe.P1)
+
+	actual := e.Byte()
+	if actual != expected {
+		t.Errorf("expected '%b' but found '%b' with enRxaddr '%v'", expected, actual, e)
+	}
+}
+
+func TestEnable_RxAddr_Pipe2_FlipsCorrectBit(t *testing.T) {
+	e := NewEnabledRxAddresses(util.B("00000000"))
+	expected := util.B("00000100")
+
+	e.Enable(pipe.P2)
+
+	actual := e.Byte()
+	if actual != expected {
+		t.Errorf("expected '%b' but found '%b' with enRxaddr '%v'", expected, actual, e)
+	}
+}
+
+func TestDisable_RxAddr_Pipe2_FlipsCorrectBit(t *testing.T) {
+	e := NewEnabledRxAddresses(util.B("11111111"))
+	expected := util.B("11111011")
+
+	e.Disable(pipe.P2)
+
+	actual := e.Byte()
+	if actual != expected {
+		t.Errorf("expected '%b' but found '%b' with enRxaddr '%v'", expected, actual, e)
+	}
+}
+
+func TestEnable_RxAddr_Pipe3_FlipsCorrectBit(t *testing.T) {
+	e := NewEnabledRxAddresses(util.B("00000000"))
+	expected := util.B("00001000")
+
+	e.Enable(pipe.P3)
+
+	actual := e.Byte()
+	if actual != expected {
+		t.Errorf("expected '%b' but found '%b' with enRxaddr '%v'", expected, actual, e)
+	}
+}
+
+func TestDisable_RxAddr_Pipe3_FlipsCorrectBit(t *testing.T) {
+	e := NewEnabledRxAddresses(util.B("11111111"))
+	expected := util.B("11110111")
+
+	e.Disable(pipe.P3)
+
+	actual := e.Byte()
+	if actual != expected {
+		t.Errorf("expected '%b' but found '%b' with enRxaddr '%v'", expected, actual, e)
+	}
+}
+
+func TestEnable_RxAddr_Pipe4_FlipsCorrectBit(t *testing.T) {
+	e := NewEnabledRxAddresses(util.B("00000000"))
+	expected := util.B("00010000")
+
+	e.Enable(pipe.P4)
+
+	actual := e.Byte()
+	if actual != expected {
+		t.Errorf("expected '%b' but found '%b' with enRxaddr '%v'", expected, actual, e)
+	}
+}
+
+func TestDisable_RxAddr_Pipe4_FlipsCorrectBit(t *testing.T) {
+	e := NewEnabledRxAddresses(util.B("11111111"))
+	expected := util.B("11101111")
+
+	e.Disable(pipe.P4)
+
+	actual := e.Byte()
+	if actual != expected {
+		t.Errorf("expected '%b' but found '%b' with enRxaddr '%v'", expected, actual, e)
+	}
+}
+
+func TestEnable_RxAddr_Pipe5_FlipsCorrectBit(t *testing.T) {
+	e := NewEnabledRxAddresses(util.B("00000000"))
+	expected := util.B("00100000")
+
+	e.Enable(pipe.P5)
+
+	actual := e.Byte()
+	if actual != expected {
+		t.Errorf("expected '%b' but found '%b' with enRxaddr '%v'", expected, actual, e)
+	}
+}
+
+func TestDisable_RxAddr_Pipe5_FlipsCorrectBit(t *testing.T) {
+	e := NewEnabledRxAddresses(util.B("11111111"))
+	expected := util.B("11011111")
+
+	e.Disable(pipe.P5)
+
+	actual := e.Byte()
+	if actual != expected {
+		t.Errorf("expected '%b' but found '%b' with enRxaddr '%v'", expected, actual, e)
+	}
+}
+
 
 
 
