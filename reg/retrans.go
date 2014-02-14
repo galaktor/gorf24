@@ -9,6 +9,9 @@ import (
 
 type RetransDelay byte
 
+// move to sup-pkg for retrans, remove RETRANS_ from const var names
+// before: RETRANS_u250
+// after:  retrans.u250
 const (
 	RETRANS_u250 = RetransDelay(iota)  // 0x0
 	RETRANS_u500  // 0x1
