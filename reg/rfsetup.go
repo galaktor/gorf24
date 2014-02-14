@@ -85,3 +85,10 @@ func (s *RfSetup) SetPllLock(enabled bool) {
 func (s *RfSetup) IsContinuousCarrierTransmitEnabled() bool {
 	return s.flags & 0x80 == 0x80
 }
+func (s *RfSetup) SetContinuousCarrierTransmit(enabled bool) {
+	if enabled {
+		s.flags = s.flags | 0x80
+	} else {
+		s.flags = s.flags & 0x7F
+	}
+}

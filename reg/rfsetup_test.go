@@ -239,12 +239,26 @@ func TestIsContinuousCarrierTransmitEnabled_One_ReturnsTrue(t *testing.T) {
 	}
 }
 
+func TestSetContinuousCarrierTransmit_Enabled_FlipsRightBit(t *testing.T) {
+	s := NewRfSetup(util.B("00000000"))
+	expected := util.B("10000000")
+	
+	s.SetContinuousCarrierTransmit(true)
+	
+	actual := s.Byte()
+	if actual != expected {
+		t.Errorf("expected '%b' but found '%b' with rfsetup '%v'", expected, actual, s)
+	}
+}
 
-
-
-
-
-
-
-
-
+func TestSetContinuousCarrierTransmit_Disabled_FlipsRightBit(t *testing.T) {
+	s := NewRfSetup(util.B("10000000"))
+	expected := util.B("00000000")
+	
+	s.SetContinuousCarrierTransmit(false)
+	
+	actual := s.Byte()
+	if actual != expected {
+		t.Errorf("expected '%b' but found '%b' with rfsetup '%v'", expected, actual, s)
+	}
+}
