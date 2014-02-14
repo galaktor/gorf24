@@ -16,3 +16,8 @@ func NewTransObserve(flags byte) *TransObserve {
 func (o *TransObserve) RetransmittedPacketCount() uint8 {
 	return o.flags & 0x0F
 }
+
+/* PLOS_CNT (bits 7:4) */
+func (o *TransObserve) LostPacketCount() uint8 {
+	return (o.flags & 0xF0) >> 4
+}
