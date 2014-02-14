@@ -5,7 +5,20 @@ import (
 
 	"github.com/galaktor/gorf24/util"
 	"github.com/galaktor/gorf24/pipe"
+	"github.com/galaktor/gorf24/reg/addr"
 )
+
+func TestNewStatus_RegisterAddress_IsSTATUS(t *testing.T) {
+	s := NewStatus(0)
+	expected := addr.STATUS
+
+	actual := s.Address()
+
+	if actual != expected {
+		t.Errorf("expected '%b' but found '%b' with status '%v'", expected, actual, s)
+	}
+	
+}
 
 func TestTxFull_RelevantBitZero_ReturnsFalse(t *testing.T) {
 	s := NewStatus(util.B("11111110"))
