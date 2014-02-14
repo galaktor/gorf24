@@ -80,3 +80,8 @@ func (s *RfSetup) SetPllLock(enabled bool) {
 		s.flags = s.flags & 0xEF
 	}
 }
+
+/* CONT_WAVE */
+func (s *RfSetup) IsContinuousCarrierTransmitEnabled() bool {
+	return s.flags & 0x80 == 0x80
+}

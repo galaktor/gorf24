@@ -217,6 +217,28 @@ func TestSetPllLock_Disabled_BitIsOne(t *testing.T) {
 	}
 }
 
+func TestIsContinuousCarrierTransmitEnabled_Zero_ReturnsFalse(t *testing.T) {
+	s := NewRfSetup(util.B("01111111"))
+	expected := false
+	
+	actual := s.IsContinuousCarrierTransmitEnabled()
+
+	if actual != expected {
+		t.Errorf("expected '%v' but found '%v' with rfsetup '%v'", expected, actual, s)
+	}
+}
+
+func TestIsContinuousCarrierTransmitEnabled_One_ReturnsTrue(t *testing.T) {
+	s := NewRfSetup(util.B("10000000"))
+	expected := true
+	
+	actual := s.IsContinuousCarrierTransmitEnabled()
+
+	if actual != expected {
+		t.Errorf("expected '%v' but found '%v' with rfsetup '%v'", expected, actual, s)
+	}
+}
+
 
 
 
