@@ -25,3 +25,6 @@ func (r *SetupRetrans) SetCount(c uint8) error {
 	r.flags = (r.flags & 0xF0) | c
 	return nil
 }
+func (r *SetupRetrans) GetCount() uint8 {
+	return r.flags & 0x0F
+}

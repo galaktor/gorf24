@@ -93,6 +93,16 @@ func TestSetCount_Sixteen_ReturnsError(t *testing.T) {
 	}
 }
 
+func TestGetCount_Zero_ReturnsZero(t *testing.T) {
+	r := NewSetupRetrans(util.B("11110000"))
+	expected := uint8(0)
+
+	actual := r.GetCount()
+
+	if actual != expected {
+		t.Errorf("expected '%b' but found '%b' with retrans '%v'", expected, actual, r)
+	}
+}
 
 
 
