@@ -22,7 +22,7 @@ func TestGetPower_Zero_ReturnsMin(t *testing.T) {
 	s := NewRfSetup(util.B("11111001"))
 	expected := PA_MIN
 	
-	actual := s.Get()
+	actual := s.GetPowerLevel()
 
 	if actual != expected {
 		t.Errorf("expected '%b' but found '%b' with rfsetup '%v'", expected, actual, s)
@@ -33,7 +33,7 @@ func TestGetPower_One_ReturnsLow(t *testing.T) {
 	s := NewRfSetup(util.B("11111011"))
 	expected := PA_LOW
 	
-	actual := s.Get()
+	actual := s.GetPowerLevel()
 
 	if actual != expected {
 		t.Errorf("expected '%b' but found '%b' with rfsetup '%v'", expected, actual, s)
@@ -44,7 +44,7 @@ func TestGetPower_Two_ReturnsMedium(t *testing.T) {
 	s := NewRfSetup(util.B("11111101"))
 	expected := PA_MEDIUM
 	
-	actual := s.Get()
+	actual := s.GetPowerLevel()
 
 	if actual != expected {
 		t.Errorf("expected '%b' but found '%b' with rfsetup '%v'", expected, actual, s)
@@ -55,7 +55,7 @@ func TestGetPower_Three_ReturnsMax(t *testing.T) {
 	s := NewRfSetup(util.B("00000110"))
 	expected := PA_MAX
 	
-	actual := s.Get()
+	actual := s.GetPowerLevel()
 
 	if actual != expected {
 		t.Errorf("expected '%b' but found '%b' with rfsetup '%v'", expected, actual, s)
@@ -66,7 +66,7 @@ func TestSetPower_Min_FlipsRightBits(t *testing.T) {
 	s := NewRfSetup(util.B("11111111"))
 	expected := util.B("11111001")
 	
-	s.Set(PA_MIN)
+	s.SetPowerLevel(PA_MIN)
 
 	actual := s.Byte()
 	if actual != expected {
@@ -78,7 +78,7 @@ func TestSetPower_Low_FlipsRightBits(t *testing.T) {
 	s := NewRfSetup(util.B("11111111"))
 	expected := util.B("11111011")
 	
-	s.Set(PA_LOW)
+	s.SetPowerLevel(PA_LOW)
 
 	actual := s.Byte()
 	if actual != expected {
@@ -90,7 +90,7 @@ func TestSetPower_Medium_FlipsRightBits(t *testing.T) {
 	s := NewRfSetup(util.B("11111111"))
 	expected := util.B("11111101")
 	
-	s.Set(PA_MEDIUM)
+	s.SetPowerLevel(PA_MEDIUM)
 
 	actual := s.Byte()
 	if actual != expected {
@@ -102,7 +102,7 @@ func TestSetPower_Max_FlipsRightBits(t *testing.T) {
 	s := NewRfSetup(util.B("11111111"))
 	expected := util.B("11111111")
 	
-	s.Set(PA_MAX)
+	s.SetPowerLevel(PA_MAX)
 
 	actual := s.Byte()
 	if actual != expected {
@@ -114,7 +114,7 @@ func TestSetPower_GreaterThanThree_ReturnsError(t *testing.T) {
 	s := NewRfSetup(util.B("11111111"))
 	expected := "Value out of legal range: 4. Allowed value from 0 -3."
 	
-	err := s.Set(PowerLevel(4))
+	err := s.SetPowerLevel(PowerLevel(4))
 
 	if err == nil {
 		t.Error("expected error but found nil")
@@ -127,22 +127,46 @@ func TestSetPower_GreaterThanThree_ReturnsError(t *testing.T) {
 	}
 }
 
+func TestGetDatarate_DrLowBitZero_DrHighBitZero_Returns1Mbps(t *testing.T) {
+	s := NewRfSetup(util.B("11010111"))
+	expected := RATE_1MBPS
+	
+	actual := s.GetDatarate()
 
+	if actual != expected {
+		t.Errorf("expected '%b' but found '%b' with rfsetup '%v'", expected, actual, s)
+	}
+}
 
+func TestGetDatarate_DrLowBitZero_DrHighBitOne_Returns2Mbps(t *testing.T) {
+	s := NewRfSetup(util.B("11011111"))
+	expected := RATE_2MBPS
+	
+	actual := s.GetDatarate()
 
+	if actual != expected {
+		t.Errorf("expected '%b' but found '%b' with rfsetup '%v'", expected, actual, s)
+	}
+}
 
+func TestGetDatarate_DrLowBitOne_DrHighBitZero_Returns250Kbps(t *testing.T) {
+	s := NewRfSetup(util.B("11110111"))
+	expected := RATE_250KBPS
+	
+	actual := s.GetDatarate()
 
+	if actual != expected {
+		t.Errorf("expected '%b' but found '%b' with rfsetup '%v'", expected, actual, s)
+	}
+}
 
+func TestGetDatarate_DrLowBitOne_DrHighBitOne_Returns250Kbps(t *testing.T) {
+	s := NewRfSetup(util.B("11111111"))
+	expected := RATE_250KBPS
+	
+	actual := s.GetDatarate()
 
-
-
-
-
-
-
-
-
-
-
-
-
+	if actual != expected {
+		t.Errorf("expected '%b' but found '%b' with rfsetup '%v'", expected, actual, s)
+	}
+}
