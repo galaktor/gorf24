@@ -104,19 +104,35 @@ func TestGetCount_Zero_ReturnsZero(t *testing.T) {
 	}
 }
 
+func TestGetCount_One_ReturnsOne(t *testing.T) {
+	r := NewSetupRetrans(util.B("11110001"))
+	expected := uint8(1)
 
+	actual := r.GetCount()
 
+	if actual != expected {
+		t.Errorf("expected '%b' but found '%b' with retrans '%v'", expected, actual, r)
+	}
+}
 
+func TestGetCount_Two_ReturnsTwo(t *testing.T) {
+	r := NewSetupRetrans(util.B("11110010"))
+	expected := uint8(2)
 
+	actual := r.GetCount()
 
+	if actual != expected {
+		t.Errorf("expected '%b' but found '%b' with retrans '%v'", expected, actual, r)
+	}
+}
 
+func TestGetCount_Fifteen_ReturnsFifteen(t *testing.T) {
+	r := NewSetupRetrans(util.B("11111111"))
+	expected := uint8(15)
 
+	actual := r.GetCount()
 
-
-
-
-
-
-
-
-
+	if actual != expected {
+		t.Errorf("expected '%b' but found '%b' with retrans '%v'", expected, actual, r)
+	}
+}
