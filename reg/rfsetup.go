@@ -1,6 +1,9 @@
 package reg
 
 import (
+	"errors"
+	"fmt"
+
 	"github.com/galaktor/gorf24/reg/addr"
 )
 
@@ -27,6 +30,25 @@ func NewRfSetup(flags byte) *RfSetup {
 func (s *RfSetup) Get() PowerLevel {
 	return PowerLevel((s.flags & 0x6)>>1)
 }
+func (s *RfSetup) Set(p PowerLevel) error {
+	if p > 3 {
+		return errors.New(fmt.Sprintf("Value out of legal range: %v. Allowed value from 0 -3.", p))
+	}
+	
+	s.flags = s.flags & 0xF9 | (byte(p) << 1)
+	return nil
+}
+
+
+
+
+
+
+
+
+
+
+
 
 
 
