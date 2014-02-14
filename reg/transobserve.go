@@ -11,3 +11,8 @@ type TransObserve struct {
 func NewTransObserve(flags byte) *TransObserve {
 	return &TransObserve{R{a: addr.OBSERVE_TX, flags: flags}}
 }
+
+/* ARC_CNT (bits 3:0) */
+func (o *TransObserve) RetransmittedPacketCount() uint8 {
+	return o.flags & 0x0F
+}
