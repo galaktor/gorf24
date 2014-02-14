@@ -67,3 +67,16 @@ func (s *RfSetup) GetDatarate() Datarate {
 
 	return result
 }
+
+/* PLL_LOCK 
+   only used in test */
+func (s *RfSetup) IsPllLockEnabled() bool {
+	return s.flags & 16 == 16
+}
+func (s *RfSetup) SetPllLock(enabled bool) {
+	if enabled {
+		s.flags = s.flags | 0x10
+	} else {
+		s.flags = s.flags & 0xEF
+	}
+}

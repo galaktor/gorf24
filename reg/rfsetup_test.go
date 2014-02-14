@@ -170,3 +170,59 @@ func TestGetDatarate_DrLowBitOne_DrHighBitOne_Returns250Kbps(t *testing.T) {
 		t.Errorf("expected '%b' but found '%b' with rfsetup '%v'", expected, actual, s)
 	}
 }
+
+func TestIsPllLockEnabled_Zero_ReturnsFalse(t *testing.T) {
+	s := NewRfSetup(util.B("11101111"))
+	expected := false
+	
+	actual := s.IsPllLockEnabled()
+
+	if actual != expected {
+		t.Errorf("expected '%v' but found '%v' with rfsetup '%v'", expected, actual, s)
+	}
+}
+
+func TestIsPllLockEnabled_One_ReturnsTrue(t *testing.T) {
+	s := NewRfSetup(util.B("00010000"))
+	expected := true
+	
+	actual := s.IsPllLockEnabled()
+
+	if actual != expected {
+		t.Errorf("expected '%v' but found '%v' with rfsetup '%v'", expected, actual, s)
+	}
+}
+
+func TestSetPllLock_Enabled_BitIsOne(t *testing.T) {
+	s := NewRfSetup(util.B("00000000"))
+	expected := util.B("00010000")
+	
+	s.SetPllLock(true)
+	
+	actual := s.Byte()
+	if actual != expected {
+		t.Errorf("expected '%b' but found '%b' with rfsetup '%v'", expected, actual, s)
+	}
+}
+
+func TestSetPllLock_Disabled_BitIsOne(t *testing.T) {
+	s := NewRfSetup(util.B("11111111"))
+	expected := util.B("11101111")
+	
+	s.SetPllLock(false)
+	
+	actual := s.Byte()
+	if actual != expected {
+		t.Errorf("expected '%b' but found '%b' with rfsetup '%v'", expected, actual, s)
+	}
+}
+
+
+
+
+
+
+
+
+
+
