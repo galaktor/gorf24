@@ -55,3 +55,6 @@ func (r *SetupRetrans) GetCount() uint8 {
 func (r *SetupRetrans) GetDelay() RetransDelay {
 	return RetransDelay(r.flags >> 4)
 }
+func (r *SetupRetrans) SetDelay(d RetransDelay) {
+	r.flags = (r.flags & 0x0F) | (byte(d) << 4)
+}

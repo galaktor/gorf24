@@ -137,13 +137,27 @@ func TestGetCount_Fifteen_ReturnsFifteen(t *testing.T) {
 	}
 }
 
-func TestSetDelay_ZeroToFifteen_FlipsRightBits(t *testing.T) {
+func TestGetDelay_ZeroToFifteen_ReturnsCorrectDelay(t *testing.T) {
 	for i := uint8(0); i <= 15; i++ {
 		r := NewSetupRetrans(i << 4) // iiii0000
 		expected := RetransDelay(i)
 
 		actual := r.GetDelay()
 
+		if actual != expected {
+			t.Errorf("expected '%b' but found '%b' with retrans '%v'", expected, actual, r)
+		}
+	}
+}
+
+func TestSetDelay_ZeroToFifteen_FlipsRightBits(t *testing.T) {
+	for i := uint8(0); i <= 15; i++ {
+		r := NewSetupRetrans(util.B("00000000"))
+		expected := byte(i << 4)
+
+		r.SetDelay(RetransDelay(i))
+
+		actual := r.Byte()
 		if actual != expected {
 			t.Errorf("expected '%b' but found '%b' with retrans '%v'", expected, actual, r)
 		}
