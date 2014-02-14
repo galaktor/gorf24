@@ -11,6 +11,9 @@ import (
 
 type AddrWidth byte
 
+// TODO: sub-pkg, drop the "AW_" prefix in favour of pkgname
+// before: reg.AW_4BYTES
+// after:  aw.4BYTES
 const (
 	AW_3BYTES AddrWidth = 0x1
 	AW_4BYTES AddrWidth = 0x2
