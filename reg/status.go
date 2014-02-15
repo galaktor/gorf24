@@ -59,7 +59,7 @@ func (s *Status) RxFifoEmpty() bool {
   Write 1 to clear bit. If MAX_RT is asserted it must
   be cleared to enable further communication. */
 func (s *Status) MaxTxRetransmits() bool {
-	return (s.flags & 8) == 0
+	return (s.flags & 8) == 8
 }
 func (s *Status) ClearMaxTxRetransmits() {
 	s.flags |= 8
@@ -72,7 +72,7 @@ func (s *Status) ClearMaxTxRetransmits() {
   vated, this bit is set high only when ACK is
   received. */
 func (s *Status) TxDataSent() bool {
-	return (s.flags & 16) == 0
+	return (s.flags & 16) == 16
 }
 func (s *Status) ClearTxDataSent() {
 	s.flags |= 16
@@ -83,7 +83,7 @@ func (s *Status) ClearTxDataSent() {
   Data Ready RX FIFO interrupt. Asserted when
   new data arrives RX FIFO. */
 func (s *Status) RxDataReady() bool {
-	return (s.flags & 32) == 0
+	return (s.flags & 32) == 32
 }
 func (s *Status) ClearRxDataReady() {
 	s.flags |= 32

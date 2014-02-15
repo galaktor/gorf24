@@ -116,9 +116,9 @@ func TestRxFifoEmpty_RelevantBitsSeven_ReturnsFalse(t *testing.T) {
 	}
 }
 
-func TestMaxTxRetransmits_RelevantBitZero_ReturnsTrue(t *testing.T) {
+func TestMaxTxRetransmits_RelevantBitZero_ReturnsFalse(t *testing.T) {
 	s := NewStatus(util.B("11110111"))
-	expected := true
+	expected := false
 
 	result := s.MaxTxRetransmits()
 
@@ -127,9 +127,9 @@ func TestMaxTxRetransmits_RelevantBitZero_ReturnsTrue(t *testing.T) {
 	}
 }
 
-func TestMaxTxRetransmits_RelevantBitOne_ReturnsFalse(t *testing.T) {
+func TestMaxTxRetransmits_RelevantBitOne_ReturnsTrue(t *testing.T) {
 	s := NewStatus(util.B("00001000"))
-	expected := false
+	expected := true
 
 	result := s.MaxTxRetransmits()
 
@@ -150,9 +150,9 @@ func TestClearMaxTxRetransmits_Zero_SetsBitToOne(t *testing.T) {
 	}
 }
 
-func TestTxDataSent_RelevantBitZero_ReturnsTrue(t *testing.T) {
+func TestTxDataSent_RelevantBitZero_ReturnsFalse(t *testing.T) {
 	s := NewStatus(util.B("11101111"))
-	expected := true
+	expected := false
 
 	result := s.TxDataSent()
 
@@ -161,9 +161,9 @@ func TestTxDataSent_RelevantBitZero_ReturnsTrue(t *testing.T) {
 	}
 }
 
-func TestTxDataSent_RelevantBitOne_ReturnsFalse(t *testing.T) {
+func TestTxDataSent_RelevantBitOne_ReturnsTrue(t *testing.T) {
 	s := NewStatus(util.B("00010000"))
-	expected := false
+	expected := true
 
 	result := s.TxDataSent()
 
@@ -184,9 +184,9 @@ func TestClearTxDataSent_Zero_SetsBitToOne(t *testing.T) {
 	}
 }
 
-func TestRxDataReady_RelevantBitZero_ReturnsTrue(t *testing.T) {
+func TestRxDataReady_RelevantBitZero_ReturnsFalse(t *testing.T) {
 	s := NewStatus(util.B("11011111"))
-	expected := true
+	expected := false
 
 	result := s.RxDataReady()
 
@@ -195,9 +195,9 @@ func TestRxDataReady_RelevantBitZero_ReturnsTrue(t *testing.T) {
 	}
 }
 
-func TestRxDataReady_RelevantBitOne_ReturnsFalse(t *testing.T) {
+func TestRxDataReady_RelevantBitOne_ReturnsTrue(t *testing.T) {
 	s := NewStatus(util.B("00100000"))
-	expected := false
+	expected := true
 
 	result := s.RxDataReady()
 
