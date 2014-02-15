@@ -35,13 +35,13 @@ type R struct {
 	status *reg.Status
 	trans *reg.TransObserve
 	rpd *reg.ReceivedPowerDetector // was 'CD' before nRF24L01+
-	rxAddrP0 *reg.FullPipeAddress
-	rxAddrP1 *reg.FullPipeAddress
-	rxAddrP2 *reg.PartialPipeAddress
-	rxAddrP3 *reg.PartialPipeAddress
-	rxAddrP4 *reg.PartialPipeAddress
-	rxAddrP5 *reg.PartialPipeAddress
-	txAddr *reg.FullPipeAddress // name 'RxAddress' not fitting here...
+	rxAddrP0 *reg.FullXAddress
+	rxAddrP1 *reg.FullXAddress
+	rxAddrP2 *reg.PartialXAddress
+	rxAddrP3 *reg.PartialXAddress
+	rxAddrP4 *reg.PartialXAddress
+	rxAddrP5 *reg.PartialXAddress
+	txAddr *reg.FullXAddress // name 'RxAddress' not fitting here...
 	rxPwP0 *reg.RxPayloadWidth
 	rxPwP1 *reg.RxPayloadWidth
 	rxPwP2 *reg.RxPayloadWidth
@@ -68,13 +68,13 @@ func New(spidevice string, spispeed uint32, cepin, csnpin uint8) (r *R, err erro
 	r.status = reg.NewStatus(0)
 	r.trans = reg.NewTransObserve(0)
 	r.rpd = reg.NewRPD(0)
-	r.rxAddrP0 = reg.NewFullPipeAddress(pipe.P0, 0)
-	r.rxAddrP1 = reg.NewFullPipeAddress(pipe.P1, 0)
-	r.rxAddrP2 = reg.NewPartialPipeAddress(pipe.P2, r.rxAddrP1, 0)
-	r.rxAddrP3 = reg.NewPartialPipeAddress(pipe.P2, r.rxAddrP1, 0)
-	r.rxAddrP4 = reg.NewPartialPipeAddress(pipe.P2, r.rxAddrP1, 0)
-	r.rxAddrP5 = reg.NewPartialPipeAddress(pipe.P2, r.rxAddrP1, 0)
-	r.txAddr = reg.NewFullPipeAddress(pipe.P0, 0) // TODO: this is wrong; name + pipe?
+	r.rxAddrP0 = reg.NewFullXAddress(pipe.P0, 0)
+	r.rxAddrP1 = reg.NewFullXAddress(pipe.P1, 0)
+	r.rxAddrP2 = reg.NewPartialXAddress(pipe.P2, r.rxAddrP1, 0)
+	r.rxAddrP3 = reg.NewPartialXAddress(pipe.P2, r.rxAddrP1, 0)
+	r.rxAddrP4 = reg.NewPartialXAddress(pipe.P2, r.rxAddrP1, 0)
+	r.rxAddrP5 = reg.NewPartialXAddress(pipe.P2, r.rxAddrP1, 0)
+	r.txAddr = reg.NewFullXAddress(pipe.P0, 0) // TODO: this is wrong; name + pipe?
 	r.rxPwP0 = reg.NewRxPayloadWidth(pipe.P0, 0)
 	r.rxPwP1 = reg.NewRxPayloadWidth(pipe.P1, 0)
 	r.rxPwP2 = reg.NewRxPayloadWidth(pipe.P2, 0)

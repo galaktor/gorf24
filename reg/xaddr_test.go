@@ -4,30 +4,30 @@ import (
 	"testing"
 )
 
-func TestNewPipeAddress_AllZeroes_ReturnsAllZeroes(t *testing.T) {
-	expected := PipeAddress(0x0000000000)
+func TestNewXAddress_AllZeroes_ReturnsAllZeroes(t *testing.T) {
+	expected := XAddress(0x0000000000)
 	
-	actual := NewPipeAddress(0x0000000000)
+	actual := NewXAddress(0x0000000000)
 
 	if actual != expected {
 		t.Errorf("expected '%b' but found '%b'", expected, actual)
 	}
 }
 
-func TestNewPipeAddress_AllOnes_ReturnsAllOnes(t *testing.T) {
-	expected := PipeAddress(0xFFFFFFFFFF)
+func TestNewXAddress_AllOnes_ReturnsAllOnes(t *testing.T) {
+	expected := XAddress(0xFFFFFFFFFF)
 	
-	actual := NewPipeAddress(0xFFFFFFFFFF)
+	actual := NewXAddress(0xFFFFFFFFFF)
 
 	if actual != expected {
 		t.Errorf("expected '%b' but found '%b'", expected, actual)
 	}
 }
 
-func TestNewPipeAddress_MixedOnesAndZeroes_ReturnsRightBits(t *testing.T) {
-	expected := PipeAddress(0xAAAAAAAAAA)
+func TestNewXAddress_MixedOnesAndZeroes_ReturnsRightBits(t *testing.T) {
+	expected := XAddress(0xAAAAAAAAAA)
 	
-	actual := NewPipeAddress(0xAAAAAAAAAA)
+	actual := NewXAddress(0xAAAAAAAAAA)
 
 
 	if actual != expected {
@@ -35,10 +35,10 @@ func TestNewPipeAddress_MixedOnesAndZeroes_ReturnsRightBits(t *testing.T) {
 	}
 }
 
-func TestNewPipeAddress_OverflowFiveBytes_TruncatesToFiveBytes(t *testing.T) {
-	expected := PipeAddress(0xAAAAAAAAAA)
+func TestNewXAddress_OverflowFiveBytes_TruncatesToFiveBytes(t *testing.T) {
+	expected := XAddress(0xAAAAAAAAAA)
 
-	actual := NewPipeAddress(0xFFFFFFAAAAAAAAAA)
+	actual := NewXAddress(0xFFFFFFAAAAAAAAAA)
 
 	if actual != expected {
 		t.Errorf("expected '%b' but found '%b'", expected, actual)
@@ -47,7 +47,7 @@ func TestNewPipeAddress_OverflowFiveBytes_TruncatesToFiveBytes(t *testing.T) {
 
 func TestByte_MixedOnesAndZeroes_ReturnsRightBits(t *testing.T) {
 	expected := uint64(0xAAAAAAAAAA)
-	a := NewPipeAddress(expected)
+	a := NewXAddress(expected)
 
 	actual := a.Byte()
 
