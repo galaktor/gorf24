@@ -116,9 +116,9 @@ func TestRxFifoEmpty_RelevantBitsSeven_ReturnsFalse(t *testing.T) {
 	}
 }
 
-func TestMaxTxRetransmits_RelevantBitZero_ReturnsFalse(t *testing.T) {
+func TestMaxTxRetransmits_RelevantBitZero_ReturnsTrue(t *testing.T) {
 	s := NewStatus(util.B("11110111"))
-	expected := false
+	expected := true
 
 	result := s.MaxTxRetransmits()
 
@@ -127,9 +127,9 @@ func TestMaxTxRetransmits_RelevantBitZero_ReturnsFalse(t *testing.T) {
 	}
 }
 
-func TestMaxTxRetransmits_RelevantBitOne_ReturnsTrue(t *testing.T) {
+func TestMaxTxRetransmits_RelevantBitOne_ReturnsFalse(t *testing.T) {
 	s := NewStatus(util.B("00001000"))
-	expected := true
+	expected := false
 
 	result := s.MaxTxRetransmits()
 
@@ -138,9 +138,21 @@ func TestMaxTxRetransmits_RelevantBitOne_ReturnsTrue(t *testing.T) {
 	}
 }
 
-func TestTxDataSent_RelevantBitZero_ReturnsFalse(t *testing.T) {
+func TestClearMaxTxRetransmits_Zero_SetsBitToOne(t *testing.T) {
+	s := NewStatus(util.B("00000000"))
+	expected := util.B("00001000")
+
+	s.ClearMaxTxRetransmits()
+
+	actual := s.Byte()
+	if actual != expected {
+		t.Errorf("expected '%b' but found '%b' with status '%v'", expected, actual, s)
+	}
+}
+
+func TestTxDataSent_RelevantBitZero_ReturnsTrue(t *testing.T) {
 	s := NewStatus(util.B("11101111"))
-	expected := false
+	expected := true
 
 	result := s.TxDataSent()
 
@@ -149,9 +161,9 @@ func TestTxDataSent_RelevantBitZero_ReturnsFalse(t *testing.T) {
 	}
 }
 
-func TestTxDataSent_RelevantBitOne_ReturnsTrue(t *testing.T) {
+func TestTxDataSent_RelevantBitOne_ReturnsFalse(t *testing.T) {
 	s := NewStatus(util.B("00010000"))
-	expected := true
+	expected := false
 
 	result := s.TxDataSent()
 
@@ -160,8 +172,31 @@ func TestTxDataSent_RelevantBitOne_ReturnsTrue(t *testing.T) {
 	}
 }
 
-func TestRxDataReady_RelevantBitZero_ReturnsFalse(t *testing.T) {
+func TestClearTxDataSent_Zero_SetsBitToOne(t *testing.T) {
+	s := NewStatus(util.B("00000000"))
+	expected := util.B("00010000")
+
+	s.ClearTxDataSent()
+
+	actual := s.Byte()
+	if actual != expected {
+		t.Errorf("expected '%b' but found '%b' with status '%v'", expected, actual, s)
+	}
+}
+
+func TestRxDataReady_RelevantBitZero_ReturnsTrue(t *testing.T) {
 	s := NewStatus(util.B("11011111"))
+	expected := true
+
+	result := s.RxDataReady()
+
+	if result != expected {
+		t.Errorf("expected '%v' but found '%v' with status '%v'", expected, result, s)
+	}
+}
+
+func TestRxDataReady_RelevantBitOne_ReturnsFalse(t *testing.T) {
+	s := NewStatus(util.B("00100000"))
 	expected := false
 
 	result := s.RxDataReady()
@@ -171,13 +206,14 @@ func TestRxDataReady_RelevantBitZero_ReturnsFalse(t *testing.T) {
 	}
 }
 
-func TestRxDataReady_RelevantBitOne_ReturnsTrue(t *testing.T) {
-	s := NewStatus(util.B("00100000"))
-	expected := true
+func TestClearRxDataReady_Zero_SetsBitToOne(t *testing.T) {
+	s := NewStatus(util.B("00000000"))
+	expected := util.B("00100000")
 
-	result := s.RxDataReady()
+	s.ClearRxDataReady()
 
-	if result != expected {
-		t.Errorf("expected '%v' but found '%v' with status '%v'", expected, result, s)
+	actual := s.Byte()
+	if actual != expected {
+		t.Errorf("expected '%b' but found '%b' with status '%v'", expected, actual, s)
 	}
 }

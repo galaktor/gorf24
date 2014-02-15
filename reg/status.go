@@ -54,25 +54,37 @@ func (s *Status) RxFifoEmpty() bool {
 }
 
 /* MAX_RT (bit 4)
+  Active low
   Maximum number of TX retransmits interrupt
   Write 1 to clear bit. If MAX_RT is asserted it must
   be cleared to enable further communication. */
 func (s *Status) MaxTxRetransmits() bool {
-	return (s.flags & 8) == 8
+	return (s.flags & 8) == 0
+}
+func (s *Status) ClearMaxTxRetransmits() {
+	s.flags |= 8
 }
 
 /* TX_DS (bit 5)
+  Active low
   Data Sent TX FIFO interrupt. Asserted when
   packet transmitted on TX. If AUTO_ACK is acti-
   vated, this bit is set high only when ACK is
   received. */
 func (s *Status) TxDataSent() bool {
-	return (s.flags & 16) == 16
+	return (s.flags & 16) == 0
+}
+func (s *Status) ClearTxDataSent() {
+	s.flags |= 16
 }
 
 /* RX_DR (bit 6)
+  Active low
   Data Ready RX FIFO interrupt. Asserted when
   new data arrives RX FIFO. */
 func (s *Status) RxDataReady() bool {
-	return (s.flags & 32) == 32
+	return (s.flags & 32) == 0
+}
+func (s *Status) ClearRxDataReady() {
+	s.flags |= 32
 }
