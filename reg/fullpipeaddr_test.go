@@ -7,9 +7,9 @@ import (
 	"github.com/galaktor/gorf24/reg/addr"
 )
 
-func TestNewFullRxAddress_Pipe0_HasP0RegisterAddress(t *testing.T) {
+func TestNewFullPipeAddress_Pipe0_HasP0RegisterAddress(t *testing.T) {
 	expected := addr.RX_ADDR(pipe.P0)
-	a := NewFullRxAddress(pipe.P0, RxAddress(0))
+	a := NewFullPipeAddress(pipe.P0, PipeAddress(0))
 
 	actual := a.Address()
 
@@ -19,9 +19,9 @@ func TestNewFullRxAddress_Pipe0_HasP0RegisterAddress(t *testing.T) {
 	
 }
 
-func TestNewFullRxAddress_Pipe1_HasP0RegisterAddress(t *testing.T) {
+func TestNewFullPipeAddress_Pipe1_HasP0RegisterAddress(t *testing.T) {
 	expected := addr.RX_ADDR(pipe.P1)
-	a := NewFullRxAddress(pipe.P1, RxAddress(0))
+	a := NewFullPipeAddress(pipe.P1, PipeAddress(0))
 
 	actual := a.Address()
 
@@ -31,9 +31,9 @@ func TestNewFullRxAddress_Pipe1_HasP0RegisterAddress(t *testing.T) {
 	
 }
 
-func TestNewFullRxAddress_Pipe2_HasP0RegisterAddress(t *testing.T) {
+func TestNewFullPipeAddress_Pipe2_HasP0RegisterAddress(t *testing.T) {
 	expected := addr.RX_ADDR(pipe.P2)
-	a := NewFullRxAddress(pipe.P2, RxAddress(0))
+	a := NewFullPipeAddress(pipe.P2, PipeAddress(0))
 
 	actual := a.Address()
 
@@ -43,9 +43,9 @@ func TestNewFullRxAddress_Pipe2_HasP0RegisterAddress(t *testing.T) {
 	
 }
 
-func TestNewFullRxAddress_Pipe3_HasP0RegisterAddress(t *testing.T) {
+func TestNewFullPipeAddress_Pipe3_HasP0RegisterAddress(t *testing.T) {
 	expected := addr.RX_ADDR(pipe.P3)
-	a := NewFullRxAddress(pipe.P3, RxAddress(0))
+	a := NewFullPipeAddress(pipe.P3, PipeAddress(0))
 
 	actual := a.Address()
 
@@ -55,9 +55,9 @@ func TestNewFullRxAddress_Pipe3_HasP0RegisterAddress(t *testing.T) {
 	
 }
 
-func TestNewFullRxAddress_Pipe4_HasP0RegisterAddress(t *testing.T) {
+func TestNewFullPipeAddress_Pipe4_HasP0RegisterAddress(t *testing.T) {
 	expected := addr.RX_ADDR(pipe.P4)
-	a := NewFullRxAddress(pipe.P4, RxAddress(0))
+	a := NewFullPipeAddress(pipe.P4, PipeAddress(0))
 
 	actual := a.Address()
 
@@ -67,9 +67,9 @@ func TestNewFullRxAddress_Pipe4_HasP0RegisterAddress(t *testing.T) {
 	
 }
 
-func TestNewFullRxAddress_Pipe5_HasP0RegisterAddress(t *testing.T) {
+func TestNewFullPipeAddress_Pipe5_HasP0RegisterAddress(t *testing.T) {
 	expected := addr.RX_ADDR(pipe.P5)
-	a := NewFullRxAddress(pipe.P5, RxAddress(0))
+	a := NewFullPipeAddress(pipe.P5, PipeAddress(0))
 
 	actual := a.Address()
 
@@ -79,8 +79,8 @@ func TestNewFullRxAddress_Pipe5_HasP0RegisterAddress(t *testing.T) {
 }
 
 func TestGet_Zeroes_ReturnsZeroes(t *testing.T) {
-	expected := RxAddress(0)
-	a := NewFullRxAddress(pipe.P0, 0)
+	expected := PipeAddress(0)
+	a := NewFullPipeAddress(pipe.P0, 0)
 
 	actual := a.Get()
 
@@ -90,8 +90,8 @@ func TestGet_Zeroes_ReturnsZeroes(t *testing.T) {
 }
 
 func TestGet_NonZero_ReturnsRightBits(t *testing.T) {
-	expected := RxAddress(0xAFAFAFAFAF)
-	a := NewFullRxAddress(pipe.P0, 0xAFAFAFAFAF)
+	expected := PipeAddress(0xAFAFAFAFAF)
+	a := NewFullPipeAddress(pipe.P0, 0xAFAFAFAFAF)
 
 	actual := a.Get()
 
@@ -101,8 +101,8 @@ func TestGet_NonZero_ReturnsRightBits(t *testing.T) {
 }
 
 func TestSet_NonZero_StoresRightBits(t *testing.T) {
-	expected := RxAddress(0xAFAFAFAFAF)
-	a := NewFullRxAddress(pipe.P0, RxAddress(0))
+	expected := PipeAddress(0xAFAFAFAFAF)
+	a := NewFullPipeAddress(pipe.P0, PipeAddress(0))
 
 	a.Set(0xAFAFAFAFAF)
 
