@@ -5,7 +5,7 @@ import (
 	"github.com/galaktor/gorf24/pipe"
 )
 
-// values up to 32; truncate above 6th bit?
+// bits 7:6 reserved
 
 type RxPayloadWidth struct {
 	R
