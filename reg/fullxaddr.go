@@ -2,8 +2,9 @@ package reg
 
 import (
 	"github.com/galaktor/gorf24/reg/addr"
-	"github.com/galaktor/gorf24/pipe"
 )
+
+// only for internal use when creating actual RxAddr or TxAddr
 
 type FullXAddress struct {
 	R
@@ -11,8 +12,8 @@ type FullXAddress struct {
 	flags XAddress
 }
 
-func NewFullXAddress(p pipe.P, flags XAddress) *FullXAddress {
-	return &FullXAddress{R{addr.RX_ADDR(p),0},flags}
+func newFullXAddress(a addr.A, flags XAddress) *FullXAddress {
+	return &FullXAddress{R{a,0},flags}
 }
 
 func (r *FullXAddress) Get() XAddress {
@@ -22,3 +23,13 @@ func (r *FullXAddress) Get() XAddress {
 func (r *FullXAddress) Set(a XAddress) {
 	r.flags = a
 }
+
+
+
+
+
+
+
+
+
+

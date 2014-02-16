@@ -2,7 +2,6 @@ package reg
 
 import (
 	"github.com/galaktor/gorf24/reg/addr"
-	"github.com/galaktor/gorf24/pipe"
 )
 
 type PartialXAddress struct {
@@ -11,10 +10,9 @@ type PartialXAddress struct {
 	root *FullXAddress
 }
 
-func NewPartialXAddress(p pipe.P, root *FullXAddress, lsb byte) *PartialXAddress {
-	return &PartialXAddress{R{addr.RX_ADDR(p),lsb},root}
+func newPartialXAddress(a addr.A, root *FullXAddress, lsb byte) *PartialXAddress {
+	return &PartialXAddress{R{a,lsb},root}
 }
-
 
 func (r *PartialXAddress) Get() XAddress {
 	// use New method to force truncate
