@@ -1,78 +1,7 @@
 ***************************
       HOW TO INSTALL
 ***************************
-TODO! More detail (on the way)
-
-The gist of it:
-
-1) install and set up basic developer tools, git as well as golang on your RPi
-   e.g. on Arch ARM:
-   $> sudo pacman -S base-devel git go
-   
-   be sure to export GOPATH and add $GOPATH/bin to your PATH; e.g.
-     $> mkdir ~/mygo
-     $> echo "export GOPATH=~/mygo" >> ~/.bashrc
-     $> echo "export PATH=$PATH:$GOPATH/bin" >> ~/.bashrc
-   
-   log off and on again for GOPATH changes to take effect
-   
-2) fetch gorf24 using 
-   $> go get github.com/galaktor/gorf24 (you will get an "ld" type error; ignore!)
-3) $> cd $GOPATH/src/github.com/galaktor/gorf24
-4) $> chmod +x build.sh
-5) $> sudo ./build.sh
-6) you might have to add /usr/local/lib to your /etc/ld.so.conf file (see below)
-7) include gorf24 in your golang source code as usual, i.e. 'import "github.com/galaktor/gorf24"'
-8) Accessing GPIO on Rpi requies elevated permissions, so it makes sense to build normally ("go build")
-   then run the executable as sudo, i.e.
-   $> go build mycode.go
-   $> sudo ./mycode
-   If you do not use sudo, you will get segfaults and panics
-
-(Tested on an overclocked (900 MHz) Model A RPi running Arch Linux for Rpi/ARM.)
-
-Note that this is project is in progress, and the golang or ansi C wrapper haven't been fully tested yet.
-Basic send/receive testing has occured, but many functions might have bugs.
-Please log any issue you might find and I will try to address it when I get a chance!
-Or even better, fork and contribute, that would be much appreciated.
-
-***************************
-ADD /USR/LOCAL/LIB LDCONFIG
-***************************
-
-On Arch ARM for RPi, /usr/local/lib had to be added to ld.so.conf in order for golang to find the librf24*.so files at runtime.
-you can check if the librf shared objects are detected by running:
-
-$> ldconfig -v | grep librf
-
-If the result is empty, then you need to add /usr/local/lib to /etc/ld.so.conf so that the golang runtime will detect the librf libraries.
-NOTE: despite the "include ld.so.conf.d/*.conf" line in /etc/ld.so.conf, adding such a file had no effect. Needed to add directly to
-ld.so.conf!
-
-### 1. Open /etc/ld.so.conf with a text editor:
-$> sudo nano /etc/ld.so.conf
-
-### 2. Add the line "/usr/local/lib" and save (in nano, "Ctrl+X", "Y" then "Return")
-
-### 3. Run ldconfig to update
-$> sudo ldconfig
-
-### 4. Verify detection of librf* shared objects using ldconfig
-$> ldconfig -v | grep rf
-   	    librf24.so.1 -> librf24.so.1.0
-	    librf24_c.so -> librf24_c.so
-
-
-
-***************************
-         TODOS
-***************************
-* Makefiles instead of shell scripts
-* maybe better way of installing via go get?
-* more testing of correct wrapping, data types etc
-* branch that includes verified-working snap of RF24-rpi
-* download with RPi binaries for armv6?
-
+ TODO
 
 
 ***************************
@@ -81,24 +10,28 @@ $> ldconfig -v | grep rf
 
 Copyright 2013, Raphael Estrada
 
-gorf24 is licensed under the MIT license.
-You should have received a copy of the MIT License along
+gorf24 is licensed under the GPL v3 license.
+You should have received a copy of the license along
 with gorf24 (file "LICENSE"). If not, see 
 
-<http://opensource.org/licenses/MIT>
+<http://www.gnu.org/licenses/gpl-3.0.txt>
 
 
 **************************
   THE GIANTS' SHOULDERS
 **************************
+I wrote the current version of gorf24 entirely from
+scratch, mostly based on the following sources:
 
-NOTE: gorf24 dynamiclly links to the C++ RF24 library for Raspberry
-Pi by Stanley Seow. At the time gorf24 was created, Seow's software
-had no apparent license included. The license for gorf24 described
-here applies exclusively to the software provided as part of gorf24,
-but does not extend to Seow's RF24 software.
+* spidev documentation:    <https://www.kernel.org/doc/Documentation/spi/spidev>
+* RPi gpio tutorial:       <https://sites.google.com/site/semilleroadt/raspberry-pi-tutorials/gpio>
+* nRF24L01+ specification: <http://www.nordicsemi.com/eng/Products/2.4GHz-RF/nRF24L01P>
 
-https://github.com/stanleyseow/RF24
+Early versions of gorf24 dynamically liked to the RF24
+library for Raspberry Pi by Stanley Seow. Some of the
+comments in the code pointed me in the right direction,
+most notably with regards to timing.
+<https://github.com/stanleyseow/RF24>
 
 Seow's work is stronly derived from maniacbug's original RF24 library.
 Much kudos to maniacbug for the great work.
