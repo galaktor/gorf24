@@ -64,12 +64,6 @@ func TestIsDynamicAckEnabled_BitOne_ReturnsTrue(t *testing.T) {
 	}
 }
 
-
-
-
-
-
-
 func TestSetPayloadWithAck_Enabled_FlipsRightBit(t *testing.T) {
 	f := NewFeature(util.B("00000010"))
 	expected := util.B("00000010")
@@ -116,5 +110,68 @@ func TestIsPayloadWithAckEnabled_BitOne_ReturnsTrue(t *testing.T) {
 	}
 }
 
-// TODO: EN_DPL
+func TestSetDynamicPayloadLength_Enabled_FlipsRightBit(t *testing.T) {
+	f := NewFeature(util.B("00000000"))
+	expected := util.B("00000100")
+
+	f.SetDynamicPayloadLength(true)
+
+	actual := f.Byte()
+	if actual != expected {
+		t.Errorf("expected '%b' but found '%b' with feature '%v'", expected, actual, f)
+	}
+}
+
+func TestSetDynamicPayloadLength_Disabled_FlipsRightBit(t *testing.T) {
+	f := NewFeature(util.B("00000100"))
+	expected := util.B("00000000")
+
+	f.SetDynamicPayloadLength(false)
+
+	actual := f.Byte()
+	if actual != expected {
+		t.Errorf("expected '%b' but found '%b' with feature '%v'", expected, actual, f)
+	}
+}
+
+func TestIsDynamicPayloadLengthEnabled_BitZero_ReturnsFalse(t *testing.T) {
+	f := NewFeature(util.B("11111011"))
+	expected := false
+
+	actual := f.IsDynamicPayloadLengthEnabled()
+
+	if actual != expected {
+		t.Errorf("expected '%v' but found '%v' with feature '%v'", expected, actual, f)
+	}
+}
+
+func TestIsDynamicPayloadLengthEnabled_BitOne_ReturnsTrue(t *testing.T) {
+	f := NewFeature(util.B("00000100"))
+	expected := true
+
+	actual := f.IsDynamicPayloadLengthEnabled()
+
+	if actual != expected {
+		t.Errorf("expected '%v' but found '%v' with feature '%v'", expected, actual, f)
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

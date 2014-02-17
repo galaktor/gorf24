@@ -39,3 +39,16 @@ func (f *Feature) SetPayloadWithAck(enabled bool) {
 		f.flags &= 0xFD
 	}
 }
+
+/* EN_DPL (bit 2)
+   Enables Dynamic Payload Length */
+func (f *Feature) IsDynamicPayloadLengthEnabled() bool {
+	return f.flags & 0x04 == 0x04
+}
+func (f *Feature) SetDynamicPayloadLength(enabled bool) {
+	if enabled {
+		f.flags |= 0x04
+	} else {
+		f.flags &= 0x7B
+	}
+}
