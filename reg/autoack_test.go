@@ -151,11 +151,11 @@ func TestIsEnabled_Pipe6_InvalidButBitIsFlipped_ReturnsFalseAnyway(t *testing.T)
 	}
 }
 
-func TestEnable_Pipe0_FlipsCorrectBit(t *testing.T) {
+func TestSet_Enable_Pipe0_FlipsCorrectBit(t *testing.T) {
 	a := NewAutoAck(util.B("00000000"))
 	expected := util.B("00000001")
 
-	a.Enable(pipe.P0)
+	a.Set(pipe.P0, true)
 
 	actual := a.Byte()
 	if actual != expected {
@@ -163,11 +163,11 @@ func TestEnable_Pipe0_FlipsCorrectBit(t *testing.T) {
 	} 
 }
 
-func TestEnable_Pipe1_FlipsCorrectBit(t *testing.T) {
+func TestSet_Enable_Pipe1_FlipsCorrectBit(t *testing.T) {
 	a := NewAutoAck(util.B("00000000"))
 	expected := util.B("00000010")
 
-	a.Enable(pipe.P1)
+	a.Set(pipe.P1, true)
 
 	actual := a.Byte()
 	if actual != expected {
@@ -175,11 +175,11 @@ func TestEnable_Pipe1_FlipsCorrectBit(t *testing.T) {
 	} 
 }
 
-func TestEnable_Pipe2_FlipsCorrectBit(t *testing.T) {
+func TestSet_Enable_Pipe2_FlipsCorrectBit(t *testing.T) {
 	a := NewAutoAck(util.B("00000000"))
 	expected := util.B("00000100")
 
-	a.Enable(pipe.P2)
+	a.Set(pipe.P2, true)
 
 	actual := a.Byte()
 	if actual != expected {
@@ -187,11 +187,11 @@ func TestEnable_Pipe2_FlipsCorrectBit(t *testing.T) {
 	} 
 }
 
-func TestEnable_Pipe3_FlipsCorrectBit(t *testing.T) {
+func TestSet_Enable_Pipe3_FlipsCorrectBit(t *testing.T) {
 	a := NewAutoAck(util.B("00000000"))
 	expected := util.B("00001000")
 
-	a.Enable(pipe.P3)
+	a.Set(pipe.P3, true)
 
 	actual := a.Byte()
 	if actual != expected {
@@ -199,11 +199,11 @@ func TestEnable_Pipe3_FlipsCorrectBit(t *testing.T) {
 	} 
 }
 
-func TestEnable_Pipe4_FlipsCorrectBit(t *testing.T) {
+func TestSet_Enable_Pipe4_FlipsCorrectBit(t *testing.T) {
 	a := NewAutoAck(util.B("00000000"))
 	expected := util.B("00010000")
 
-	a.Enable(pipe.P4)
+	a.Set(pipe.P4, true)
 
 	actual := a.Byte()
 	if actual != expected {
@@ -211,11 +211,11 @@ func TestEnable_Pipe4_FlipsCorrectBit(t *testing.T) {
 	} 
 }
 
-func TestEnable_Pipe5_FlipsCorrectBit(t *testing.T) {
+func TestSet_Enable_Pipe5_FlipsCorrectBit(t *testing.T) {
 	a := NewAutoAck(util.B("00000000"))
 	expected := util.B("00100000")
 
-	a.Enable(pipe.P5)
+	a.Set(pipe.P5, true)
 
 	actual := a.Byte()
 	if actual != expected {
@@ -223,11 +223,11 @@ func TestEnable_Pipe5_FlipsCorrectBit(t *testing.T) {
 	} 
 }
 
-func TestDisable_Pipe0_FlipsCorrectBit(t *testing.T) {
+func TestSet_Disable_Pipe0_FlipsCorrectBit(t *testing.T) {
 	a := NewAutoAck(util.B("11111111"))
 	expected := util.B("11111110")
 
-	a.Disable(pipe.P0)
+	a.Set(pipe.P0, false)
 
 	actual := a.Byte()
 	if actual != expected {
@@ -235,11 +235,11 @@ func TestDisable_Pipe0_FlipsCorrectBit(t *testing.T) {
 	}
 }
 
-func TestDisable_Pipe1_FlipsCorrectBit(t *testing.T) {
+func TestSet_Disable_Pipe1_FlipsCorrectBit(t *testing.T) {
 	a := NewAutoAck(util.B("11111111"))
 	expected := util.B("11111101")
 
-	a.Disable(pipe.P1)
+	a.Set(pipe.P1, false)
 
 	actual := a.Byte()
 	if actual != expected {
@@ -247,11 +247,11 @@ func TestDisable_Pipe1_FlipsCorrectBit(t *testing.T) {
 	}
 }
 
-func TestDisable_Pipe2_FlipsCorrectBit(t *testing.T) {
+func TestSet_Disable_Pipe2_FlipsCorrectBit(t *testing.T) {
 	a := NewAutoAck(util.B("11111111"))
 	expected := util.B("11111011")
 
-	a.Disable(pipe.P2)
+	a.Set(pipe.P2, false)
 
 	actual := a.Byte()
 	if actual != expected {
@@ -259,11 +259,11 @@ func TestDisable_Pipe2_FlipsCorrectBit(t *testing.T) {
 	}
 }
 
-func TestDisable_Pipe3_FlipsCorrectBit(t *testing.T) {
+func TestSet_Disable_Pipe3_FlipsCorrectBit(t *testing.T) {
 	a := NewAutoAck(util.B("11111111"))
 	expected := util.B("11110111")
 
-	a.Disable(pipe.P3)
+	a.Set(pipe.P3, false)
 
 	actual := a.Byte()
 	if actual != expected {
@@ -271,11 +271,11 @@ func TestDisable_Pipe3_FlipsCorrectBit(t *testing.T) {
 	}
 }
 
-func TestDisable_Pipe4_FlipsCorrectBit(t *testing.T) {
+func TestSet_Disable_Pipe4_FlipsCorrectBit(t *testing.T) {
 	a := NewAutoAck(util.B("11111111"))
 	expected := util.B("11101111")
 
-	a.Disable(pipe.P4)
+	a.Set(pipe.P4, false)
 
 	actual := a.Byte()
 	if actual != expected {
@@ -283,11 +283,11 @@ func TestDisable_Pipe4_FlipsCorrectBit(t *testing.T) {
 	}
 }
 
-func TestDisable_Pipe5_FlipsCorrectBit(t *testing.T) {
+func TestSet_Disable_Pipe5_FlipsCorrectBit(t *testing.T) {
 	a := NewAutoAck(util.B("11111111"))
 	expected := util.B("11011111")
 
-	a.Disable(pipe.P5)
+	a.Set(pipe.P5, false)
 
 	actual := a.Byte()
 	if actual != expected {
