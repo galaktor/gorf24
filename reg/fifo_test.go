@@ -105,3 +105,30 @@ func TestTx_EmptyAndFullBitsOne_ReturnsFIFO_INVALID(t *testing.T) {
 		t.Errorf("expected '%b' but found '%b' with fifostatus '%v'", expected, actual, f)
 	}
 }
+
+func TestIsTxPayloadReuseEnabled_BitZero_ReturnsFalse(t *testing.T) {
+	f := NewFifoStatus(util.B("10111111"))
+	expected := false
+
+	actual := f.IsTxPayloadReuseEnabled()
+	
+	if actual != expected {
+		t.Errorf("expected '%v' but found '%v' with fifostatus '%v'", expected, actual, f)
+	}
+}
+
+func TestIsTxPayloadReuseEnabled_BitOne_ReturnsTrue(t *testing.T) {
+	f := NewFifoStatus(util.B("01000000"))
+	expected := true
+
+	actual := f.IsTxPayloadReuseEnabled()
+	
+	if actual != expected {
+		t.Errorf("expected '%v' but found '%v' with fifostatus '%v'", expected, actual, f)
+	}
+}
+
+
+
+
+

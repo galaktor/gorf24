@@ -42,3 +42,10 @@ func (f *FifoStatus) Tx() FifoUsage {
 	// xx11xxxx -> empty AND full? INVALID!
 	return FifoUsage((f.flags >> 4) & 3)
 }
+
+/* TX_REUSE (bit 6) */
+func (f *FifoStatus) IsTxPayloadReuseEnabled() bool {
+	// x0xxxxxx -> disabled
+	// x1xxxxxx -> enabled
+	return f.flags & 0x40 == 0x40
+}
