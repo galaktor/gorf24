@@ -20,6 +20,17 @@ func TestNewStatus_RegisterAddress_IsSTATUS(t *testing.T) {
 	
 }
 
+func TestNewStatus_ReservedBitOne_StoresZero(t *testing.T) {
+	expected := util.B("01111111")
+
+	s := NewStatus(util.B("11111111"))
+
+	actual := s.Byte()
+	if actual != expected {
+		t.Errorf("expected '%b' but found '%b' with status '%v'", expected, actual, s)
+	}
+}
+
 func TestTxFull_RelevantBitZero_ReturnsFalse(t *testing.T) {
 	s := NewStatus(util.B("11111110"))
 	expected := false

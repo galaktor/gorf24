@@ -18,7 +18,8 @@ type Status struct {
 }
 
 func NewStatus(flags byte) *Status {
-	return &Status{R{a: addr.STATUS, flags: flags}}
+	masked := flags & 0x7F // reset reserved bits
+	return &Status{R{a: addr.STATUS, flags: masked}}
 }
 
 /* TX_FULL (bit 0)
