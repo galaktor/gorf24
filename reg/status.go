@@ -8,6 +8,11 @@ import (
 	"github.com/galaktor/gorf24/reg/addr"
 )
 
+/* STATUS
+   Status Register (In parallel to the SPI command
+   word applied on the MOSI pin, the STATUS register
+   is shifted serially out on the MISO pin) 
+   bit 7 reserved */
 type Status struct {
 	R
 }
