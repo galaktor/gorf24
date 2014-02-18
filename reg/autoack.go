@@ -20,7 +20,8 @@ func NewAutoAck(flags byte) *AutoAck {
 // TODO: if pipe const value was byte, could just do
 // "return a.flags & p == p"
 
-/* ENAA_Px */
+/* ENAA_Px 
+   Enable auto acknowledgement data pipe 'p' */
 func (a *AutoAck) Set(p pipe.P, enabled bool) {
 	if enabled {
 		a.enable(p)
