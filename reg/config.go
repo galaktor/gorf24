@@ -4,6 +4,14 @@ import (
 	"github.com/galaktor/gorf24/reg/addr"
 )
 
+type CrcLength byte
+
+const (
+	CRC_DISABLED = iota
+	CRC_8BIT
+	CRC_16BIT
+)
+
 /* CONFIG
    Configuration Register
    bit 7 reserved */
@@ -17,7 +25,8 @@ func NewConfig(flags byte) *Config {
 
 /* PRIM_RX (bit 0)
    RX/TX control
-   1: PRX, 0: PTX */
+   xxxxxxx0: PTX
+   xxxxxxx1: PRX */
 func (c *Config) SetPrimaryReceiver() {
 	c.flags = c.flags | 1
 }
@@ -32,7 +41,8 @@ func (c *Config) IsPrimaryTransmitter() bool {
 }
 
 /* PWR_UP (bit 1)
-   1: POWER UP, 0:POWER DOWN */
+   xxxxxx0x: POWER DOWN
+   xxxxxx1x: POWER UP */
 func (c *Config) SetPowerUp(up bool) {
 	if up {
 		c.flags |= 2
@@ -47,8 +57,8 @@ func (c *Config) IsPowerUp() bool {
 
 /* CRCO (bit 2)
    CRC encoding scheme
-   '0' - 1 byte
-   '1' – 2 bytes */
+   xxxxx0xx - 1 byte
+   xxxxx1xx - 2 bytes */
 func (c *Config) SetCrcLength(l CrcLength) {
 	switch l {
 	case CRC_8BIT:
@@ -67,7 +77,10 @@ func (c *Config) GetCrcLength() CrcLength {
 
 /* EN_CRC (bit 3)
    Enable CRC. Forced high if one of the bits in the
-   EN_AA is high */
+   EN_AA is high
+
+   xxxx0xxx - disabled
+   xxxx1xxx - enabled */
 func (c *Config) SetCrcEnabled(enable bool) {
 	if enable {
 		c.flags |= 8
@@ -81,9 +94,9 @@ func (c *Config) IsCrcEnabled() bool {
 
 /* MASK_MAX_RT (bit 4)
    Mask interrupt caused by MAX_RT
-   1: Interrupt not reflected on the IRQ pin
-   0: Reflect MAX_RT as active low interrupt on the
-   IRQ pin */
+
+   xxx0xxxx: Reflect MAX_RT as active low interrupt on the IRQ pin
+   xxx1xxxx: Interrupt not reflected on the IRQ pin  */
 func (c *Config) SetMaxRtInterruptEnabled(enable bool) {
 	if enable {
 		c.flags &= 0xEF
@@ -97,9 +110,9 @@ func (c *Config) IsMaxRtInterruptEnabled() bool {
 
 /* MASK_TX_DS (bit 5)
    Mask interrupt caused by TX_DS
-   1: Interrupt not reflected on the IRQ pin
-   0: Reflect TX_DS as active low interrupt on the
-   IRQ pin */
+
+   xx0xxxxx: Reflect TX_DS as active low interrupt on the IRQ pin
+   xx1xxxxx: Interrupt not reflected on the IRQ pin*/
 func (c *Config) SetTxDsInterruptEnabled(enable bool) {
 	if enable {
 		c.flags &= 0xDF
@@ -113,9 +126,9 @@ func (c *Config) IsTxDsInterruptEnabled() bool {
 
 /* MASK_RX_DR (bit 6)
    Mask interrupt caused by RX_DR
-   1: Interrupt not reflected on the IRQ pin
-   0: Reflect RX_DR as active low interrupt on the
-   IRQ pin */
+
+   x0xxxxxx: Reflect RX_DR as active low interrupt on the IRQ pin
+   x1xxxxxx: Interrupt not reflected on the IRQ pin */
 func (c *Config) SetRxDrInterruptEnabled(enable bool) {
 	if enable {
 		c.flags &= 0xBF

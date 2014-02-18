@@ -4,6 +4,10 @@ import (
 	"github.com/galaktor/gorf24/reg/addr"
 )
 
+/* has the same 5byte address as its 'root' except for
+   the LSByte which differs. When asked will combine
+   the root's first 4 MSBytes and append it's own single
+   LSByte to form a 5byte address. */
 type PartialXAddress struct {
 	R
 
@@ -11,7 +15,7 @@ type PartialXAddress struct {
 }
 
 func newPartialXAddress(a addr.A, root *FullXAddress, lsb byte) *PartialXAddress {
-	return &PartialXAddress{R{a,lsb},root}
+	return &PartialXAddress{R{a, lsb}, root}
 }
 
 func (r *PartialXAddress) Get() XAddress {

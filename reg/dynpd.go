@@ -20,7 +20,8 @@ func NewDynamicPayload(flags byte) *DynamicPayload {
 }
 
 /* DPL_Px
-   requires EN_DPL and ENAA_Px */
+   Enable dynamic payload length data pipe 'p'.
+   (Requires EN_DPL and ENAA_Px) */
 func (d *DynamicPayload) IsEnabled(p pipe.P) (enabled bool) {
 	switch p {
 	case pipe.P0:

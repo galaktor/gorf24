@@ -16,7 +16,8 @@ func NewEnabledRxAddresses(flags byte) *EnabledRxAddresses {
 	return &EnabledRxAddresses{R{addr.EN_RXADDR, flags}}
 }
 
-/* ERX_Px */
+/* ERX_Px
+   Enable data pipe 'p' */
 func (e *EnabledRxAddresses) IsEnabled(p pipe.P) bool {
 	var result bool
 

@@ -10,24 +10,25 @@ import (
 type PowerLevel byte
 
 const (
-	PA_MIN PowerLevel = iota // 0x0
-	PA_LOW    // 0x1
-	PA_MEDIUM // 0x2
-	PA_MAX    // 0x3
+	PA_MIN    PowerLevel = iota // 0x0
+	PA_LOW                      // 0x1
+	PA_MEDIUM                   // 0x2
+	PA_MAX                      // 0x3
 )
 
 type Datarate byte
 
 const (
-	RATE_1MBPS Datarate = iota // 0x0
-	RATE_2MBPS   // 0x1
-	RATE_250KBPS // 0x2
+	RATE_1MBPS   Datarate = iota // 0x0
+	RATE_2MBPS                   // 0x1
+	RATE_250KBPS                 // 0x2
 )
 
-// bit 0 obsolete/ignored
-// bit 4 only used in test
-// bit 6 reserved
-
+/* RF_SETUP
+   RF Setup Register
+   bit 6 reserved
+   bit 4 only used in test (but exposed here anyway)
+   bit 0 obsolete */
 type RfSetup struct {
 	R
 }
@@ -36,31 +37,47 @@ func NewRfSetup(flags byte) *RfSetup {
 	return &RfSetup{R{a: addr.RF_SETUP, flags: flags}}
 }
 
-/* RF_PWR */
+/* RF_PWR (bits 2:1)
+   Set RF output power in TX mode
+   'xxxxx00x' – -18dBm
+   'xxxxx01x' – -12dBm
+   'xxxxx10x' – -6dBm
+   'xxxxx11x' –  0dBm */
 func (s *RfSetup) GetPowerLevel() PowerLevel {
-	return PowerLevel((s.flags & 0x6)>>1)
+	return PowerLevel((s.flags & 0x6) >> 1)
 }
 func (s *RfSetup) SetPowerLevel(p PowerLevel) error {
 	if p > 3 {
 		return errors.New(fmt.Sprintf("Value out of legal range: %v. Allowed value from 0 -3.", p))
 	}
-	
-	s.flags = s.flags & 0xF9 | (byte(p) << 1)
+
+	s.flags = s.flags&0xF9 | (byte(p) << 1)
 	return nil
 }
 
-/* RF_DR_LOW  (bit 5)
-   RF_DR_HIGH (bit 3) */
+/* RF_DR_HIGH (bit 3)
+   Select between the high speed data rates. This bit
+   is don’t care if RF_DR_LOW is set.
+   Encoding:
+   [RF_DR_LOW, RF_DR_HIGH]:
+   ‘xx0x0xxx’ – 1Mbps
+   ‘xx0x1xxx’ – 2Mbps
+   ‘xx1x0xxx’ – 250kbps
+   ‘xx1x1xxx’ – Reserved
+
+   RF_DR_LOW  (bit 5)
+   Set RF Data Rate to 250kbps. See RF_DR_HIGH
+   for encoding. */
 func (s *RfSetup) GetDatarate() Datarate {
 	var result Datarate
 
 	switch val := s.flags & 0x28; val {
-	case 0x0:  // xx0x0xxx
+	case 0x0: // xx0x0xxx
 		result = RATE_1MBPS
-	case 0x8:  // xx0x1xxx
+	case 0x8: // xx0x1xxx
 		result = RATE_2MBPS
 	case 0x20: // xx1x0xxx
-		fallthrough
+		fallthrough // RF_DR_LOW set, so don't care
 	case 0x28: // xx1x1xxx
 		result = RATE_250KBPS
 	}
@@ -68,27 +85,32 @@ func (s *RfSetup) GetDatarate() Datarate {
 	return result
 }
 
-/* PLL_LOCK 
-   only used in test */
+/* PLL_LOCK (bit 4)
+   Force PLL lock signal. Only used in test
+
+   spec not explicit on this, so I'm assuming:
+   xxx0xxxx - disabled
+   xxx1xxxx - enabled */
 func (s *RfSetup) IsPllLockEnabled() bool {
-	return s.flags & 16 == 16
+	return s.flags&16 == 16
 }
 func (s *RfSetup) SetPllLock(enabled bool) {
 	if enabled {
-		s.flags = s.flags | 0x10
+		s.flags |= 0x10
 	} else {
-		s.flags = s.flags & 0xEF
+		s.flags &= 0xEF
 	}
 }
 
-/* CONT_WAVE */
+/* CONT_WAVE
+   Enables continuous carrier transmit when high. */
 func (s *RfSetup) IsContinuousCarrierTransmitEnabled() bool {
-	return s.flags & 0x80 == 0x80
+	return s.flags&0x80 == 0x80 // 1xxxxxxx
 }
 func (s *RfSetup) SetContinuousCarrierTransmit(enabled bool) {
 	if enabled {
-		s.flags = s.flags | 0x80
+		s.flags |= 0x80 // 1xxxxxxx
 	} else {
-		s.flags = s.flags & 0x7F
+		s.flags &= 0x7F // 0xxxxxxx
 	}
 }
