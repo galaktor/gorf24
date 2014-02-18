@@ -84,6 +84,22 @@ func (s *RfSetup) GetDatarate() Datarate {
 
 	return result
 }
+func (s *RfSetup) SetDataRate(d Datarate) (err error) {
+	err = nil
+
+	switch d {
+	case RATE_1MBPS: // xx0x0xxx
+		s.flags &= 0xD7
+	case RATE_2MBPS: // xx0x1xxx
+		s.flags = (s.flags & 0xDF) | 8
+	case RATE_250KBPS: // xx1x0xxx
+		s.flags = (s.flags & 0xF7) | 32
+	default:
+		err = errors.New(fmt.Sprintf("unsupported Datarate: %v. allowed values 0 - 2", d))
+	}
+
+	return
+}
 
 /* PLL_LOCK (bit 4)
    Force PLL lock signal. Only used in test

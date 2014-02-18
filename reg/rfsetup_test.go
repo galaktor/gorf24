@@ -171,6 +171,62 @@ func TestGetDatarate_DrLowBitOne_DrHighBitOne_Returns250Kbps(t *testing.T) {
 	}
 }
 
+func TestSetDataRate_1MPS_FlipsRightBits(t *testing.T) {
+	s := NewRfSetup(util.B("11111111"))
+	expected := util.B("11010111")
+
+	s.SetDataRate(RATE_1MBPS)
+
+	actual := s.Byte()
+
+	if actual != expected {
+		t.Errorf("expected '%b' but found '%b' with rfsetup '%v'", expected, actual, s)
+	}	
+}
+
+func TestSetDataRate_2MPS_FlipsRightBits(t *testing.T) {
+	s := NewRfSetup(util.B("00000000"))
+	expected := util.B("00001000")
+
+	s.SetDataRate(RATE_2MBPS)
+
+	actual := s.Byte()
+
+	if actual != expected {
+		t.Errorf("expected '%b' but found '%b' with rfsetup '%v'", expected, actual, s)
+	}	
+}
+
+func TestSetDataRate_UnknownRate_ReturnsError(t *testing.T) {
+	s := NewRfSetup(0)
+	expected := "unsupported Datarate: 4. allowed values 0 - 2"
+
+	err := s.SetDataRate(Datarate(4))
+	
+	if err == nil {
+		t.Errorf("expected error but found nil")
+		t.FailNow()
+	}
+
+	actual := err.Error()
+	if actual != expected {
+		t.Errorf("expected '%v' but found '%v' with rfsetup '%v'", expected, actual, s)
+	}
+}
+
+func TestSetDataRate_250KBPS_FlipsRightBits(t *testing.T) {
+	s := NewRfSetup(util.B("00000000"))
+	expected := util.B("00100000")
+
+	s.SetDataRate(RATE_250KBPS)
+
+	actual := s.Byte()
+
+	if actual != expected {
+		t.Errorf("expected '%b' but found '%b' with rfsetup '%v'", expected, actual, s)
+	}	
+}
+
 func TestIsPllLockEnabled_Zero_ReturnsFalse(t *testing.T) {
 	s := NewRfSetup(util.B("11101111"))
 	expected := false
