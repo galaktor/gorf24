@@ -13,6 +13,6 @@ import (
    Set RX_ADDR_P0 equal to this address to handle
    automatic acknowledge if this is a PTX device with
    Enhanced ShockBurstTM enabled. */
-func NewTxAddress(flags xaddr.A) *xaddr.Full {
+func New(flags xaddr.A) *xaddr.Full {
 	return xaddr.NewFull(addr.TX_ADDR, flags)
 }
