@@ -12,18 +12,18 @@ import (
 /* DYNPD
    Enable dynamic payload length
    bits 7:6 reserved */
-type DynamicPayload struct {
+type DP struct {
 	reg.R
 }
 
-func NewDynamicPayload(flags byte) *DynamicPayload {
-	return &DynamicPayload{reg.New(addr.DYNPD, flags)}
+func New(flags byte) *DP {
+	return &DP{reg.New(addr.DYNPD, flags)}
 }
 
 /* DPL_Px
    Enable dynamic payload length data pipe 'p'.
    (Requires EN_DPL and ENAA_Px) */
-func (d *DynamicPayload) IsEnabled(p pipe.P) (enabled bool) {
+func (d *DP) IsEnabled(p pipe.P) (enabled bool) {
 	switch p {
 	case pipe.P0:
 		enabled = d.Byte()&0x01 == 0x01
@@ -41,14 +41,14 @@ func (d *DynamicPayload) IsEnabled(p pipe.P) (enabled bool) {
 
 	return
 }
-func (d *DynamicPayload) Set(p pipe.P, enabled bool) error {
+func (d *DP) Set(p pipe.P, enabled bool) error {
 	if enabled {
 		return d.enable(p)
 	} else {
 		return d.disable(p)
 	}
 }
-func (d *DynamicPayload) enable(p pipe.P) (err error) {
+func (d *DP) enable(p pipe.P) (err error) {
 	err = nil
 
 	switch p {
@@ -70,7 +70,7 @@ func (d *DynamicPayload) enable(p pipe.P) (err error) {
 
 	return
 }
-func (d *DynamicPayload) disable(p pipe.P) (err error) {
+func (d *DP) disable(p pipe.P) (err error) {
 	err = nil
 
 	switch p {
