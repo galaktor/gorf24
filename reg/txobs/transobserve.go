@@ -1,17 +1,18 @@
-package reg
+package txobs
 
 import (
+	"github.com/galaktor/gorf24/reg"
 	"github.com/galaktor/gorf24/reg/addr"
 )
 
 /* OBSERVE_TX
    Transmit observe register */
 type TransObserve struct {
-	R
+	reg.R
 }
 
 func NewTransObserve(flags byte) *TransObserve {
-	return &TransObserve{R{a: addr.OBSERVE_TX, flags: flags}}
+	return &TransObserve{reg.New(addr.OBSERVE_TX, flags)}
 }
 
 /* ARC_CNT (bits 3:0)
@@ -19,7 +20,7 @@ func NewTransObserve(flags byte) *TransObserve {
    when transmission of a new packet starts. */
 func (o *TransObserve) RetransmittedPacketCount() uint8 {
 	// mask out 4 MSbits
-	return o.flags & 0x0F
+	return o.Byte() & 0x0F
 }
 
 /* PLOS_CNT (bits 7:4)
@@ -28,5 +29,5 @@ func (o *TransObserve) RetransmittedPacketCount() uint8 {
    The counter is reset by writing to RF_CH. */
 func (o *TransObserve) LostPacketCount() uint8 {
 	// dump 4 LSbits
-	return (o.flags & 0xF0) >> 4
+	return (o.Byte() & 0xF0) >> 4
 }
