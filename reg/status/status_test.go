@@ -8,8 +8,8 @@ import (
 	"github.com/galaktor/gorf24/reg/addr"
 )
 
-func TestNewStatus_RegisterAddress_IsSTATUS(t *testing.T) {
-	s := NewStatus(0)
+func TestNew_RegisterAddress_IsSTATUS(t *testing.T) {
+	s := New(0)
 	expected := addr.STATUS
 
 	actual := s.Address()
@@ -20,10 +20,10 @@ func TestNewStatus_RegisterAddress_IsSTATUS(t *testing.T) {
 	
 }
 
-func TestNewStatus_ReservedBitOne_StoresZero(t *testing.T) {
+func TestNew_ReservedBitOne_StoresZero(t *testing.T) {
 	expected := util.B("01111111")
 
-	s := NewStatus(util.B("11111111"))
+	s := New(util.B("11111111"))
 
 	actual := s.Byte()
 	if actual != expected {
@@ -32,7 +32,7 @@ func TestNewStatus_ReservedBitOne_StoresZero(t *testing.T) {
 }
 
 func TestTxFull_RelevantBitZero_ReturnsFalse(t *testing.T) {
-	s := NewStatus(util.B("11111110"))
+	s := New(util.B("11111110"))
 	expected := false
 
 	result := s.TxFull()
@@ -43,7 +43,7 @@ func TestTxFull_RelevantBitZero_ReturnsFalse(t *testing.T) {
 }
 
 func TestTxFull_RelevantBitsOne_ReturnsTrue(t *testing.T) {
-	s := NewStatus(util.B("00000001"))
+	s := New(util.B("00000001"))
 	expected := true
 
 	result := s.TxFull()
@@ -54,7 +54,7 @@ func TestTxFull_RelevantBitsOne_ReturnsTrue(t *testing.T) {
 }
 
 func TestRxPipeNumber_RelevantBitsZero_ReturnsP0(t *testing.T) {
-	s := NewStatus(util.B("11110001"))
+	s := New(util.B("11110001"))
 	expected := pipe.P0
 
 	result,err := s.RxPipeNumber()
@@ -69,7 +69,7 @@ func TestRxPipeNumber_RelevantBitsZero_ReturnsP0(t *testing.T) {
 }
 
 func TestRxPipeNumber_RelevantBitsFive_ReturnsP5(t *testing.T) {
-	s := NewStatus(util.B("00001010"))
+	s := New(util.B("00001010"))
 	expected := pipe.P5
 	
 	result,err := s.RxPipeNumber()
@@ -84,7 +84,7 @@ func TestRxPipeNumber_RelevantBitsFive_ReturnsP5(t *testing.T) {
 }
 
 func TestRxPipeNumber_RelevantBitsSix_ReturnsError(t *testing.T) {
-	s := NewStatus(util.B("00001100"))
+	s := New(util.B("00001100"))
 	expected := "Invalid pipe number: 6"
 	
 	_,err := s.RxPipeNumber()
@@ -95,7 +95,7 @@ func TestRxPipeNumber_RelevantBitsSix_ReturnsError(t *testing.T) {
 }
 
 func TestRxPipeNumber_RelevantBitsSeven_ReturnsError(t *testing.T) {
-	s := NewStatus(util.B("00001110"))
+	s := New(util.B("00001110"))
 	expected := "Rx FIFO is empty."
 	
 	_,err := s.RxPipeNumber()
@@ -106,7 +106,7 @@ func TestRxPipeNumber_RelevantBitsSeven_ReturnsError(t *testing.T) {
 }
 
 func TestRxFifoEmpty_RelevantBitsSix_ReturnsFalse(t *testing.T) {
-	s := NewStatus(util.B("00001100"))
+	s := New(util.B("00001100"))
 	expected := false
 
 	result := s.RxFifoEmpty()
@@ -117,7 +117,7 @@ func TestRxFifoEmpty_RelevantBitsSix_ReturnsFalse(t *testing.T) {
 }
 
 func TestRxFifoEmpty_RelevantBitsSeven_ReturnsFalse(t *testing.T) {
-	s := NewStatus(util.B("00001110"))
+	s := New(util.B("00001110"))
 	expected := true
 
 	result := s.RxFifoEmpty()
@@ -128,7 +128,7 @@ func TestRxFifoEmpty_RelevantBitsSeven_ReturnsFalse(t *testing.T) {
 }
 
 func TestMaxTxRetransmits_RelevantBitZero_ReturnsFalse(t *testing.T) {
-	s := NewStatus(util.B("11110111"))
+	s := New(util.B("11110111"))
 	expected := false
 
 	result := s.MaxTxRetransmits()
@@ -139,7 +139,7 @@ func TestMaxTxRetransmits_RelevantBitZero_ReturnsFalse(t *testing.T) {
 }
 
 func TestMaxTxRetransmits_RelevantBitOne_ReturnsTrue(t *testing.T) {
-	s := NewStatus(util.B("00001000"))
+	s := New(util.B("00001000"))
 	expected := true
 
 	result := s.MaxTxRetransmits()
@@ -150,7 +150,7 @@ func TestMaxTxRetransmits_RelevantBitOne_ReturnsTrue(t *testing.T) {
 }
 
 func TestClearMaxTxRetransmits_Zero_SetsBitToOne(t *testing.T) {
-	s := NewStatus(util.B("00000000"))
+	s := New(util.B("00000000"))
 	expected := util.B("00001000")
 
 	s.ClearMaxTxRetransmits()
@@ -162,7 +162,7 @@ func TestClearMaxTxRetransmits_Zero_SetsBitToOne(t *testing.T) {
 }
 
 func TestTxDataSent_RelevantBitZero_ReturnsFalse(t *testing.T) {
-	s := NewStatus(util.B("11101111"))
+	s := New(util.B("11101111"))
 	expected := false
 
 	result := s.TxDataSent()
@@ -173,7 +173,7 @@ func TestTxDataSent_RelevantBitZero_ReturnsFalse(t *testing.T) {
 }
 
 func TestTxDataSent_RelevantBitOne_ReturnsTrue(t *testing.T) {
-	s := NewStatus(util.B("00010000"))
+	s := New(util.B("00010000"))
 	expected := true
 
 	result := s.TxDataSent()
@@ -184,7 +184,7 @@ func TestTxDataSent_RelevantBitOne_ReturnsTrue(t *testing.T) {
 }
 
 func TestClearTxDataSent_Zero_SetsBitToOne(t *testing.T) {
-	s := NewStatus(util.B("00000000"))
+	s := New(util.B("00000000"))
 	expected := util.B("00010000")
 
 	s.ClearTxDataSent()
@@ -196,7 +196,7 @@ func TestClearTxDataSent_Zero_SetsBitToOne(t *testing.T) {
 }
 
 func TestRxDataReady_RelevantBitZero_ReturnsFalse(t *testing.T) {
-	s := NewStatus(util.B("11011111"))
+	s := New(util.B("11011111"))
 	expected := false
 
 	result := s.RxDataReady()
@@ -207,7 +207,7 @@ func TestRxDataReady_RelevantBitZero_ReturnsFalse(t *testing.T) {
 }
 
 func TestRxDataReady_RelevantBitOne_ReturnsTrue(t *testing.T) {
-	s := NewStatus(util.B("00100000"))
+	s := New(util.B("00100000"))
 	expected := true
 
 	result := s.RxDataReady()
@@ -218,7 +218,7 @@ func TestRxDataReady_RelevantBitOne_ReturnsTrue(t *testing.T) {
 }
 
 func TestClearRxDataReady_Zero_SetsBitToOne(t *testing.T) {
-	s := NewStatus(util.B("00000000"))
+	s := New(util.B("00000000"))
 	expected := util.B("00100000")
 
 	s.ClearRxDataReady()

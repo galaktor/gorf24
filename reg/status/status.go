@@ -14,15 +14,15 @@ import (
    word applied on the MOSI pin, the STATUS register
    is shifted serially out on the MISO pin)
    bit 7 reserved */
-type Status struct {
+type S struct {
 	reg.R
 }
 
-const res_mask = 0x7F
+const RES_MASK = 0x7F
 
-func NewStatus(flags byte) *Status {
-	masked := flags & res_mask // reset reserved bits
-	return &Status{reg.New(addr.STATUS, masked)}
+func New(flags byte) *S {
+	masked := flags & RES_MASK // reset reserved bits
+	return &S{reg.New(addr.STATUS, masked)}
 }
 
 /* TX_FULL (bit 0)
@@ -32,7 +32,7 @@ func NewStatus(flags byte) *Status {
 
    tempted to return FifoUsage here like for FIFO_STATUS
    but the data here really *is* boolean */
-func (s *Status) TxFull() bool {
+func (s *S) TxFull() bool {
 	return (s.Byte() & 1) == 1
 }
 
@@ -42,7 +42,7 @@ func (s *Status) TxFull() bool {
    000-101: Data Pipe Number
    110: Not Used
    111: RX FIFO Empty */
-func (s *Status) RxPipeNumber() (pipe.P, error) {
+func (s *S) RxPipeNumber() (pipe.P, error) {
 	val := (s.Byte() >> 1) & 7
 
 	switch {
@@ -58,7 +58,7 @@ func (s *Status) RxPipeNumber() (pipe.P, error) {
 /* when RX_P_NO bits are '111'
    tempted to return FifoUsage here like for FIFO_STATUS
    but the data here really *is* boolean */
-func (s *Status) RxFifoEmpty() bool {
+func (s *S) RxFifoEmpty() bool {
 	p, _ := s.RxPipeNumber()
 	return p == 7
 }
@@ -68,10 +68,10 @@ func (s *Status) RxFifoEmpty() bool {
    Maximum number of TX retransmits interrupt
    Write 1 to clear bit. If MAX_RT is asserted it must
    be cleared to enable further communication. */
-func (s *Status) MaxTxRetransmits() bool {
+func (s *S) MaxTxRetransmits() bool {
 	return (s.Byte() & 8) == 8
 }
-func (s *Status) ClearMaxTxRetransmits() {
+func (s *S) ClearMaxTxRetransmits() {
 	s.R.Set(s.Byte() | 8)
 }
 
@@ -81,10 +81,10 @@ func (s *Status) ClearMaxTxRetransmits() {
    packet transmitted on TX. If AUTO_ACK is acti-
    vated, this bit is set high only when ACK is
    received. */
-func (s *Status) TxDataSent() bool {
+func (s *S) TxDataSent() bool {
 	return (s.Byte() & 16) == 16
 }
-func (s *Status) ClearTxDataSent() {
+func (s *S) ClearTxDataSent() {
 	s.R.Set(s.Byte() | 16)
 }
 
@@ -92,9 +92,9 @@ func (s *Status) ClearTxDataSent() {
    Active low
    Data Ready RX FIFO interrupt. Asserted when
    new data arrives RX FIFO. */
-func (s *Status) RxDataReady() bool {
+func (s *S) RxDataReady() bool {
 	return (s.Byte() & 32) == 32
 }
-func (s *Status) ClearRxDataReady() {
+func (s *S) ClearRxDataReady() {
 	s.R.Set(s.Byte() | 32)
 }
