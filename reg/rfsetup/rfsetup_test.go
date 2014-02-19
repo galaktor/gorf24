@@ -7,8 +7,8 @@ import (
 	"github.com/galaktor/gorf24/reg/addr"
 )
 
-func NewRfSetup_RegisterAddress_IsRF_SETUP(t *testing.T) {
-	s := NewRfSetup(0)
+func New_RegisterAddress_IsRF_SETUP(t *testing.T) {
+	s := New(0)
 	expected := addr.RF_SETUP
 
 	actual := s.Address()
@@ -19,7 +19,7 @@ func NewRfSetup_RegisterAddress_IsRF_SETUP(t *testing.T) {
 }
 
 func TestGetPower_Zero_ReturnsMin(t *testing.T) {
-	s := NewRfSetup(util.B("11111001"))
+	s := New(util.B("11111001"))
 	expected := PA_MIN
 	
 	actual := s.GetPowerLevel()
@@ -30,7 +30,7 @@ func TestGetPower_Zero_ReturnsMin(t *testing.T) {
 }
 
 func TestGetPower_One_ReturnsLow(t *testing.T) {
-	s := NewRfSetup(util.B("11111011"))
+	s := New(util.B("11111011"))
 	expected := PA_LOW
 	
 	actual := s.GetPowerLevel()
@@ -41,7 +41,7 @@ func TestGetPower_One_ReturnsLow(t *testing.T) {
 }
 
 func TestGetPower_Two_ReturnsMedium(t *testing.T) {
-	s := NewRfSetup(util.B("11111101"))
+	s := New(util.B("11111101"))
 	expected := PA_MEDIUM
 	
 	actual := s.GetPowerLevel()
@@ -52,7 +52,7 @@ func TestGetPower_Two_ReturnsMedium(t *testing.T) {
 }
 
 func TestGetPower_Three_ReturnsMax(t *testing.T) {
-	s := NewRfSetup(util.B("00000110"))
+	s := New(util.B("00000110"))
 	expected := PA_MAX
 	
 	actual := s.GetPowerLevel()
@@ -63,7 +63,7 @@ func TestGetPower_Three_ReturnsMax(t *testing.T) {
 }
 
 func TestSetPower_Min_FlipsRightBits(t *testing.T) {
-	s := NewRfSetup(util.B("11111111"))
+	s := New(util.B("11111111"))
 	expected := util.B("11111001")
 	
 	s.SetPowerLevel(PA_MIN)
@@ -75,7 +75,7 @@ func TestSetPower_Min_FlipsRightBits(t *testing.T) {
 }
 
 func TestSetPower_Low_FlipsRightBits(t *testing.T) {
-	s := NewRfSetup(util.B("11111111"))
+	s := New(util.B("11111111"))
 	expected := util.B("11111011")
 	
 	s.SetPowerLevel(PA_LOW)
@@ -87,7 +87,7 @@ func TestSetPower_Low_FlipsRightBits(t *testing.T) {
 }
 
 func TestSetPower_Medium_FlipsRightBits(t *testing.T) {
-	s := NewRfSetup(util.B("11111111"))
+	s := New(util.B("11111111"))
 	expected := util.B("11111101")
 	
 	s.SetPowerLevel(PA_MEDIUM)
@@ -99,7 +99,7 @@ func TestSetPower_Medium_FlipsRightBits(t *testing.T) {
 }
 
 func TestSetPower_Max_FlipsRightBits(t *testing.T) {
-	s := NewRfSetup(util.B("11111111"))
+	s := New(util.B("11111111"))
 	expected := util.B("11111111")
 	
 	s.SetPowerLevel(PA_MAX)
@@ -111,7 +111,7 @@ func TestSetPower_Max_FlipsRightBits(t *testing.T) {
 }
 
 func TestSetPower_GreaterThanThree_ReturnsError(t *testing.T) {
-	s := NewRfSetup(util.B("11111111"))
+	s := New(util.B("11111111"))
 	expected := "Value out of legal range: 4. Allowed value from 0 -3."
 	
 	err := s.SetPowerLevel(PowerLevel(4))
@@ -128,7 +128,7 @@ func TestSetPower_GreaterThanThree_ReturnsError(t *testing.T) {
 }
 
 func TestGetDatarate_DrLowBitZero_DrHighBitZero_Returns1Mbps(t *testing.T) {
-	s := NewRfSetup(util.B("11010111"))
+	s := New(util.B("11010111"))
 	expected := RATE_1MBPS
 	
 	actual := s.GetDatarate()
@@ -139,7 +139,7 @@ func TestGetDatarate_DrLowBitZero_DrHighBitZero_Returns1Mbps(t *testing.T) {
 }
 
 func TestGetDatarate_DrLowBitZero_DrHighBitOne_Returns2Mbps(t *testing.T) {
-	s := NewRfSetup(util.B("11011111"))
+	s := New(util.B("11011111"))
 	expected := RATE_2MBPS
 	
 	actual := s.GetDatarate()
@@ -150,7 +150,7 @@ func TestGetDatarate_DrLowBitZero_DrHighBitOne_Returns2Mbps(t *testing.T) {
 }
 
 func TestGetDatarate_DrLowBitOne_DrHighBitZero_Returns250Kbps(t *testing.T) {
-	s := NewRfSetup(util.B("11110111"))
+	s := New(util.B("11110111"))
 	expected := RATE_250KBPS
 	
 	actual := s.GetDatarate()
@@ -161,7 +161,7 @@ func TestGetDatarate_DrLowBitOne_DrHighBitZero_Returns250Kbps(t *testing.T) {
 }
 
 func TestGetDatarate_DrLowBitOne_DrHighBitOne_Returns250Kbps(t *testing.T) {
-	s := NewRfSetup(util.B("11111111"))
+	s := New(util.B("11111111"))
 	expected := RATE_250KBPS
 	
 	actual := s.GetDatarate()
@@ -172,7 +172,7 @@ func TestGetDatarate_DrLowBitOne_DrHighBitOne_Returns250Kbps(t *testing.T) {
 }
 
 func TestSetDataRate_1MPS_FlipsRightBits(t *testing.T) {
-	s := NewRfSetup(util.B("11111111"))
+	s := New(util.B("11111111"))
 	expected := util.B("11010111")
 
 	s.SetDataRate(RATE_1MBPS)
@@ -185,7 +185,7 @@ func TestSetDataRate_1MPS_FlipsRightBits(t *testing.T) {
 }
 
 func TestSetDataRate_2MPS_FlipsRightBits(t *testing.T) {
-	s := NewRfSetup(util.B("00000000"))
+	s := New(util.B("00000000"))
 	expected := util.B("00001000")
 
 	s.SetDataRate(RATE_2MBPS)
@@ -198,7 +198,7 @@ func TestSetDataRate_2MPS_FlipsRightBits(t *testing.T) {
 }
 
 func TestSetDataRate_UnknownRate_ReturnsError(t *testing.T) {
-	s := NewRfSetup(0)
+	s := New(0)
 	expected := "unsupported Datarate: 4. allowed values 0 - 2"
 
 	err := s.SetDataRate(Datarate(4))
@@ -215,7 +215,7 @@ func TestSetDataRate_UnknownRate_ReturnsError(t *testing.T) {
 }
 
 func TestSetDataRate_250KBPS_FlipsRightBits(t *testing.T) {
-	s := NewRfSetup(util.B("00000000"))
+	s := New(util.B("00000000"))
 	expected := util.B("00100000")
 
 	s.SetDataRate(RATE_250KBPS)
@@ -228,7 +228,7 @@ func TestSetDataRate_250KBPS_FlipsRightBits(t *testing.T) {
 }
 
 func TestIsPllLockEnabled_Zero_ReturnsFalse(t *testing.T) {
-	s := NewRfSetup(util.B("11101111"))
+	s := New(util.B("11101111"))
 	expected := false
 	
 	actual := s.IsPllLockEnabled()
@@ -239,7 +239,7 @@ func TestIsPllLockEnabled_Zero_ReturnsFalse(t *testing.T) {
 }
 
 func TestIsPllLockEnabled_One_ReturnsTrue(t *testing.T) {
-	s := NewRfSetup(util.B("00010000"))
+	s := New(util.B("00010000"))
 	expected := true
 	
 	actual := s.IsPllLockEnabled()
@@ -250,7 +250,7 @@ func TestIsPllLockEnabled_One_ReturnsTrue(t *testing.T) {
 }
 
 func TestSetPllLock_Enabled_BitIsOne(t *testing.T) {
-	s := NewRfSetup(util.B("00000000"))
+	s := New(util.B("00000000"))
 	expected := util.B("00010000")
 	
 	s.SetPllLock(true)
@@ -262,7 +262,7 @@ func TestSetPllLock_Enabled_BitIsOne(t *testing.T) {
 }
 
 func TestSetPllLock_Disabled_BitIsOne(t *testing.T) {
-	s := NewRfSetup(util.B("11111111"))
+	s := New(util.B("11111111"))
 	expected := util.B("11101111")
 	
 	s.SetPllLock(false)
@@ -274,7 +274,7 @@ func TestSetPllLock_Disabled_BitIsOne(t *testing.T) {
 }
 
 func TestIsContinuousCarrierTransmitEnabled_Zero_ReturnsFalse(t *testing.T) {
-	s := NewRfSetup(util.B("01111111"))
+	s := New(util.B("01111111"))
 	expected := false
 	
 	actual := s.IsContinuousCarrierTransmitEnabled()
@@ -285,7 +285,7 @@ func TestIsContinuousCarrierTransmitEnabled_Zero_ReturnsFalse(t *testing.T) {
 }
 
 func TestIsContinuousCarrierTransmitEnabled_One_ReturnsTrue(t *testing.T) {
-	s := NewRfSetup(util.B("10000000"))
+	s := New(util.B("10000000"))
 	expected := true
 	
 	actual := s.IsContinuousCarrierTransmitEnabled()
@@ -296,7 +296,7 @@ func TestIsContinuousCarrierTransmitEnabled_One_ReturnsTrue(t *testing.T) {
 }
 
 func TestSetContinuousCarrierTransmit_Enabled_FlipsRightBit(t *testing.T) {
-	s := NewRfSetup(util.B("00000000"))
+	s := New(util.B("00000000"))
 	expected := util.B("10000000")
 	
 	s.SetContinuousCarrierTransmit(true)
@@ -308,7 +308,7 @@ func TestSetContinuousCarrierTransmit_Enabled_FlipsRightBit(t *testing.T) {
 }
 
 func TestSetContinuousCarrierTransmit_Disabled_FlipsRightBit(t *testing.T) {
-	s := NewRfSetup(util.B("10000000"))
+	s := New(util.B("10000000"))
 	expected := util.B("00000000")
 	
 	s.SetContinuousCarrierTransmit(false)

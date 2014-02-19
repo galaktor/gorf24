@@ -30,12 +30,12 @@ const (
    bit 6 reserved
    bit 4 only used in test (but exposed here anyway)
    bit 0 obsolete */
-type RfSetup struct {
+type R struct {
 	reg.R
 }
 
-func NewRfSetup(flags byte) *RfSetup {
-	return &RfSetup{reg.New(addr.RF_SETUP, flags)}
+func New(flags byte) *R {
+	return &R{reg.New(addr.RF_SETUP, flags)}
 }
 
 /* RF_PWR (bits 2:1)
@@ -44,10 +44,10 @@ func NewRfSetup(flags byte) *RfSetup {
    'xxxxx01x' – -12dBm
    'xxxxx10x' – -6dBm
    'xxxxx11x' –  0dBm */
-func (s *RfSetup) GetPowerLevel() PowerLevel {
+func (s *R) GetPowerLevel() PowerLevel {
 	return PowerLevel((s.Byte() & 0x6) >> 1)
 }
-func (s *RfSetup) SetPowerLevel(p PowerLevel) error {
+func (s *R) SetPowerLevel(p PowerLevel) error {
 	if p > 3 {
 		return errors.New(fmt.Sprintf("Value out of legal range: %v. Allowed value from 0 -3.", p))
 	}
@@ -69,7 +69,7 @@ func (s *RfSetup) SetPowerLevel(p PowerLevel) error {
    RF_DR_LOW  (bit 5)
    Set RF Data Rate to 250kbps. See RF_DR_HIGH
    for encoding. */
-func (s *RfSetup) GetDatarate() Datarate {
+func (s *R) GetDatarate() Datarate {
 	var result Datarate
 
 	switch val := s.Byte() & 0x28; val {
@@ -85,7 +85,7 @@ func (s *RfSetup) GetDatarate() Datarate {
 
 	return result
 }
-func (s *RfSetup) SetDataRate(d Datarate) (err error) {
+func (s *R) SetDataRate(d Datarate) (err error) {
 	err = nil
 
 	switch d {
@@ -108,10 +108,10 @@ func (s *RfSetup) SetDataRate(d Datarate) (err error) {
    spec not explicit on this, so I'm assuming:
    xxx0xxxx - disabled
    xxx1xxxx - enabled */
-func (s *RfSetup) IsPllLockEnabled() bool {
+func (s *R) IsPllLockEnabled() bool {
 	return s.Byte()&16 == 16
 }
-func (s *RfSetup) SetPllLock(enabled bool) {
+func (s *R) SetPllLock(enabled bool) {
 	if enabled {
 		s.R.Set(s.Byte() | 0x10)
 	} else {
@@ -121,10 +121,10 @@ func (s *RfSetup) SetPllLock(enabled bool) {
 
 /* CONT_WAVE
    Enables continuous carrier transmit when high. */
-func (s *RfSetup) IsContinuousCarrierTransmitEnabled() bool {
+func (s *R) IsContinuousCarrierTransmitEnabled() bool {
 	return s.Byte()&0x80 == 0x80 // 1xxxxxxx
 }
-func (s *RfSetup) SetContinuousCarrierTransmit(enabled bool) {
+func (s *R) SetContinuousCarrierTransmit(enabled bool) {
 	if enabled {
 		s.R.Set(s.Byte() | 0x80) // 1xxxxxxx
 	} else {
