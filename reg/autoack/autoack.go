@@ -2,6 +2,7 @@ package reg
 
 import (
 	"github.com/galaktor/gorf24/pipe"
+	"github.com/galaktor/gorf24/reg"
 	"github.com/galaktor/gorf24/reg/addr"
 )
 
@@ -10,17 +11,17 @@ import (
    this functionality to be compatible with nRF2401
    bits 7:6 reserved */
 type AutoAck struct {
-	R
+	reg.R
 }
 
 func NewAutoAck(flags byte) *AutoAck {
-	return &AutoAck{R{a: addr.EN_AA, flags: flags}}
+	return &AutoAck{reg.New(addr.EN_AA, flags)}
 }
 
 // TODO: if pipe const value was byte, could just do
 // "return a.flags & p == p"
 
-/* ENAA_Px 
+/* ENAA_Px
    Enable auto acknowledgement data pipe 'p' */
 func (a *AutoAck) Set(p pipe.P, enabled bool) {
 	if enabled {
@@ -32,33 +33,33 @@ func (a *AutoAck) Set(p pipe.P, enabled bool) {
 func (a *AutoAck) enable(p pipe.P) {
 	switch p {
 	case pipe.P0:
-		a.flags |= 1
+		a.R.Set(a.Byte() | 1)
 	case pipe.P1:
-		a.flags |= 2
+		a.R.Set(a.Byte() | 2)
 	case pipe.P2:
-		a.flags |= 4
+		a.R.Set(a.Byte() | 4)
 	case pipe.P3:
-		a.flags |= 8
+		a.R.Set(a.Byte() | 8)
 	case pipe.P4:
-		a.flags |= 16
+		a.R.Set(a.Byte() | 16)
 	case pipe.P5:
-		a.flags |= 32
+		a.R.Set(a.Byte() | 32)
 	}
 }
 func (a *AutoAck) disable(p pipe.P) {
 	switch p {
 	case pipe.P0:
-		a.flags &= 0xFE
+		a.R.Set(a.Byte() & 0xFE)
 	case pipe.P1:
-		a.flags &= 0xFD
+		a.R.Set(a.Byte() & 0xFD)
 	case pipe.P2:
-		a.flags &= 0xFB
+		a.R.Set(a.Byte() & 0xFB)
 	case pipe.P3:
-		a.flags &= 0xF7
+		a.R.Set(a.Byte() & 0xF7)
 	case pipe.P4:
-		a.flags &= 0xEF
+		a.R.Set(a.Byte() & 0xEF)
 	case pipe.P5:
-		a.flags &= 0xDF
+		a.R.Set(a.Byte() & 0xDF)
 	}
 }
 func (a *AutoAck) IsEnabled(p pipe.P) bool {
@@ -66,17 +67,17 @@ func (a *AutoAck) IsEnabled(p pipe.P) bool {
 
 	switch p {
 	case pipe.P0:
-		result = a.flags&1 == 1
+		result = a.Byte()&1 == 1
 	case pipe.P1:
-		result = a.flags&2 == 2
+		result = a.Byte()&2 == 2
 	case pipe.P2:
-		result = a.flags&4 == 4
+		result = a.Byte()&4 == 4
 	case pipe.P3:
-		result = a.flags&8 == 8
+		result = a.Byte()&8 == 8
 	case pipe.P4:
-		result = a.flags&16 == 16
+		result = a.Byte()&16 == 16
 	case pipe.P5:
-		result = a.flags&32 == 32
+		result = a.Byte()&32 == 32
 	}
 
 	return result
