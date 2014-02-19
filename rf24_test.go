@@ -1,3 +1,7 @@
+/*  Copyright 2013, Raphael Estrada
+    Author email:  <galaktor@gmx.de>
+    Project home:  <https://github.com/galaktor/gorf24>
+    Licensed under The GPL v3 License (see README and LICENSE files) */
 package gorf24
 
 import (
@@ -9,7 +13,7 @@ import (
 func TestB_ZeroByte_ReturnsZero(t *testing.T) {
 	bits := "00000000"
 	expected := byte(0)
-	
+
 	result := util.B(bits)
 
 	if result != expected {
@@ -20,7 +24,7 @@ func TestB_ZeroByte_ReturnsZero(t *testing.T) {
 func TestB_AllOnes_Returns255(t *testing.T) {
 	bits := "11111111"
 	expected := byte(255)
-	
+
 	result := util.B(bits)
 
 	if result != expected {
@@ -31,7 +35,7 @@ func TestB_AllOnes_Returns255(t *testing.T) {
 func TestB_OverflowWithNineBits_AllOnes_Returns255(t *testing.T) {
 	bits := "111111111"
 	expected := byte(255)
-	
+
 	result := util.B(bits)
 
 	if result != expected {
@@ -42,7 +46,7 @@ func TestB_OverflowWithNineBits_AllOnes_Returns255(t *testing.T) {
 func TestB_FortyTwo_ReturnsFortyTwo(t *testing.T) {
 	bits := "101010"
 	expected := byte(42)
-	
+
 	result := util.B(bits)
 
 	if result != expected {
