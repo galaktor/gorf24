@@ -7,8 +7,8 @@ import (
 	"github.com/galaktor/gorf24/util"
 )
 
-func TestNewRPD_RegisterAddress_IsRPD(t *testing.T) {
-	r := NewRPD(0)
+func TestNew_RegisterAddress_IsRPD(t *testing.T) {
+	r := New(0)
 	expected := addr.RPD
 
 	actual := r.Address()
@@ -19,7 +19,7 @@ func TestNewRPD_RegisterAddress_IsRPD(t *testing.T) {
 }
 
 func TestTriggered_BitZero_ReturnsFalse(t *testing.T) {
-	r := NewRPD(util.B("11111110"))
+	r := New(util.B("11111110"))
 	expected := false
 
 	actual := r.Triggered()
@@ -30,7 +30,7 @@ func TestTriggered_BitZero_ReturnsFalse(t *testing.T) {
 }
 
 func TestTriggered_BitOne_ReturnsTrue(t *testing.T) {
-	r := NewRPD(util.B("00000001"))
+	r := New(util.B("00000001"))
 	expected := true
 
 	actual := r.Triggered()

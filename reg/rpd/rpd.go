@@ -11,18 +11,18 @@ import (
    different in nRF24L01+ due to the different input
    power level threshold for this bit.
    bits 7:1 reserved */
-type ReceivedPowerDetector struct {
+type R struct {
 	reg.R
 }
 
-func NewRPD(flags byte) *ReceivedPowerDetector {
-	return &ReceivedPowerDetector{reg.New(addr.RPD, flags)}
+func New(flags byte) *R {
+	return &R{reg.New(addr.RPD, flags)}
 }
 
 /* RPD (bit 0)
    triggers at received power levels above -64 dBm that
    are present in the RF channel you receive on. If the
    received power is less than -64 dBm, [sic] RDP = 0.*/
-func (r *ReceivedPowerDetector) Triggered() bool {
+func (r *R) Triggered() bool {
 	return r.Byte()&1 == 1
 }
