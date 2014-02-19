@@ -1,4 +1,4 @@
-package addrwd
+package addrw
 
 import (
 	"testing"
@@ -7,10 +7,10 @@ import (
 )
 
 func TestSet_3Bytes_FlipsRightBit(t *testing.T) {
-	w := NewAddrWidths(util.B("00000000"))
+	w := New(util.B("00000000"))
 	expected := util.B("00000001")
 
-	w.Set(AW_3BYTES)
+	w.Set(BYTES_3)
 
 	actual := w.Byte()
 	if actual != expected {
@@ -19,10 +19,10 @@ func TestSet_3Bytes_FlipsRightBit(t *testing.T) {
 }
 
 func TestSet_4Bytes_FlipsRightBit(t *testing.T) {
-	w := NewAddrWidths(util.B("00000000"))
+	w := New(util.B("00000000"))
 	expected := util.B("00000010")
 
-	w.Set(AW_4BYTES)
+	w.Set(BYTES_4)
 
 	actual := w.Byte()
 	if actual != expected {
@@ -31,10 +31,10 @@ func TestSet_4Bytes_FlipsRightBit(t *testing.T) {
 }
 
 func TestSet_5Bytes_FlipsRightBit(t *testing.T) {
-	w := NewAddrWidths(util.B("00000000"))
+	w := New(util.B("00000000"))
 	expected := util.B("00000011")
 
-	w.Set(AW_5BYTES)
+	w.Set(BYTES_5)
 
 	actual := w.Byte()
 	if actual != expected {
@@ -43,10 +43,10 @@ func TestSet_5Bytes_FlipsRightBit(t *testing.T) {
 }
 
 func TestSet_GreaterThree_ReturnsError(t *testing.T) {
-	w := NewAddrWidths(util.B("00000000"))
+	w := New(util.B("00000000"))
 	expected := "value outside of legal range: 4. only values 1 - 3 allowed."
 	
-	err := w.Set(AddrWidth(4))
+	err := w.Set(Width(4))
 
 	if err == nil {
 		t.Error("expected error but found nil")
@@ -60,10 +60,10 @@ func TestSet_GreaterThree_ReturnsError(t *testing.T) {
 }
 
 func TestSet_Zero_ReturnsError(t *testing.T) {
-	w := NewAddrWidths(util.B("00000000"))
+	w := New(util.B("00000000"))
 	expected := "value outside of legal range: 0. only values 1 - 3 allowed."
 	
-	err := w.Set(AddrWidth(0))
+	err := w.Set(Width(0))
 
 	if err == nil {
 		t.Error("expected error but found nil")
@@ -77,8 +77,8 @@ func TestSet_Zero_ReturnsError(t *testing.T) {
 }
 
 func TestGet_ValueOne_Returns3Bytes(t *testing.T) {
-	w := NewAddrWidths(util.B("00000001"))
-	expected := AW_3BYTES
+	w := New(util.B("00000001"))
+	expected := BYTES_3
 
 	actual := w.Get()
 
@@ -88,8 +88,8 @@ func TestGet_ValueOne_Returns3Bytes(t *testing.T) {
 }
 
 func TestGet_ValueTwo_Returns4Bytes(t *testing.T) {
-	w := NewAddrWidths(util.B("00000010"))
-	expected := AW_4BYTES
+	w := New(util.B("00000010"))
+	expected := BYTES_4
 
 	actual := w.Get()
 
@@ -99,8 +99,8 @@ func TestGet_ValueTwo_Returns4Bytes(t *testing.T) {
 }
 
 func TestGet_ValueThree_Returns5Bytes(t *testing.T) {
-	w := NewAddrWidths(util.B("00000011"))
-	expected := AW_5BYTES
+	w := New(util.B("00000011"))
+	expected := BYTES_5
 
 	actual := w.Get()
 

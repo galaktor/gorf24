@@ -1,4 +1,4 @@
-package addrwd
+package addrw
 
 import (
 	"errors"
@@ -8,24 +8,24 @@ import (
 	"github.com/galaktor/gorf24/reg/addr"
 )
 
-type AddrWidth byte
+type Width byte
 
 const (
-	AW_3BYTES AddrWidth = 0x1
-	AW_4BYTES AddrWidth = 0x2
-	AW_5BYTES AddrWidth = 0x3
+	BYTES_3 Width = 0x1
+	BYTES_4 Width = 0x2
+	BYTES_5 Width = 0x3
 )
 
 /* SETUP_AW
    Setup of Address Widths
    (common for all data pipes)
    can only use two LSBits; 7:2 must be 000000 */
-type AddrWidths struct {
+type AW struct {
 	reg.R
 }
 
-func NewAddrWidths(flags byte) *AddrWidths {
-	return &AddrWidths{reg.New(addr.SETUP_AW, flags)}
+func New(flags byte) *AW {
+	return &AW{reg.New(addr.SETUP_AW, flags)}
 }
 
 /* AW (bits 1:0)
@@ -35,7 +35,7 @@ func NewAddrWidths(flags byte) *AddrWidths {
    '10' - 4 bytes
    '11' – 5 bytes
    LSByte is used if address width is below 5 bytes */
-func (a *AddrWidths) Set(w AddrWidth) error {
+func (a *AW) Set(w Width) error {
 	if w == 0 || w&0xFC > 0 {
 		return errors.New(fmt.Sprintf("value outside of legal range: %v. only values 1 - 3 allowed.", w))
 	}
@@ -43,21 +43,6 @@ func (a *AddrWidths) Set(w AddrWidth) error {
 	a.R.Set(byte(w))
 	return nil
 }
-func (a *AddrWidths) Get() AddrWidth {
-	return AddrWidth(a.Byte())
+func (a *AW) Get() Width {
+	return Width(a.Byte())
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
