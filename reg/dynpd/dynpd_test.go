@@ -1,4 +1,4 @@
-package reg
+package dynpd
 
 import (
 	"testing"
