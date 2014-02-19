@@ -7,7 +7,7 @@ import (
 )
 
 func TestSetCount_Zero_FlipsRightBits(t *testing.T) {
-	r := NewSetupRetrans(util.B("11111111"))
+	r := New(util.B("11111111"))
 	expected := util.B("11110000")
 
 	err := r.SetCount(0)
@@ -23,7 +23,7 @@ func TestSetCount_Zero_FlipsRightBits(t *testing.T) {
 }
 
 func TestSetCount_One_FlipsRightBits(t *testing.T) {
-	r := NewSetupRetrans(util.B("11110000"))
+	r := New(util.B("11110000"))
 	expected := util.B("11110001")
 
 	err := r.SetCount(1)
@@ -39,7 +39,7 @@ func TestSetCount_One_FlipsRightBits(t *testing.T) {
 }
 
 func TestSetCount_One_ReturnsNoError(t *testing.T) {
-	r := NewSetupRetrans(util.B("11110000"))
+	r := New(util.B("11110000"))
 
 	err := r.SetCount(1)
 
@@ -49,7 +49,7 @@ func TestSetCount_One_ReturnsNoError(t *testing.T) {
 }
 
 func TestSetCount_Two_FlipsRightBits(t *testing.T) {
-	r := NewSetupRetrans(util.B("11110000"))
+	r := New(util.B("11110000"))
 	expected := util.B("11110010")
 
 	err := r.SetCount(2)
@@ -65,7 +65,7 @@ func TestSetCount_Two_FlipsRightBits(t *testing.T) {
 }
 
 func TestSetCount_Fifteen_FlipsRightBits(t *testing.T) {
-	r := NewSetupRetrans(util.B("11110000"))
+	r := New(util.B("11110000"))
 	expected := util.B("11111111")
 
 	r.SetCount(15)
@@ -77,7 +77,7 @@ func TestSetCount_Fifteen_FlipsRightBits(t *testing.T) {
 }
 
 func TestSetCount_Sixteen_ReturnsError(t *testing.T) {
-	r := NewSetupRetrans(util.B("00000000"))
+	r := New(util.B("00000000"))
 	expected := "value out of legal range: 16. Only values 0 - 15 allowed."
 	
 	err := r.SetCount(16)
@@ -94,7 +94,7 @@ func TestSetCount_Sixteen_ReturnsError(t *testing.T) {
 }
 
 func TestGetCount_Zero_ReturnsZero(t *testing.T) {
-	r := NewSetupRetrans(util.B("11110000"))
+	r := New(util.B("11110000"))
 	expected := uint8(0)
 
 	actual := r.GetCount()
@@ -105,7 +105,7 @@ func TestGetCount_Zero_ReturnsZero(t *testing.T) {
 }
 
 func TestGetCount_One_ReturnsOne(t *testing.T) {
-	r := NewSetupRetrans(util.B("11110001"))
+	r := New(util.B("11110001"))
 	expected := uint8(1)
 
 	actual := r.GetCount()
@@ -116,7 +116,7 @@ func TestGetCount_One_ReturnsOne(t *testing.T) {
 }
 
 func TestGetCount_Two_ReturnsTwo(t *testing.T) {
-	r := NewSetupRetrans(util.B("11110010"))
+	r := New(util.B("11110010"))
 	expected := uint8(2)
 
 	actual := r.GetCount()
@@ -127,7 +127,7 @@ func TestGetCount_Two_ReturnsTwo(t *testing.T) {
 }
 
 func TestGetCount_Fifteen_ReturnsFifteen(t *testing.T) {
-	r := NewSetupRetrans(util.B("11111111"))
+	r := New(util.B("11111111"))
 	expected := uint8(15)
 
 	actual := r.GetCount()
@@ -139,8 +139,8 @@ func TestGetCount_Fifteen_ReturnsFifteen(t *testing.T) {
 
 func TestGetDelay_ZeroToFifteen_ReturnsCorrectDelay(t *testing.T) {
 	for i := uint8(0); i <= 15; i++ {
-		r := NewSetupRetrans(i << 4) // iiii0000
-		expected := RetransDelay(i)
+		r := New(i << 4) // iiii0000
+		expected := Delay(i)
 
 		actual := r.GetDelay()
 
@@ -152,10 +152,10 @@ func TestGetDelay_ZeroToFifteen_ReturnsCorrectDelay(t *testing.T) {
 
 func TestSetDelay_ZeroToFifteen_FlipsRightBits(t *testing.T) {
 	for i := uint8(0); i <= 15; i++ {
-		r := NewSetupRetrans(util.B("00000000"))
+		r := New(util.B("00000000"))
 		expected := byte(i << 4)
 
-		r.SetDelay(RetransDelay(i))
+		r.SetDelay(Delay(i))
 
 		actual := r.Byte()
 		if actual != expected {

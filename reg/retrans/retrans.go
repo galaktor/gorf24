@@ -8,36 +8,36 @@ import (
 	"github.com/galaktor/gorf24/reg/addr"
 )
 
-type RetransDelay byte
+type Delay byte
 
 const (
-	u250  = RetransDelay(iota) // 0x0
-	u500                       // 0x1
-	u750                       // 0x2
-	u1000                      // 0x3
-	u1250                      // 0x4
-	u1500                      // 0x5
-	u1750                      // 0x6
-	u2000                      // 0x7
-	u2250                      // 0x8
-	u2500                      // 0x9
-	u2750                      // 0xA
-	u3000                      // 0xB
-	u3250                      // 0xC
-	u3500                      // 0xD
-	u3750                      // 0xE
-	u4000                      // 0xF
+	u250  = Delay(iota) // 0x0
+	u500                // 0x1
+	u750                // 0x2
+	u1000               // 0x3
+	u1250               // 0x4
+	u1500               // 0x5
+	u1750               // 0x6
+	u2000               // 0x7
+	u2250               // 0x8
+	u2500               // 0x9
+	u2750               // 0xA
+	u3000               // 0xB
+	u3250               // 0xC
+	u3500               // 0xD
+	u3750               // 0xE
+	u4000               // 0xF
 
 )
 
 /* SETUP_RETR
 Setup of Automatic Retransmission */
-type SetupRetrans struct {
+type R struct {
 	reg.R
 }
 
-func NewSetupRetrans(flags byte) *SetupRetrans {
-	return &SetupRetrans{reg.New(addr.SETUP_RETR, flags)}
+func New(flags byte) *R {
+	return &R{reg.New(addr.SETUP_RETR, flags)}
 }
 
 /* ARC (bits 3:0)
@@ -46,7 +46,7 @@ func NewSetupRetrans(flags byte) *SetupRetrans {
    ‘xxxx0001’ – Up to 1 Re-Transmit on fail of AA
    ......
    ‘xxxx1111’ – Up to 15 Re-Transmit on fail of AA */
-func (r *SetupRetrans) SetCount(c uint8) error {
+func (r *R) SetCount(c uint8) error {
 	if c > 15 {
 		return errors.New(fmt.Sprintf("value out of legal range: %v. Only values 0 - 15 allowed.", c))
 	}
@@ -54,7 +54,7 @@ func (r *SetupRetrans) SetCount(c uint8) error {
 	r.R.Set((r.Byte() & 0xF0) | c)
 	return nil
 }
-func (r *SetupRetrans) GetCount() uint8 {
+func (r *R) GetCount() uint8 {
 	return r.Byte() & 0x0F
 }
 
@@ -86,9 +86,9 @@ func (r *SetupRetrans) GetCount() uint8 {
    than 5byte in 1Mbps mode the ARD must be 500μS or more.
    In 250kbps mode (even when the payload is not in ACK)
    the ARD must be 500μS or more.*/
-func (r *SetupRetrans) GetDelay() RetransDelay {
-	return RetransDelay(r.Byte() >> 4)
+func (r *R) GetDelay() Delay {
+	return Delay(r.Byte() >> 4)
 }
-func (r *SetupRetrans) SetDelay(d RetransDelay) {
+func (r *R) SetDelay(d Delay) {
 	r.R.Set((r.Byte() & 0x0F) | (byte(d) << 4))
 }
