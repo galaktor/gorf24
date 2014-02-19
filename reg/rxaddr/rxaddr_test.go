@@ -9,12 +9,12 @@ import (
 )
 
 func someFullRxAddr(flags uint64) *xaddr.Full {
-	return NewFullRxAddress(pipe.P0, xaddr.A(flags))
+	return NewFull(pipe.P0, xaddr.A(flags))
 }
 
-func TestNewFullRxAddress_Pipe0_HasP0RegisterAddress(t *testing.T) {
+func TestNewFull_Pipe0_HasP0RegisterAddress(t *testing.T) {
 	expected := addr.RX_ADDR(pipe.P0)
-	a := NewFullRxAddress(pipe.P0, xaddr.A(0))
+	a := NewFull(pipe.P0, xaddr.A(0))
 
 	actual := a.Address()
 
@@ -24,9 +24,9 @@ func TestNewFullRxAddress_Pipe0_HasP0RegisterAddress(t *testing.T) {
 	
 }
 
-func TestNewFullRxAddress_Pipe1_HasP0RegisterAddress(t *testing.T) {
+func TestNewFull_Pipe1_HasP0RegisterAddress(t *testing.T) {
 	expected := addr.RX_ADDR(pipe.P1)
-	a := NewFullRxAddress(pipe.P1, xaddr.A(0))
+	a := NewFull(pipe.P1, xaddr.A(0))
 
 	actual := a.Address()
 
@@ -36,9 +36,9 @@ func TestNewFullRxAddress_Pipe1_HasP0RegisterAddress(t *testing.T) {
 	
 }
 
-func TestNewFullRxAddress_Pipe2_HasP0RegisterAddress(t *testing.T) {
+func TestNewFull_Pipe2_HasP0RegisterAddress(t *testing.T) {
 	expected := addr.RX_ADDR(pipe.P2)
-	a := NewFullRxAddress(pipe.P2, xaddr.A(0))
+	a := NewFull(pipe.P2, xaddr.A(0))
 
 	actual := a.Address()
 
@@ -48,9 +48,9 @@ func TestNewFullRxAddress_Pipe2_HasP0RegisterAddress(t *testing.T) {
 	
 }
 
-func TestNewFullRxAddress_Pipe3_HasP0RegisterAddress(t *testing.T) {
+func TestNewFull_Pipe3_HasP0RegisterAddress(t *testing.T) {
 	expected := addr.RX_ADDR(pipe.P3)
-	a := NewFullRxAddress(pipe.P3, xaddr.A(0))
+	a := NewFull(pipe.P3, xaddr.A(0))
 
 	actual := a.Address()
 
@@ -60,9 +60,9 @@ func TestNewFullRxAddress_Pipe3_HasP0RegisterAddress(t *testing.T) {
 	
 }
 
-func TestNewFullRxAddress_Pipe4_HasP0RegisterAddress(t *testing.T) {
+func TestNewFull_Pipe4_HasP0RegisterAddress(t *testing.T) {
 	expected := addr.RX_ADDR(pipe.P4)
-	a := NewFullRxAddress(pipe.P4, xaddr.A(0))
+	a := NewFull(pipe.P4, xaddr.A(0))
 
 	actual := a.Address()
 
@@ -72,9 +72,9 @@ func TestNewFullRxAddress_Pipe4_HasP0RegisterAddress(t *testing.T) {
 	
 }
 
-func TestNewFullRxAddress_Pipe5_HasP0RegisterAddress(t *testing.T) {
+func TestNewFull_Pipe5_HasP0RegisterAddress(t *testing.T) {
 	expected := addr.RX_ADDR(pipe.P5)
-	a := NewFullRxAddress(pipe.P5, xaddr.A(0))
+	a := NewFull(pipe.P5, xaddr.A(0))
 
 	actual := a.Address()
 
@@ -84,9 +84,9 @@ func TestNewFullRxAddress_Pipe5_HasP0RegisterAddress(t *testing.T) {
 }
 
 
-func TestNewPartialRxAddress_Pipe0_HasRightRegAddress(t *testing.T) {
+func TestNewPartial_Pipe0_HasRightRegAddress(t *testing.T) {
 	expected := addr.RX_ADDR(pipe.P0)
-	a := NewPartialRxAddress(pipe.P0, someFullRxAddr(0), 0x0)
+	a := NewPartial(pipe.P0, someFullRxAddr(0), 0x0)
 
 	actual := a.Address()
 
@@ -95,9 +95,9 @@ func TestNewPartialRxAddress_Pipe0_HasRightRegAddress(t *testing.T) {
 	}
 }
 
-func TestNewPartialRxAddress_Pipe1_HasRightRegAddress(t *testing.T) {
+func TestNewPartial_Pipe1_HasRightRegAddress(t *testing.T) {
 	expected := addr.RX_ADDR(pipe.P1)
-	a := NewPartialRxAddress(pipe.P1, someFullRxAddr(0), 0x0)
+	a := NewPartial(pipe.P1, someFullRxAddr(0), 0x0)
 
 	actual := a.Address()
 
@@ -106,9 +106,9 @@ func TestNewPartialRxAddress_Pipe1_HasRightRegAddress(t *testing.T) {
 	}
 }
 
-func TestNewPartialRxAddress_Pipe2_HasRightRegAddress(t *testing.T) {
+func TestNewPartial_Pipe2_HasRightRegAddress(t *testing.T) {
 	expected := addr.RX_ADDR(pipe.P2)
-	a := NewPartialRxAddress(pipe.P2, someFullRxAddr(0), 0x0)
+	a := NewPartial(pipe.P2, someFullRxAddr(0), 0x0)
 
 	actual := a.Address()
 
@@ -117,9 +117,9 @@ func TestNewPartialRxAddress_Pipe2_HasRightRegAddress(t *testing.T) {
 	}
 }
 
-func TestNewPartialRxAddress_Pipe3_HasRightRegAddress(t *testing.T) {
+func TestNewPartial_Pipe3_HasRightRegAddress(t *testing.T) {
 	expected := addr.RX_ADDR(pipe.P3)
-	a := NewPartialRxAddress(pipe.P3, someFullRxAddr(0), 0x0)
+	a := NewPartial(pipe.P3, someFullRxAddr(0), 0x0)
 
 	actual := a.Address()
 
@@ -128,9 +128,9 @@ func TestNewPartialRxAddress_Pipe3_HasRightRegAddress(t *testing.T) {
 	}
 }
 
-func TestNewPartialRxAddress_Pipe4_HasRightRegAddress(t *testing.T) {
+func TestNewPartial_Pipe4_HasRightRegAddress(t *testing.T) {
 	expected := addr.RX_ADDR(pipe.P4)
-	a := NewPartialRxAddress(pipe.P4, someFullRxAddr(0), 0x0)
+	a := NewPartial(pipe.P4, someFullRxAddr(0), 0x0)
 
 	actual := a.Address()
 
@@ -139,9 +139,9 @@ func TestNewPartialRxAddress_Pipe4_HasRightRegAddress(t *testing.T) {
 	}
 }
 
-func TestNewPartialRxAddress_Pipe5_HasRightRegAddress(t *testing.T) {
+func TestNewPartial_Pipe5_HasRightRegAddress(t *testing.T) {
 	expected := addr.RX_ADDR(pipe.P5)
-	a := NewPartialRxAddress(pipe.P5, someFullRxAddr(0), 0x0)
+	a := NewPartial(pipe.P5, someFullRxAddr(0), 0x0)
 
 	actual := a.Address()
 

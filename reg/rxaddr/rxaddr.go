@@ -14,7 +14,7 @@ import (
    5 Bytes maximum
    length. (LSByte is written first. Write the number of
    bytes defined by SETUP_AW)*/
-func NewFullRxAddress(p pipe.P, flags xaddr.A) *xaddr.Full {
+func NewFull(p pipe.P, flags xaddr.A) *xaddr.Full {
 	a := xaddr.NewFull(addr.RX_ADDR(p), flags)
 	return a
 }
@@ -26,6 +26,6 @@ func NewFullRxAddress(p pipe.P, flags xaddr.A) *xaddr.Full {
 
    Only LSB. MSBytes
    are equal to RX_ADDR_P1[39:8] */
-func NewPartialRxAddress(p pipe.P, root *xaddr.Full, lsb byte) *xaddr.Partial {
+func NewPartial(p pipe.P, root *xaddr.Full, lsb byte) *xaddr.Partial {
 	return xaddr.NewPartial(addr.RX_ADDR(p), root, lsb)
 }
