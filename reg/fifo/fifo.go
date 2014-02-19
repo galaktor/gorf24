@@ -1,4 +1,4 @@
-package reg
+package fifo
 
 import (
 	"github.com/galaktor/gorf24/reg"
