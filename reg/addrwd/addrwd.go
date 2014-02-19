@@ -44,7 +44,7 @@ func (a *AddrWidths) Set(w AddrWidth) error {
 	return nil
 }
 func (a *AddrWidths) Get() AddrWidth {
-	return AddrWidth(a.R.Byte())
+	return AddrWidth(a.Byte())
 }
 
 
