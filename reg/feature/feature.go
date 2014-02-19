@@ -8,22 +8,22 @@ import (
 /* FEATURE
    Feature Register
    bits 7:3 reserved */
-type Feature struct {
+type F struct {
 	reg.R
 }
 
-func NewFeature(flags byte) *Feature {
-	return &Feature{reg.New(addr.FEATURE, flags)}
+func New(flags byte) *F {
+	return &F{reg.New(addr.FEATURE, flags)}
 }
 
 /* EN_DYN_ACK (bit 0)
    Enables the W_TX_PAYLOAD_NOACK command
    xxxxxxx0 -> disabled
    xxxxxxx1 -> enabled */
-func (f *Feature) IsDynamicAckEnabled() bool {
+func (f *F) IsDynamicAckEnabled() bool {
 	return f.Byte()&0x01 == 0x01
 }
-func (f *Feature) SetDynamicAck(enabled bool) {
+func (f *F) SetDynamicAck(enabled bool) {
 	if enabled {
 		f.R.Set(f.Byte() | 0x01)
 	} else {
@@ -46,10 +46,10 @@ func (f *Feature) SetDynamicAck(enabled bool) {
 
    xxxxxx0x -> disabled
    xxxxxx1x -> enabled */
-func (f *Feature) IsPayloadWithAckEnabled() bool {
+func (f *F) IsPayloadWithAckEnabled() bool {
 	return f.Byte()&0x02 == 0x02
 }
-func (f *Feature) SetPayloadWithAck(enabled bool) {
+func (f *F) SetPayloadWithAck(enabled bool) {
 	if enabled {
 		f.R.Set(f.Byte() | 0x02)
 	} else {
@@ -62,10 +62,10 @@ func (f *Feature) SetPayloadWithAck(enabled bool) {
 
    xxxxx0xx -> disabled
    xxxxx1xx -> enabled */
-func (f *Feature) IsDynamicPayloadLengthEnabled() bool {
+func (f *F) IsDynamicPayloadLengthEnabled() bool {
 	return f.Byte()&0x04 == 0x04
 }
-func (f *Feature) SetDynamicPayloadLength(enabled bool) {
+func (f *F) SetDynamicPayloadLength(enabled bool) {
 	if enabled {
 		f.R.Set(f.Byte() | 0x04)
 	} else {

@@ -8,7 +8,7 @@ import (
 )
 
 func TestNewFeature_RegisterAddress_IsFEATURE(t *testing.T) {
-	f := NewFeature(0)
+	f := New(0)
 	expected := addr.FEATURE
 
 	actual := f.Address()
@@ -19,7 +19,7 @@ func TestNewFeature_RegisterAddress_IsFEATURE(t *testing.T) {
 }
 
 func TestSetDynamicAck_Enabled_FlipsRightBit(t *testing.T) {
-	f := NewFeature(util.B("00000000"))
+	f := New(util.B("00000000"))
 	expected := util.B("00000001")
 
 	f.SetDynamicAck(true)
@@ -31,7 +31,7 @@ func TestSetDynamicAck_Enabled_FlipsRightBit(t *testing.T) {
 }
 
 func TestSetDynamicAck_Disabled_FlipsRightBit(t *testing.T) {
-	f := NewFeature(util.B("11111111"))
+	f := New(util.B("11111111"))
 	expected := util.B("11111110")
 
 	f.SetDynamicAck(false)
@@ -43,7 +43,7 @@ func TestSetDynamicAck_Disabled_FlipsRightBit(t *testing.T) {
 }
 
 func TestIsDynamicAckEnabled_BitZero_ReturnsFalse(t *testing.T) {
-	f := NewFeature(util.B("11111110"))
+	f := New(util.B("11111110"))
 	expected := false
 
 	actual := f.IsDynamicAckEnabled()
@@ -54,7 +54,7 @@ func TestIsDynamicAckEnabled_BitZero_ReturnsFalse(t *testing.T) {
 }
 
 func TestIsDynamicAckEnabled_BitOne_ReturnsTrue(t *testing.T) {
-	f := NewFeature(util.B("00000001"))
+	f := New(util.B("00000001"))
 	expected := true
 
 	actual := f.IsDynamicAckEnabled()
@@ -65,7 +65,7 @@ func TestIsDynamicAckEnabled_BitOne_ReturnsTrue(t *testing.T) {
 }
 
 func TestSetPayloadWithAck_Enabled_FlipsRightBit(t *testing.T) {
-	f := NewFeature(util.B("00000010"))
+	f := New(util.B("00000010"))
 	expected := util.B("00000010")
 
 	f.SetPayloadWithAck(true)
@@ -77,7 +77,7 @@ func TestSetPayloadWithAck_Enabled_FlipsRightBit(t *testing.T) {
 }
 
 func TestSetPayloadWithAck_Disabled_FlipsRightBit(t *testing.T) {
-	f := NewFeature(util.B("11111111"))
+	f := New(util.B("11111111"))
 	expected := util.B("11111101")
 
 	f.SetPayloadWithAck(false)
@@ -89,7 +89,7 @@ func TestSetPayloadWithAck_Disabled_FlipsRightBit(t *testing.T) {
 }
 
 func TestIsPayloadWithAckEnabled_BitZero_ReturnsFalse(t *testing.T) {
-	f := NewFeature(util.B("11111101"))
+	f := New(util.B("11111101"))
 	expected := false
 
 	actual := f.IsPayloadWithAckEnabled()
@@ -100,7 +100,7 @@ func TestIsPayloadWithAckEnabled_BitZero_ReturnsFalse(t *testing.T) {
 }
 
 func TestIsPayloadWithAckEnabled_BitOne_ReturnsTrue(t *testing.T) {
-	f := NewFeature(util.B("00000010"))
+	f := New(util.B("00000010"))
 	expected := true
 
 	actual := f.IsPayloadWithAckEnabled()
@@ -111,7 +111,7 @@ func TestIsPayloadWithAckEnabled_BitOne_ReturnsTrue(t *testing.T) {
 }
 
 func TestSetDynamicPayloadLength_Enabled_FlipsRightBit(t *testing.T) {
-	f := NewFeature(util.B("00000000"))
+	f := New(util.B("00000000"))
 	expected := util.B("00000100")
 
 	f.SetDynamicPayloadLength(true)
@@ -123,7 +123,7 @@ func TestSetDynamicPayloadLength_Enabled_FlipsRightBit(t *testing.T) {
 }
 
 func TestSetDynamicPayloadLength_Disabled_FlipsRightBit(t *testing.T) {
-	f := NewFeature(util.B("00000100"))
+	f := New(util.B("00000100"))
 	expected := util.B("00000000")
 
 	f.SetDynamicPayloadLength(false)
@@ -135,7 +135,7 @@ func TestSetDynamicPayloadLength_Disabled_FlipsRightBit(t *testing.T) {
 }
 
 func TestIsDynamicPayloadLengthEnabled_BitZero_ReturnsFalse(t *testing.T) {
-	f := NewFeature(util.B("11111011"))
+	f := New(util.B("11111011"))
 	expected := false
 
 	actual := f.IsDynamicPayloadLengthEnabled()
@@ -146,7 +146,7 @@ func TestIsDynamicPayloadLengthEnabled_BitZero_ReturnsFalse(t *testing.T) {
 }
 
 func TestIsDynamicPayloadLengthEnabled_BitOne_ReturnsTrue(t *testing.T) {
-	f := NewFeature(util.B("00000100"))
+	f := New(util.B("00000100"))
 	expected := true
 
 	actual := f.IsDynamicPayloadLengthEnabled()
