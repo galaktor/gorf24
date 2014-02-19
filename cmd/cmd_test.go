@@ -278,7 +278,7 @@ func TestW_TX_PAYLOAD_NOACK_Always_ReturnsRightBits(t *testing.T) {
 /***** helper funcs *****/
 
 func someReg(adr byte) reg.R {
-	return reg.New(addr.A(adr))
+	return reg.New(addr.A(adr), 0)
 }
 
 
