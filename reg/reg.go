@@ -10,12 +10,16 @@ type R struct {
 	flags byte
 }
 
-func New(a addr.A) R {
-	return R{a, byte(0)}
+func New(a addr.A, flags byte) R {
+	return R{a, flags}
 }
 
 func (r *R) Byte() byte {
 	return r.flags
+}
+
+func (r *R) Set(flags byte) {
+	r.flags = flags
 }
 
 func (r *R) Address() addr.A {
