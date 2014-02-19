@@ -1,6 +1,7 @@
 package reg
 
 import (
+	"github.com/galaktor/gorf24/reg"
 	"github.com/galaktor/gorf24/reg/addr"
 )
 
@@ -8,11 +9,11 @@ import (
    Feature Register
    bits 7:3 reserved */
 type Feature struct {
-	R
+	reg.R
 }
 
 func NewFeature(flags byte) *Feature {
-	return &Feature{R{a: addr.FEATURE, flags: flags}}
+	return &Feature{reg.New(addr.FEATURE, flags)}
 }
 
 /* EN_DYN_ACK (bit 0)
@@ -20,13 +21,13 @@ func NewFeature(flags byte) *Feature {
    xxxxxxx0 -> disabled
    xxxxxxx1 -> enabled */
 func (f *Feature) IsDynamicAckEnabled() bool {
-	return f.flags&0x01 == 0x01
+	return f.Byte()&0x01 == 0x01
 }
 func (f *Feature) SetDynamicAck(enabled bool) {
 	if enabled {
-		f.flags |= 0x01
+		f.R.Set(f.Byte() | 0x01)
 	} else {
-		f.flags &= 0xFE
+		f.R.Set(f.Byte() & 0xFE)
 	}
 }
 
@@ -46,13 +47,13 @@ func (f *Feature) SetDynamicAck(enabled bool) {
    xxxxxx0x -> disabled
    xxxxxx1x -> enabled */
 func (f *Feature) IsPayloadWithAckEnabled() bool {
-	return f.flags&0x02 == 0x02
+	return f.Byte()&0x02 == 0x02
 }
 func (f *Feature) SetPayloadWithAck(enabled bool) {
 	if enabled {
-		f.flags |= 0x02
+		f.R.Set(f.Byte() | 0x02)
 	} else {
-		f.flags &= 0xFD
+		f.R.Set(f.Byte() & 0xFD)
 	}
 }
 
@@ -62,12 +63,12 @@ func (f *Feature) SetPayloadWithAck(enabled bool) {
    xxxxx0xx -> disabled
    xxxxx1xx -> enabled */
 func (f *Feature) IsDynamicPayloadLengthEnabled() bool {
-	return f.flags&0x04 == 0x04
+	return f.Byte()&0x04 == 0x04
 }
 func (f *Feature) SetDynamicPayloadLength(enabled bool) {
 	if enabled {
-		f.flags |= 0x04
+		f.R.Set(f.Byte() | 0x04)
 	} else {
-		f.flags &= 0x7B
+		f.R.Set(f.Byte() & 0x7B)
 	}
 }
