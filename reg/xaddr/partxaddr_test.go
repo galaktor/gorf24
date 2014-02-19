@@ -5,9 +5,9 @@ import (
 
 	"github.com/galaktor/gorf24/reg/addr"
 )
-
+ 
 func someFullXAddr(flags uint64) *Full {
-	return NewFull(addr.A(0), NewA(flags))
+	return NewFull(addr.A(0), New(flags))
 }
 
 func TestByte_ParentMSBytesZero_FirstFourBytesZero(t *testing.T) {
@@ -39,7 +39,7 @@ func TestByte_ParentMSByteChanges_ByteMsbChangesWithParent(t *testing.T) {
 	root := someFullXAddr(0x0000000000)
 	a := NewPartial(addr.A(0), root, 0xA1)
 	
-	root.Set(NewA(0xFFFFFFFFFF))
+	root.Set(New(0xFFFFFFFFFF))
 	actual := a.Get()
 
 	if actual != expected {

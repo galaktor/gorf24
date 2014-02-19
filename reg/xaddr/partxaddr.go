@@ -21,7 +21,7 @@ func NewPartial(a addr.A, root *Full, lsb byte) *Partial {
 
 func (r *Partial) Get() A {
 	// use New method to force truncate
-	return NewA((r.root.Get().Byte() << 8) | uint64(r.R.Byte()))
+	return New((r.root.Get().Byte() << 8) | uint64(r.R.Byte()))
 }
 
 func (r *Partial) Set(lsb byte) {
