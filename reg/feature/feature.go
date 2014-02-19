@@ -1,4 +1,4 @@
-package reg
+package feature
 
 import (
 	"github.com/galaktor/gorf24/reg"
