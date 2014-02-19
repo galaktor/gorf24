@@ -1,33 +1,33 @@
-package reg
+package xaddr
 
 import (
 	"testing"
 )
 
-func TestNewXAddress_AllZeroes_ReturnsAllZeroes(t *testing.T) {
-	expected := XAddress(0x0000000000)
+func TestNewA_AllZeroes_ReturnsAllZeroes(t *testing.T) {
+	expected := A(0x0000000000)
 	
-	actual := NewXAddress(0x0000000000)
+	actual := NewA(0x0000000000)
 
 	if actual != expected {
 		t.Errorf("expected '%b' but found '%b'", expected, actual)
 	}
 }
 
-func TestNewXAddress_AllOnes_ReturnsAllOnes(t *testing.T) {
-	expected := XAddress(0xFFFFFFFFFF)
+func TestNewA_AllOnes_ReturnsAllOnes(t *testing.T) {
+	expected := A(0xFFFFFFFFFF)
 	
-	actual := NewXAddress(0xFFFFFFFFFF)
+	actual := NewA(0xFFFFFFFFFF)
 
 	if actual != expected {
 		t.Errorf("expected '%b' but found '%b'", expected, actual)
 	}
 }
 
-func TestNewXAddress_MixedOnesAndZeroes_ReturnsRightBits(t *testing.T) {
-	expected := XAddress(0xAAAAAAAAAA)
+func TestNewA_MixedOnesAndZeroes_ReturnsRightBits(t *testing.T) {
+	expected := A(0xAAAAAAAAAA)
 	
-	actual := NewXAddress(0xAAAAAAAAAA)
+	actual := NewA(0xAAAAAAAAAA)
 
 
 	if actual != expected {
@@ -35,10 +35,10 @@ func TestNewXAddress_MixedOnesAndZeroes_ReturnsRightBits(t *testing.T) {
 	}
 }
 
-func TestNewXAddress_OverflowFiveBytes_TruncatesToFiveBytes(t *testing.T) {
-	expected := XAddress(0xAAAAAAAAAA)
+func TestNewA_OverflowFiveBytes_TruncatesToFiveBytes(t *testing.T) {
+	expected := A(0xAAAAAAAAAA)
 
-	actual := NewXAddress(0xFFFFFFAAAAAAAAAA)
+	actual := NewA(0xFFFFFFAAAAAAAAAA)
 
 	if actual != expected {
 		t.Errorf("expected '%b' but found '%b'", expected, actual)
@@ -47,7 +47,7 @@ func TestNewXAddress_OverflowFiveBytes_TruncatesToFiveBytes(t *testing.T) {
 
 func TestByte_MixedOnesAndZeroes_ReturnsRightBits(t *testing.T) {
 	expected := uint64(0xAAAAAAAAAA)
-	a := NewXAddress(expected)
+	a := NewA(expected)
 
 	actual := a.Byte()
 

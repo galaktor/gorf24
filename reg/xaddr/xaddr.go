@@ -1,4 +1,4 @@
-package reg
+package xaddr
 
 /* used for Rx and Tx addresses; hence 'x' address
    max 5 bytes
@@ -8,13 +8,13 @@ package reg
    64bits
    <-- ignored -----------><-- used ------------------------------>
    xxxxxxxxxxxxxxxxxxxxxxxx1111111111111111111111111111111111111111 */
-type XAddress uint64
+type A uint64
 
-func NewXAddress(flags uint64) XAddress {
+func NewA(flags uint64) A {
 	// mask out first 3 bytes
-	return XAddress(flags & 0x000000FFFFFFFFFF)
+	return A(flags & 0x000000FFFFFFFFFF)
 }
 
-func (a XAddress) Byte() uint64 {
+func (a A) Byte() uint64 {
 	return uint64(a)
 }

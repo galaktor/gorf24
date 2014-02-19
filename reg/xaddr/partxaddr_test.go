@@ -1,4 +1,4 @@
-package reg
+package xaddr
 
 import (
 	"testing"
@@ -6,14 +6,14 @@ import (
 	"github.com/galaktor/gorf24/reg/addr"
 )
 
-func someFullXAddr(flags uint64) *FullXAddress {
-	return newFullXAddress(addr.A(0), NewXAddress(flags))
+func someFullXAddr(flags uint64) *Full {
+	return NewFull(addr.A(0), NewA(flags))
 }
 
 func TestByte_ParentMSBytesZero_FirstFourBytesZero(t *testing.T) {
-	expected := XAddress(0x00000000FF)
+	expected := A(0x00000000FF)
 	root := someFullXAddr(0x0000000000)
-	a := newPartialXAddress(addr.A(0), root, 0xFF)
+	a := NewPartial(addr.A(0), root, 0xFF)
 
 	actual := a.Get()
 
@@ -23,9 +23,9 @@ func TestByte_ParentMSBytesZero_FirstFourBytesZero(t *testing.T) {
 }
 
 func TestByte_ParentMSBytesOnes_FirstFourBytesOnes(t *testing.T) {
-	expected := XAddress(0xFFFFFFFFAA)
+	expected := A(0xFFFFFFFFAA)
 	root := someFullXAddr(0xFFFFFFFFFF)
-	a := newPartialXAddress(addr.A(0), root, 0xAA)
+	a := NewPartial(addr.A(0), root, 0xAA)
 
 	actual := a.Get()
 
@@ -35,11 +35,11 @@ func TestByte_ParentMSBytesOnes_FirstFourBytesOnes(t *testing.T) {
 }
 
 func TestByte_ParentMSByteChanges_ByteMsbChangesWithParent(t *testing.T) {
-	expected := XAddress(0xFFFFFFFFA1)
+	expected := A(0xFFFFFFFFA1)
 	root := someFullXAddr(0x0000000000)
-	a := newPartialXAddress(addr.A(0), root, 0xA1)
+	a := NewPartial(addr.A(0), root, 0xA1)
 	
-	root.Set(NewXAddress(0xFFFFFFFFFF))
+	root.Set(NewA(0xFFFFFFFFFF))
 	actual := a.Get()
 
 	if actual != expected {

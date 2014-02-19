@@ -1,4 +1,4 @@
-package reg
+package xaddr
 
 import (
 	"testing"
@@ -7,8 +7,8 @@ import (
 )
 
 func TestGet_Zeroes_ReturnsZeroes(t *testing.T) {
-	expected := XAddress(0)
-	a := newFullXAddress(addr.A(0), 0)
+	expected := A(0)
+	a := NewFull(addr.A(0), 0)
 
 	actual := a.Get()
 
@@ -18,8 +18,8 @@ func TestGet_Zeroes_ReturnsZeroes(t *testing.T) {
 }
 
 func TestGet_NonZero_ReturnsRightBits(t *testing.T) {
-	expected := XAddress(0xAFAFAFAFAF)
-	a := newFullXAddress(addr.A(0), 0xAFAFAFAFAF)
+	expected := A(0xAFAFAFAFAF)
+	a := NewFull(addr.A(0), 0xAFAFAFAFAF)
 
 	actual := a.Get()
 
@@ -29,8 +29,8 @@ func TestGet_NonZero_ReturnsRightBits(t *testing.T) {
 }
 
 func TestSet_NonZero_StoresRightBits(t *testing.T) {
-	expected := XAddress(0xAFAFAFAFAF)
-	a := newFullXAddress(addr.A(0), XAddress(0))
+	expected := A(0xAFAFAFAFAF)
+	a := NewFull(addr.A(0), A(0))
 
 	a.Set(0xAFAFAFAFAF)
 
