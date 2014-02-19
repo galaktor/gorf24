@@ -1,4 +1,4 @@
-package reg
+package enrxaddr
 
 import (
 	"testing"
