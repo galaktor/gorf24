@@ -8,10 +8,10 @@ import (
 	"github.com/galaktor/gorf24/reg/addr"
 )
 
-func TestNewRxPayloadWidth_RegisterAddress_AllPipes_HasRightRegister(t *testing.T) {
+func TestNew_RegisterAddress_AllPipes_HasRightRegister(t *testing.T) {
 	for i := 0; i <= 5; i++ {
 		p := pipe.P(i)
-		w := NewRxPayloadWidth(p, 0)
+		w := New(p, 0)
 		expected := addr.RX_PW(p)
 		
 		actual := w.Address()
@@ -23,7 +23,7 @@ func TestNewRxPayloadWidth_RegisterAddress_AllPipes_HasRightRegister(t *testing.
 }
 
 func TestSet_Zero_FlipsRelevantBits(t *testing.T) {
-	w := NewRxPayloadWidth(pipe.P0, util.B("00111111"))
+	w := New(pipe.P0, util.B("00111111"))
 	expected := util.B("00000000")
 
 	w.Set(0)
@@ -35,7 +35,7 @@ func TestSet_Zero_FlipsRelevantBits(t *testing.T) {
 }
 
 func TestSet_One_FlipsRelevantBits(t *testing.T) {
-	w := NewRxPayloadWidth(pipe.P0, util.B("0000000"))
+	w := New(pipe.P0, util.B("0000000"))
 	expected := util.B("00000001")
 
 	w.Set(1)
@@ -47,7 +47,7 @@ func TestSet_One_FlipsRelevantBits(t *testing.T) {
 }
 
 func TestSet_ThirtyTwo_FlipsRelevantBits(t *testing.T) {
-	w := NewRxPayloadWidth(pipe.P0, util.B("00000000"))
+	w := New(pipe.P0, util.B("00000000"))
 	expected := util.B("00100000")
 
 	w.Set(32)
@@ -59,7 +59,7 @@ func TestSet_ThirtyTwo_FlipsRelevantBits(t *testing.T) {
 }
 
 func TestSet_OverThrityTwo_ReturnsError(t *testing.T) {
-	w := NewRxPayloadWidth(pipe.P0, util.B("00000000"))
+	w := New(pipe.P0, util.B("00000000"))
 	expected := "value out of legal range: 33. allowed values from 0 - 32"
 
 	err := w.Set(33)
@@ -76,7 +76,7 @@ func TestSet_OverThrityTwo_ReturnsError(t *testing.T) {
 }
 
 func TestGet_Zero_ReturnsZero(t *testing.T) {
-	w := NewRxPayloadWidth(pipe.P0, util.B("00000000"))
+	w := New(pipe.P0, util.B("00000000"))
 	expected := uint8(0)
 
 	actual := w.Get()
@@ -87,7 +87,7 @@ func TestGet_Zero_ReturnsZero(t *testing.T) {
 }
 
 func TestGet_ThirtyTwo_ReturnsThirtyTwo(t *testing.T) {
-	w := NewRxPayloadWidth(pipe.P0, util.B("00100000"))
+	w := New(pipe.P0, util.B("00100000"))
 	expected := uint8(32)
 
 	actual := w.Get()
@@ -98,7 +98,7 @@ func TestGet_ThirtyTwo_ReturnsThirtyTwo(t *testing.T) {
 }
 
 func TestGet_OverThirtyTwo_TruncatesAndReturnsThirtyTwo(t *testing.T) {
-	w := NewRxPayloadWidth(pipe.P0, byte(33))
+	w := New(pipe.P0, byte(33))
 	expected := uint8(32)
 
 	actual := w.Get()

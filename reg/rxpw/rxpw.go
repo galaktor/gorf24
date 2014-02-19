@@ -20,16 +20,16 @@ const MAX uint8 = 32
    32 = 32 bytes
 
    bits 7:6 reserved */
-type RxPayloadWidth struct {
+type W struct {
 	reg.R
 }
 
-func NewRxPayloadWidth(p pipe.P, flags byte) *RxPayloadWidth {
-	return &RxPayloadWidth{reg.New(addr.RX_PW(p), flags)}
+func New(p pipe.P, flags byte) *W {
+	return &W{reg.New(addr.RX_PW(p), flags)}
 }
 
 /* RX_PWx (bits 5:0) */
-func (r *RxPayloadWidth) Set(w uint8) error {
+func (r *W) Set(w uint8) error {
 	if w > MAX {
 		return errors.New(fmt.Sprintf("value out of legal range: %v. allowed values from 0 - %v", w, MAX))
 	}
@@ -37,7 +37,7 @@ func (r *RxPayloadWidth) Set(w uint8) error {
 	r.R.Set((r.Byte() & 0) | w)
 	return nil
 }
-func (r *RxPayloadWidth) Get() uint8 {
+func (r *W) Get() uint8 {
 	if r.Byte() > MAX {
 		return MAX
 	}
