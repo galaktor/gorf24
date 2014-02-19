@@ -10,12 +10,12 @@ import (
    Enable ‘Auto Acknowledgment’ Function Disable
    this functionality to be compatible with nRF2401
    bits 7:6 reserved */
-type AutoAck struct {
+type AA struct {
 	reg.R
 }
 
-func NewAutoAck(flags byte) *AutoAck {
-	return &AutoAck{reg.New(addr.EN_AA, flags)}
+func New(flags byte) *AA {
+	return &AA{reg.New(addr.EN_AA, flags)}
 }
 
 // TODO: if pipe const value was byte, could just do
@@ -23,14 +23,14 @@ func NewAutoAck(flags byte) *AutoAck {
 
 /* ENAA_Px
    Enable auto acknowledgement data pipe 'p' */
-func (a *AutoAck) Set(p pipe.P, enabled bool) {
+func (a *AA) Set(p pipe.P, enabled bool) {
 	if enabled {
 		a.enable(p)
 	} else {
 		a.disable(p)
 	}
 }
-func (a *AutoAck) enable(p pipe.P) {
+func (a *AA) enable(p pipe.P) {
 	switch p {
 	case pipe.P0:
 		a.R.Set(a.Byte() | 1)
@@ -46,7 +46,7 @@ func (a *AutoAck) enable(p pipe.P) {
 		a.R.Set(a.Byte() | 32)
 	}
 }
-func (a *AutoAck) disable(p pipe.P) {
+func (a *AA) disable(p pipe.P) {
 	switch p {
 	case pipe.P0:
 		a.R.Set(a.Byte() & 0xFE)
@@ -62,7 +62,7 @@ func (a *AutoAck) disable(p pipe.P) {
 		a.R.Set(a.Byte() & 0xDF)
 	}
 }
-func (a *AutoAck) IsEnabled(p pipe.P) bool {
+func (a *AA) IsEnabled(p pipe.P) bool {
 	var result bool
 
 	switch p {
