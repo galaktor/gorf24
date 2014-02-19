@@ -8,7 +8,7 @@ import (
 type CrcLength byte
 
 const (
-	CRC_DISABLED = iota
+	CRC_DISABLED CrcLength = iota
 	CRC_8BIT
 	CRC_16BIT
 )
@@ -16,35 +16,35 @@ const (
 /* CONFIG
    Configuration Register
    bit 7 reserved */
-type Config struct {
+type C struct {
 	reg.R
 }
 
-func NewConfig(flags byte) *Config {
-	return &Config{reg.New(addr.CONFIG, flags)}
+func New(flags byte) *C {
+	return &C{reg.New(addr.CONFIG, flags)}
 }
 
 /* PRIM_RX (bit 0)
    RX/TX control
    xxxxxxx0: PTX
    xxxxxxx1: PRX */
-func (c *Config) SetPrimaryReceiver() {
+func (c *C) SetPrimaryReceiver() {
 	c.R.Set(c.Byte() | 1)
 }
-func (c *Config) IsPrimaryReceiver() bool {
+func (c *C) IsPrimaryReceiver() bool {
 	return c.Byte()&1 == 1
 }
-func (c *Config) SetPrimaryTransmitter() {
+func (c *C) SetPrimaryTransmitter() {
 	c.R.Set(c.Byte() & 0xFE)
 }
-func (c *Config) IsPrimaryTransmitter() bool {
+func (c *C) IsPrimaryTransmitter() bool {
 	return c.Byte()&1 == 0
 }
 
 /* PWR_UP (bit 1)
    xxxxxx0x: POWER DOWN
    xxxxxx1x: POWER UP */
-func (c *Config) SetPowerUp(up bool) {
+func (c *C) SetPowerUp(up bool) {
 	if up {
 		c.R.Set(c.Byte() | 2)
 	} else {
@@ -52,7 +52,7 @@ func (c *Config) SetPowerUp(up bool) {
 	}
 
 }
-func (c *Config) IsPowerUp() bool {
+func (c *C) IsPowerUp() bool {
 	return c.Byte()&2 == 2
 }
 
@@ -60,7 +60,7 @@ func (c *Config) IsPowerUp() bool {
    CRC encoding scheme
    xxxxx0xx - 1 byte
    xxxxx1xx - 2 bytes */
-func (c *Config) SetCrcLength(l CrcLength) {
+func (c *C) SetCrcLength(l CrcLength) {
 	switch l {
 	case CRC_8BIT:
 		c.Set(c.Byte() & 0xFB)
@@ -68,7 +68,7 @@ func (c *Config) SetCrcLength(l CrcLength) {
 		c.Set(c.Byte() | 4)
 	}
 }
-func (c *Config) GetCrcLength() CrcLength {
+func (c *C) GetCrcLength() CrcLength {
 	if c.Byte()&4 == 4 {
 		return CRC_16BIT
 	} else {
@@ -82,14 +82,14 @@ func (c *Config) GetCrcLength() CrcLength {
 
    xxxx0xxx - disabled
    xxxx1xxx - enabled */
-func (c *Config) SetCrcEnabled(enable bool) {
+func (c *C) SetCrcEnabled(enable bool) {
 	if enable {
 		c.R.Set(c.Byte() | 8)
 	} else {
 		c.R.Set(c.Byte() & 0xF7)
 	}
 }
-func (c *Config) IsCrcEnabled() bool {
+func (c *C) IsCrcEnabled() bool {
 	return c.Byte()&8 == 8
 }
 
@@ -98,14 +98,14 @@ func (c *Config) IsCrcEnabled() bool {
 
    xxx0xxxx: Reflect MAX_RT as active low interrupt on the IRQ pin
    xxx1xxxx: Interrupt not reflected on the IRQ pin  */
-func (c *Config) SetMaxRtInterruptEnabled(enable bool) {
+func (c *C) SetMaxRtInterruptEnabled(enable bool) {
 	if enable {
 		c.R.Set(c.Byte() & 0xEF)
 	} else {
 		c.R.Set(c.Byte() | 16)
 	}
 }
-func (c *Config) IsMaxRtInterruptEnabled() bool {
+func (c *C) IsMaxRtInterruptEnabled() bool {
 	return c.Byte()&16 == 0
 }
 
@@ -114,14 +114,14 @@ func (c *Config) IsMaxRtInterruptEnabled() bool {
 
    xx0xxxxx: Reflect TX_DS as active low interrupt on the IRQ pin
    xx1xxxxx: Interrupt not reflected on the IRQ pin*/
-func (c *Config) SetTxDsInterruptEnabled(enable bool) {
+func (c *C) SetTxDsInterruptEnabled(enable bool) {
 	if enable {
 		c.R.Set(c.Byte() & 0xDF)
 	} else {
 		c.R.Set(c.Byte() | 32)
 	}
 }
-func (c *Config) IsTxDsInterruptEnabled() bool {
+func (c *C) IsTxDsInterruptEnabled() bool {
 	return c.Byte()&32 == 0
 }
 
@@ -130,13 +130,13 @@ func (c *Config) IsTxDsInterruptEnabled() bool {
 
    x0xxxxxx: Reflect RX_DR as active low interrupt on the IRQ pin
    x1xxxxxx: Interrupt not reflected on the IRQ pin */
-func (c *Config) SetRxDrInterruptEnabled(enable bool) {
+func (c *C) SetRxDrInterruptEnabled(enable bool) {
 	if enable {
 		c.R.Set(c.Byte() & 0xBF)
 	} else {
 		c.R.Set(c.Byte() | 64)
 	}
 }
-func (c *Config) IsRxDrInterruptEnabled() bool {
+func (c *C) IsRxDrInterruptEnabled() bool {
 	return c.Byte()&64 == 0
 }
