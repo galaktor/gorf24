@@ -1,6 +1,7 @@
 package reg
 
 import (
+	"github.com/galaktor/gorf24/reg"
 	"github.com/galaktor/gorf24/reg/addr"
 )
 
@@ -18,11 +19,11 @@ const (
    bit 7 reserved
    bits 3:2 reserved */
 type FifoStatus struct {
-	R
+	reg.R
 }
 
 func NewFifoStatus(flags byte) *FifoStatus {
-	return &FifoStatus{R{a: addr.FIFO_STATUS, flags: flags}}
+	return &FifoStatus{reg.New(addr.FIFO_STATUS, flags)}
 }
 
 /* RX_EMPTY (bit 0)
@@ -43,7 +44,7 @@ func NewFifoStatus(flags byte) *FifoStatus {
 */
 func (f *FifoStatus) Rx() FifoUsage {
 
-	return FifoUsage(f.flags & 3)
+	return FifoUsage(f.Byte() & 3)
 }
 
 /* TX_EMPTY (bit 4)
@@ -63,7 +64,7 @@ func (f *FifoStatus) Rx() FifoUsage {
    xx11xxxx -> empty AND full? INVALID! */
 func (f *FifoStatus) Tx() FifoUsage {
 
-	return FifoUsage((f.flags >> 4) & 3)
+	return FifoUsage((f.Byte() >> 4) & 3)
 }
 
 /* TX_REUSE (bit 6)
@@ -78,5 +79,5 @@ func (f *FifoStatus) Tx() FifoUsage {
    x0xxxxxx -> disabled
    x1xxxxxx -> enabled */
 func (f *FifoStatus) IsTxPayloadReuseEnabled() bool {
-	return f.flags&0x40 == 0x40
+	return f.Byte()&0x40 == 0x40
 }
