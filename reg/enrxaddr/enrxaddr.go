@@ -9,17 +9,17 @@ import (
 /* EN_RXADDR
    Enable RX Addresses
    bits 7:6 reserved */
-type EnabledRxAddresses struct {
+type E struct {
 	reg.R
 }
 
-func NewEnabledRxAddresses(flags byte) *EnabledRxAddresses {
-	return &EnabledRxAddresses{reg.New(addr.EN_RXADDR, flags)}
+func New(flags byte) *E {
+	return &E{reg.New(addr.EN_RXADDR, flags)}
 }
 
 /* ERX_Px
    Enable data pipe 'p' */
-func (e *EnabledRxAddresses) IsEnabled(p pipe.P) bool {
+func (e *E) IsEnabled(p pipe.P) bool {
 	var result bool
 
 	switch p {
@@ -39,14 +39,14 @@ func (e *EnabledRxAddresses) IsEnabled(p pipe.P) bool {
 
 	return result
 }
-func (e *EnabledRxAddresses) Set(p pipe.P, enabled bool) {
+func (e *E) Set(p pipe.P, enabled bool) {
 	if enabled {
 		e.enable(p)
 	} else {
 		e.disable(p)
 	}
 }
-func (e *EnabledRxAddresses) enable(p pipe.P) {
+func (e *E) enable(p pipe.P) {
 	switch p {
 	case pipe.P0:
 		e.R.Set(e.Byte() | 1)
@@ -62,7 +62,7 @@ func (e *EnabledRxAddresses) enable(p pipe.P) {
 		e.R.Set(e.Byte() | 32)
 	}
 }
-func (e *EnabledRxAddresses) disable(p pipe.P) {
+func (e *E) disable(p pipe.P) {
 	switch p {
 	case pipe.P0:
 		e.R.Set(e.Byte() & 0xFE)
