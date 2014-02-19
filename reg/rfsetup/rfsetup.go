@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/galaktor/gorf24/reg"
 	"github.com/galaktor/gorf24/reg/addr"
 )
 
@@ -30,11 +31,11 @@ const (
    bit 4 only used in test (but exposed here anyway)
    bit 0 obsolete */
 type RfSetup struct {
-	R
+	reg.R
 }
 
 func NewRfSetup(flags byte) *RfSetup {
-	return &RfSetup{R{a: addr.RF_SETUP, flags: flags}}
+	return &RfSetup{reg.New(addr.RF_SETUP, flags)}
 }
 
 /* RF_PWR (bits 2:1)
@@ -44,14 +45,14 @@ func NewRfSetup(flags byte) *RfSetup {
    'xxxxx10x' – -6dBm
    'xxxxx11x' –  0dBm */
 func (s *RfSetup) GetPowerLevel() PowerLevel {
-	return PowerLevel((s.flags & 0x6) >> 1)
+	return PowerLevel((s.Byte() & 0x6) >> 1)
 }
 func (s *RfSetup) SetPowerLevel(p PowerLevel) error {
 	if p > 3 {
 		return errors.New(fmt.Sprintf("Value out of legal range: %v. Allowed value from 0 -3.", p))
 	}
 
-	s.flags = s.flags&0xF9 | (byte(p) << 1)
+	s.R.Set(s.Byte()&0xF9 | (byte(p) << 1))
 	return nil
 }
 
@@ -71,7 +72,7 @@ func (s *RfSetup) SetPowerLevel(p PowerLevel) error {
 func (s *RfSetup) GetDatarate() Datarate {
 	var result Datarate
 
-	switch val := s.flags & 0x28; val {
+	switch val := s.Byte() & 0x28; val {
 	case 0x0: // xx0x0xxx
 		result = RATE_1MBPS
 	case 0x8: // xx0x1xxx
@@ -89,11 +90,11 @@ func (s *RfSetup) SetDataRate(d Datarate) (err error) {
 
 	switch d {
 	case RATE_1MBPS: // xx0x0xxx
-		s.flags &= 0xD7
+		s.R.Set(s.Byte() & 0xD7)
 	case RATE_2MBPS: // xx0x1xxx
-		s.flags = (s.flags & 0xDF) | 8
+		s.R.Set((s.Byte() & 0xDF) | 8)
 	case RATE_250KBPS: // xx1x0xxx
-		s.flags = (s.flags & 0xF7) | 32
+		s.R.Set((s.Byte() & 0xF7) | 32)
 	default:
 		err = errors.New(fmt.Sprintf("unsupported Datarate: %v. allowed values 0 - 2", d))
 	}
@@ -108,25 +109,25 @@ func (s *RfSetup) SetDataRate(d Datarate) (err error) {
    xxx0xxxx - disabled
    xxx1xxxx - enabled */
 func (s *RfSetup) IsPllLockEnabled() bool {
-	return s.flags&16 == 16
+	return s.Byte()&16 == 16
 }
 func (s *RfSetup) SetPllLock(enabled bool) {
 	if enabled {
-		s.flags |= 0x10
+		s.R.Set(s.Byte() | 0x10)
 	} else {
-		s.flags &= 0xEF
+		s.R.Set(s.Byte() & 0xEF)
 	}
 }
 
 /* CONT_WAVE
    Enables continuous carrier transmit when high. */
 func (s *RfSetup) IsContinuousCarrierTransmitEnabled() bool {
-	return s.flags&0x80 == 0x80 // 1xxxxxxx
+	return s.Byte()&0x80 == 0x80 // 1xxxxxxx
 }
 func (s *RfSetup) SetContinuousCarrierTransmit(enabled bool) {
 	if enabled {
-		s.flags |= 0x80 // 1xxxxxxx
+		s.R.Set(s.Byte() | 0x80) // 1xxxxxxx
 	} else {
-		s.flags &= 0x7F // 0xxxxxxx
+		s.R.Set(s.Byte() & 0x7F) // 0xxxxxxx
 	}
 }
