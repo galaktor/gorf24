@@ -1,19 +1,20 @@
-package reg
+package rxaddr
 
 import (
 	"testing"
 
 	"github.com/galaktor/gorf24/reg/addr"
+	"github.com/galaktor/gorf24/reg/xaddr"
 	"github.com/galaktor/gorf24/pipe"
 )
 
-func someFullRxAddr(flags uint64) *FullXAddress {
-	return NewFullRxAddress(pipe.P0, XAddress(flags))
+func someFullRxAddr(flags uint64) *xaddr.Full {
+	return NewFullRxAddress(pipe.P0, xaddr.A(flags))
 }
 
 func TestNewFullRxAddress_Pipe0_HasP0RegisterAddress(t *testing.T) {
 	expected := addr.RX_ADDR(pipe.P0)
-	a := NewFullRxAddress(pipe.P0, XAddress(0))
+	a := NewFullRxAddress(pipe.P0, xaddr.A(0))
 
 	actual := a.Address()
 
@@ -25,7 +26,7 @@ func TestNewFullRxAddress_Pipe0_HasP0RegisterAddress(t *testing.T) {
 
 func TestNewFullRxAddress_Pipe1_HasP0RegisterAddress(t *testing.T) {
 	expected := addr.RX_ADDR(pipe.P1)
-	a := NewFullRxAddress(pipe.P1, XAddress(0))
+	a := NewFullRxAddress(pipe.P1, xaddr.A(0))
 
 	actual := a.Address()
 
@@ -37,7 +38,7 @@ func TestNewFullRxAddress_Pipe1_HasP0RegisterAddress(t *testing.T) {
 
 func TestNewFullRxAddress_Pipe2_HasP0RegisterAddress(t *testing.T) {
 	expected := addr.RX_ADDR(pipe.P2)
-	a := NewFullRxAddress(pipe.P2, XAddress(0))
+	a := NewFullRxAddress(pipe.P2, xaddr.A(0))
 
 	actual := a.Address()
 
@@ -49,7 +50,7 @@ func TestNewFullRxAddress_Pipe2_HasP0RegisterAddress(t *testing.T) {
 
 func TestNewFullRxAddress_Pipe3_HasP0RegisterAddress(t *testing.T) {
 	expected := addr.RX_ADDR(pipe.P3)
-	a := NewFullRxAddress(pipe.P3, XAddress(0))
+	a := NewFullRxAddress(pipe.P3, xaddr.A(0))
 
 	actual := a.Address()
 
@@ -61,7 +62,7 @@ func TestNewFullRxAddress_Pipe3_HasP0RegisterAddress(t *testing.T) {
 
 func TestNewFullRxAddress_Pipe4_HasP0RegisterAddress(t *testing.T) {
 	expected := addr.RX_ADDR(pipe.P4)
-	a := NewFullRxAddress(pipe.P4, XAddress(0))
+	a := NewFullRxAddress(pipe.P4, xaddr.A(0))
 
 	actual := a.Address()
 
@@ -73,7 +74,7 @@ func TestNewFullRxAddress_Pipe4_HasP0RegisterAddress(t *testing.T) {
 
 func TestNewFullRxAddress_Pipe5_HasP0RegisterAddress(t *testing.T) {
 	expected := addr.RX_ADDR(pipe.P5)
-	a := NewFullRxAddress(pipe.P5, XAddress(0))
+	a := NewFullRxAddress(pipe.P5, xaddr.A(0))
 
 	actual := a.Address()
 

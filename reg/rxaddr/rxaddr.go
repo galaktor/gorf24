@@ -1,8 +1,9 @@
-package reg
+package rxaddr
 
 import (
 	"github.com/galaktor/gorf24/pipe"
 	"github.com/galaktor/gorf24/reg/addr"
+	"github.com/galaktor/gorf24/reg/xaddr"
 )
 
 /* use to create 5byte XAddress for RX_ADDR_Px
@@ -13,8 +14,8 @@ import (
    5 Bytes maximum
    length. (LSByte is written first. Write the number of
    bytes defined by SETUP_AW)*/
-func NewFullRxAddress(p pipe.P, flags XAddress) *FullXAddress {
-	a := newFullXAddress(addr.RX_ADDR(p), flags)
+func NewFullRxAddress(p pipe.P, flags xaddr.A) *xaddr.Full {
+	a := xaddr.NewFull(addr.RX_ADDR(p), flags)
 	return a
 }
 
@@ -25,6 +26,6 @@ func NewFullRxAddress(p pipe.P, flags XAddress) *FullXAddress {
 
    Only LSB. MSBytes
    are equal to RX_ADDR_P1[39:8] */
-func NewPartialRxAddress(p pipe.P, root *FullXAddress, lsb byte) *PartialXAddress {
-	return newPartialXAddress(addr.RX_ADDR(p), root, lsb)
+func NewPartialRxAddress(p pipe.P, root *xaddr.Full, lsb byte) *xaddr.Partial {
+	return xaddr.NewPartial(addr.RX_ADDR(p), root, lsb)
 }
