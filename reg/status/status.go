@@ -1,10 +1,11 @@
-package reg
+package status
 
 import (
 	"errors"
 	"fmt"
 
 	"github.com/galaktor/gorf24/pipe"
+	"github.com/galaktor/gorf24/reg"
 	"github.com/galaktor/gorf24/reg/addr"
 )
 
@@ -14,12 +15,14 @@ import (
    is shifted serially out on the MISO pin)
    bit 7 reserved */
 type Status struct {
-	R
+	reg.R
 }
 
+const res_mask = 0x7F
+
 func NewStatus(flags byte) *Status {
-	masked := flags & 0x7F // reset reserved bits
-	return &Status{R{a: addr.STATUS, flags: masked}}
+	masked := flags & res_mask // reset reserved bits
+	return &Status{reg.New(addr.STATUS, masked)}
 }
 
 /* TX_FULL (bit 0)
@@ -30,7 +33,7 @@ func NewStatus(flags byte) *Status {
    tempted to return FifoUsage here like for FIFO_STATUS
    but the data here really *is* boolean */
 func (s *Status) TxFull() bool {
-	return (s.flags & 1) == 1
+	return (s.Byte() & 1) == 1
 }
 
 /* RX_P_NO (bits 3:1)
@@ -40,7 +43,7 @@ func (s *Status) TxFull() bool {
    110: Not Used
    111: RX FIFO Empty */
 func (s *Status) RxPipeNumber() (pipe.P, error) {
-	val := (s.flags >> 1) & 7
+	val := (s.Byte() >> 1) & 7
 
 	switch {
 	case val < 6:
@@ -66,10 +69,10 @@ func (s *Status) RxFifoEmpty() bool {
    Write 1 to clear bit. If MAX_RT is asserted it must
    be cleared to enable further communication. */
 func (s *Status) MaxTxRetransmits() bool {
-	return (s.flags & 8) == 8
+	return (s.Byte() & 8) == 8
 }
 func (s *Status) ClearMaxTxRetransmits() {
-	s.flags |= 8
+	s.R.Set(s.Byte() | 8)
 }
 
 /* TX_DS (bit 5)
@@ -79,10 +82,10 @@ func (s *Status) ClearMaxTxRetransmits() {
    vated, this bit is set high only when ACK is
    received. */
 func (s *Status) TxDataSent() bool {
-	return (s.flags & 16) == 16
+	return (s.Byte() & 16) == 16
 }
 func (s *Status) ClearTxDataSent() {
-	s.flags |= 16
+	s.R.Set(s.Byte() | 16)
 }
 
 /* RX_DR (bit 6)
@@ -90,8 +93,8 @@ func (s *Status) ClearTxDataSent() {
    Data Ready RX FIFO interrupt. Asserted when
    new data arrives RX FIFO. */
 func (s *Status) RxDataReady() bool {
-	return (s.flags & 32) == 32
+	return (s.Byte() & 32) == 32
 }
 func (s *Status) ClearRxDataReady() {
-	s.flags |= 32
+	s.R.Set(s.Byte() | 32)
 }
