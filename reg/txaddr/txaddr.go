@@ -1,7 +1,8 @@
-package reg
+package txaddr
 
 import (
 	"github.com/galaktor/gorf24/reg/addr"
+	"github.com/galaktor/gorf24/reg/xaddr"
 )
 
 /* use to create XAddress for TX_ADDR
@@ -12,6 +13,6 @@ import (
    Set RX_ADDR_P0 equal to this address to handle
    automatic acknowledge if this is a PTX device with
    Enhanced ShockBurstTM enabled. */
-func NewTxAddress(flags XAddress) *FullXAddress {
-	return newFullXAddress(addr.TX_ADDR, flags)
+func NewTxAddress(flags xaddr.A) *xaddr.Full {
+	return xaddr.NewFull(addr.TX_ADDR, flags)
 }
