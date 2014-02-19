@@ -5,25 +5,25 @@ import (
 	"github.com/galaktor/gorf24/reg/addr"
 )
 
-type FifoUsage byte
+type Usage byte
 
 const (
-	FIFO_PARTIAL FifoUsage = iota // 0x0
-	FIFO_EMPTY                    // 0x1
-	FIFO_FULL                     // 0x2
-	FIFO_INVALID                  // 0x3
+	PARTIAL Usage = iota // 0x0
+	EMPTY                // 0x1
+	FULL                 // 0x2
+	INVALID              // 0x3
 )
 
 /* FIFO_STATUS
    FIFO Status Register
    bit 7 reserved
    bits 3:2 reserved */
-type FifoStatus struct {
+type F struct {
 	reg.R
 }
 
-func NewFifoStatus(flags byte) *FifoStatus {
-	return &FifoStatus{reg.New(addr.FIFO_STATUS, flags)}
+func New(flags byte) *F {
+	return &F{reg.New(addr.FIFO_STATUS, flags)}
 }
 
 /* RX_EMPTY (bit 0)
@@ -42,9 +42,9 @@ func NewFifoStatus(flags byte) *FifoStatus {
    xxxxxx10 -> full
    xxxxxx11 -> empty AND full? INVALID!
 */
-func (f *FifoStatus) Rx() FifoUsage {
+func (f *F) Rx() Usage {
 
-	return FifoUsage(f.Byte() & 3)
+	return Usage(f.Byte() & 3)
 }
 
 /* TX_EMPTY (bit 4)
@@ -62,9 +62,9 @@ func (f *FifoStatus) Rx() FifoUsage {
    xx01xxxx -> empty
    xx10xxxx -> full
    xx11xxxx -> empty AND full? INVALID! */
-func (f *FifoStatus) Tx() FifoUsage {
+func (f *F) Tx() Usage {
 
-	return FifoUsage((f.Byte() >> 4) & 3)
+	return Usage((f.Byte() >> 4) & 3)
 }
 
 /* TX_REUSE (bit 6)
@@ -78,6 +78,6 @@ func (f *FifoStatus) Tx() FifoUsage {
 
    x0xxxxxx -> disabled
    x1xxxxxx -> enabled */
-func (f *FifoStatus) IsTxPayloadReuseEnabled() bool {
+func (f *F) IsTxPayloadReuseEnabled() bool {
 	return f.Byte()&0x40 == 0x40
 }

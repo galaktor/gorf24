@@ -7,8 +7,8 @@ import (
 	"github.com/galaktor/gorf24/util"
 )
 
-func TestNewFifoStatus_RegisterAddress_IsFIFO_STATUS(t *testing.T) {
-	f := NewFifoStatus(0)
+func TestNewFifoStatus_RegisterAddress_IsSTATUS(t *testing.T) {
+	f := New(0)
 	expected := addr.FIFO_STATUS
 
 	actual := f.Address()
@@ -18,9 +18,9 @@ func TestNewFifoStatus_RegisterAddress_IsFIFO_STATUS(t *testing.T) {
 	}
 }
 
-func TestRx_FullBitOne_ReturnsFIFO_FULL(t *testing.T) {
-	f := NewFifoStatus(util.B("00000010"))
-	expected := FIFO_FULL
+func TestRx_FullBitOne_ReturnsFULL(t *testing.T) {
+	f := New(util.B("00000010"))
+	expected := FULL
 
 	actual := f.Rx()
 
@@ -29,9 +29,9 @@ func TestRx_FullBitOne_ReturnsFIFO_FULL(t *testing.T) {
 	}
 }
 
-func TestRx_EmptyBitOne_ReturnsFIFO_EMPTY(t *testing.T) {
-	f := NewFifoStatus(util.B("00000001"))
-	expected := FIFO_EMPTY
+func TestRx_EmptyBitOne_ReturnsEMPTY(t *testing.T) {
+	f := New(util.B("00000001"))
+	expected := EMPTY
 
 	actual := f.Rx()
 
@@ -40,9 +40,9 @@ func TestRx_EmptyBitOne_ReturnsFIFO_EMPTY(t *testing.T) {
 	}
 }
 
-func TestRx_EmptyAndFullBitsZero_ReturnsFIFO_PARTIAL(t *testing.T) {
-	f := NewFifoStatus(util.B("11111100"))
-	expected := FIFO_PARTIAL
+func TestRx_EmptyAndFullBitsZero_ReturnsPARTIAL(t *testing.T) {
+	f := New(util.B("11111100"))
+	expected := PARTIAL
 
 	actual := f.Rx()
 
@@ -51,9 +51,9 @@ func TestRx_EmptyAndFullBitsZero_ReturnsFIFO_PARTIAL(t *testing.T) {
 	}
 }
 
-func TestRx_EmptyAndFullBitsOne_ReturnsFIFO_INVALID(t *testing.T) {
-	f := NewFifoStatus(util.B("00000011"))
-	expected := FIFO_INVALID
+func TestRx_EmptyAndFullBitsOne_ReturnsINVALID(t *testing.T) {
+	f := New(util.B("00000011"))
+	expected := INVALID
 
 	actual := f.Rx()
 
@@ -62,9 +62,9 @@ func TestRx_EmptyAndFullBitsOne_ReturnsFIFO_INVALID(t *testing.T) {
 	}
 }
 
-func TestTx_FullBitOne_ReturnsFIFO_FULL(t *testing.T) {
-	f := NewFifoStatus(util.B("00100000"))
-	expected := FIFO_FULL
+func TestTx_FullBitOne_ReturnsFULL(t *testing.T) {
+	f := New(util.B("00100000"))
+	expected := FULL
 
 	actual := f.Tx()
 
@@ -73,9 +73,9 @@ func TestTx_FullBitOne_ReturnsFIFO_FULL(t *testing.T) {
 	}
 }
 
-func TestTx_EmptyBitOne_ReturnsFIFO_EMPTY(t *testing.T) {
-	f := NewFifoStatus(util.B("00010000"))
-	expected := FIFO_EMPTY
+func TestTx_EmptyBitOne_ReturnsEMPTY(t *testing.T) {
+	f := New(util.B("00010000"))
+	expected := EMPTY
 
 	actual := f.Tx()
 
@@ -84,9 +84,9 @@ func TestTx_EmptyBitOne_ReturnsFIFO_EMPTY(t *testing.T) {
 	}
 }
 
-func TestTx_EmptyAndFullBitsZero_ReturnsFIFO_PARTIAL(t *testing.T) {
-	f := NewFifoStatus(util.B("11001111"))
-	expected := FIFO_PARTIAL
+func TestTx_EmptyAndFullBitsZero_ReturnsPARTIAL(t *testing.T) {
+	f := New(util.B("11001111"))
+	expected := PARTIAL
 
 	actual := f.Tx()
 
@@ -95,9 +95,9 @@ func TestTx_EmptyAndFullBitsZero_ReturnsFIFO_PARTIAL(t *testing.T) {
 	}
 }
 
-func TestTx_EmptyAndFullBitsOne_ReturnsFIFO_INVALID(t *testing.T) {
-	f := NewFifoStatus(util.B("00110000"))
-	expected := FIFO_INVALID
+func TestTx_EmptyAndFullBitsOne_ReturnsINVALID(t *testing.T) {
+	f := New(util.B("00110000"))
+	expected := INVALID
 
 	actual := f.Tx()
 
@@ -107,7 +107,7 @@ func TestTx_EmptyAndFullBitsOne_ReturnsFIFO_INVALID(t *testing.T) {
 }
 
 func TestIsTxPayloadReuseEnabled_BitZero_ReturnsFalse(t *testing.T) {
-	f := NewFifoStatus(util.B("10111111"))
+	f := New(util.B("10111111"))
 	expected := false
 
 	actual := f.IsTxPayloadReuseEnabled()
@@ -118,7 +118,7 @@ func TestIsTxPayloadReuseEnabled_BitZero_ReturnsFalse(t *testing.T) {
 }
 
 func TestIsTxPayloadReuseEnabled_BitOne_ReturnsTrue(t *testing.T) {
-	f := NewFifoStatus(util.B("01000000"))
+	f := New(util.B("01000000"))
 	expected := true
 
 	actual := f.IsTxPayloadReuseEnabled()
