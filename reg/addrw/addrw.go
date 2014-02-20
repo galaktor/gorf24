@@ -23,13 +23,17 @@ const (
 /* SETUP_AW
    Setup of Address Widths
    (common for all data pipes)
-   can only use two LSBits; 7:2 must be 000000 */
+   can only use two LSBits; 
+   bits 7:2 reserved, must be 000000 */
 type AW struct {
 	reg.R
 }
 
+const RES_MASK byte = 0x03 // 00000011
+
 func New(flags byte) *AW {
-	return &AW{reg.New(addr.SETUP_AW, flags)}
+	masked := flags & RES_MASK
+	return &AW{reg.New(addr.SETUP_AW, masked)}
 }
 
 /* AW (bits 1:0)

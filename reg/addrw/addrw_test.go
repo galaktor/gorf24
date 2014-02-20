@@ -8,7 +8,30 @@ import (
 	"testing"
 
 	"github.com/galaktor/gorf24/util"
+	"github.com/galaktor/gorf24/reg/addr"
 )
+
+func TestNew_RegisterAddress_IsSETUP_AW(t *testing.T) {
+	w := New(0)
+	expected := addr.SETUP_AW
+
+	actual := w.Address()
+
+	if actual != expected {
+		t.Errorf("expected '%b' but found '%b' with addrwidths '%v'", expected, actual, w)
+	}
+}
+
+func TestNew_ReservedBitsSet_StoresZeroes(t *testing.T) {
+	w := New(util.B("11111111"))
+	expected := util.B("00000011")
+
+	actual := w.Byte()
+
+	if actual != expected {
+		t.Errorf("expected '%b' but found '%b' with addrwidths '%v'", expected, actual, w)
+	}
+}
 
 func TestSet_3Bytes_FlipsRightBit(t *testing.T) {
 	w := New(util.B("00000000"))
