@@ -16,8 +16,11 @@ type F struct {
 	reg.R
 }
 
+const RES_MASK byte = 0x07
+
 func New(flags byte) *F {
-	return &F{reg.New(addr.FEATURE, flags)}
+	masked := flags & RES_MASK
+	return &F{reg.New(addr.FEATURE, masked)}
 }
 
 /* EN_DYN_ACK (bit 0)

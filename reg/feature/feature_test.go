@@ -11,11 +11,22 @@ import (
 	"github.com/galaktor/gorf24/util"
 )
 
-func TestNewFeature_RegisterAddress_IsFEATURE(t *testing.T) {
+func TestNew_RegisterAddress_IsFEATURE(t *testing.T) {
 	f := New(0)
 	expected := addr.FEATURE
 
 	actual := f.Address()
+
+	if actual != expected {
+		t.Errorf("expected '%b' but found '%b' with feature '%v'", expected, actual, f)
+	}
+}
+
+func TestNew_ReservedBitsOne_StoresZeroes(t *testing.T) {
+	f := New(util.B("11111111"))
+	expected := util.B("00000111")
+	
+	actual := f.Byte()
 
 	if actual != expected {
 		t.Errorf("expected '%b' but found '%b' with feature '%v'", expected, actual, f)
@@ -35,8 +46,8 @@ func TestSetDynamicAck_Enabled_FlipsRightBit(t *testing.T) {
 }
 
 func TestSetDynamicAck_Disabled_FlipsRightBit(t *testing.T) {
-	f := New(util.B("11111111"))
-	expected := util.B("11111110")
+	f := New(util.B("00000111"))
+	expected := util.B("00000110")
 
 	f.SetDynamicAck(false)
 
@@ -81,8 +92,8 @@ func TestSetPayloadWithAck_Enabled_FlipsRightBit(t *testing.T) {
 }
 
 func TestSetPayloadWithAck_Disabled_FlipsRightBit(t *testing.T) {
-	f := New(util.B("11111111"))
-	expected := util.B("11111101")
+	f := New(util.B("00000111"))
+	expected := util.B("00000101")
 
 	f.SetPayloadWithAck(false)
 
