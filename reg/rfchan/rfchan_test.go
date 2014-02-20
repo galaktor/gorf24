@@ -8,7 +8,30 @@ import (
 	"testing"
 
 	"github.com/galaktor/gorf24/util"
+	"github.com/galaktor/gorf24/reg/addr"
 )
+
+func TestNew_RegisterAddress_IsRF_CH(t *testing.T) {
+	c := New(0)
+	expected := addr.RF_CH
+
+	actual := c.Address()
+
+	if actual != expected {
+		t.Errorf("expected '%b' but found '%b' on rfchan '%v'", expected, actual, c)
+	}
+}
+
+func TestNew_ReservedBitsOne_StoresZeroes(t *testing.T) {
+	c := New(util.B("11111111"))
+	expected := util.B("01111111")
+
+	actual := c.Byte()
+
+	if actual != expected {
+		t.Errorf("expected '%b' but found '%b' on rfchan '%v'", expected, actual, c)
+	}
+}
 
 func TestGet_Zeroes_ReturnsZero(t *testing.T) {
 	c := New(util.B("00000000"))
