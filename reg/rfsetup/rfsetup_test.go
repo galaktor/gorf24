@@ -11,7 +11,7 @@ import (
 	"github.com/galaktor/gorf24/reg/addr"
 )
 
-func New_RegisterAddress_IsRF_SETUP(t *testing.T) {
+func TestNew_RegisterAddress_IsRF_SETUP(t *testing.T) {
 	s := New(0)
 	expected := addr.RF_SETUP
 
@@ -21,6 +21,18 @@ func New_RegisterAddress_IsRF_SETUP(t *testing.T) {
 		t.Errorf("expected '%b' but found '%b' with rfsetup '%v'", expected, actual, s)
 	}
 }
+
+func TestNew_ReservedBitsOne_StoresZeroes(t *testing.T) {
+	s := New(util.B("11111111"))
+	expected := util.B("10111110")
+	
+	actual := s.Byte()
+
+	if actual != expected {
+		t.Errorf("expected '%b' but found '%b' with rfsetup '%v'", expected, actual, s)
+	}
+}
+
 
 func TestGetPower_Zero_ReturnsMin(t *testing.T) {
 	s := New(util.B("11111001"))
@@ -67,8 +79,8 @@ func TestGetPower_Three_ReturnsMax(t *testing.T) {
 }
 
 func TestSetPower_Min_FlipsRightBits(t *testing.T) {
-	s := New(util.B("11111111"))
-	expected := util.B("11111001")
+	s := New(util.B("10111110"))
+	expected := util.B("10111000")
 	
 	s.SetPowerLevel(PA_MIN)
 
@@ -79,8 +91,8 @@ func TestSetPower_Min_FlipsRightBits(t *testing.T) {
 }
 
 func TestSetPower_Low_FlipsRightBits(t *testing.T) {
-	s := New(util.B("11111111"))
-	expected := util.B("11111011")
+	s := New(util.B("10111110"))
+	expected := util.B("10111010")
 	
 	s.SetPowerLevel(PA_LOW)
 
@@ -91,8 +103,8 @@ func TestSetPower_Low_FlipsRightBits(t *testing.T) {
 }
 
 func TestSetPower_Medium_FlipsRightBits(t *testing.T) {
-	s := New(util.B("11111111"))
-	expected := util.B("11111101")
+	s := New(util.B("10111110"))
+	expected := util.B("10111100")
 	
 	s.SetPowerLevel(PA_MEDIUM)
 
@@ -103,8 +115,8 @@ func TestSetPower_Medium_FlipsRightBits(t *testing.T) {
 }
 
 func TestSetPower_Max_FlipsRightBits(t *testing.T) {
-	s := New(util.B("11111111"))
-	expected := util.B("11111111")
+	s := New(util.B("10111000"))
+	expected := util.B("10111110")
 	
 	s.SetPowerLevel(PA_MAX)
 
@@ -176,8 +188,8 @@ func TestGetDatarate_DrLowBitOne_DrHighBitOne_Returns250Kbps(t *testing.T) {
 }
 
 func TestSetDataRate_1MPS_FlipsRightBits(t *testing.T) {
-	s := New(util.B("11111111"))
-	expected := util.B("11010111")
+	s := New(util.B("10111110"))
+	expected := util.B("10010110")
 
 	s.SetDataRate(RATE_1MBPS)
 
@@ -266,8 +278,8 @@ func TestSetPllLock_Enabled_BitIsOne(t *testing.T) {
 }
 
 func TestSetPllLock_Disabled_BitIsOne(t *testing.T) {
-	s := New(util.B("11111111"))
-	expected := util.B("11101111")
+	s := New(util.B("10111110"))
+	expected := util.B("10101110")
 	
 	s.SetPllLock(false)
 	

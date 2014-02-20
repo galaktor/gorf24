@@ -38,8 +38,11 @@ type R struct {
 	reg.R
 }
 
+const RES_MASK byte = 0xBE // 10111110
+
 func New(flags byte) *R {
-	return &R{reg.New(addr.RF_SETUP, flags)}
+	masked := flags & RES_MASK
+	return &R{reg.New(addr.RF_SETUP, masked)}
 }
 
 /* RF_PWR (bits 2:1)
