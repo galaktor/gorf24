@@ -11,11 +11,22 @@ import (
 	"github.com/galaktor/gorf24/util"
 )
 
-func TestNewFifoStatus_RegisterAddress_IsSTATUS(t *testing.T) {
+func TestNewFifoStatus_RegisterAddress_IsFIFO_STATUS(t *testing.T) {
 	f := New(0)
 	expected := addr.FIFO_STATUS
 
 	actual := f.Address()
+
+	if actual != expected {
+		t.Errorf("expected '%b' but found '%b' with fifostatus '%v'", expected, actual, f)
+	}
+}
+
+func TestNew_ReservedBitsOne_StoresAsZero(t *testing.T) {
+	f := New(util.B("11111111"))
+	expected := util.B("01110011")
+	
+	actual := f.Byte()
 
 	if actual != expected {
 		t.Errorf("expected '%b' but found '%b' with fifostatus '%v'", expected, actual, f)
