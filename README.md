@@ -1,17 +1,28 @@
-***************************
-      HOW TO INSTALL
-***************************
- TODO
+# Radio-fy your Raspberry Pi
+It's software that allows you to control the low-cost Nordic Semiconductor nRF24L01+ radio transceiver.
 
+It works or can be modified to make it work on any system that satisfies the following conditions:
+* Linux OS
+* SPI
+* Go programming language
 
-***************************
-  COPYRIGHT AND LICENSE
-***************************
+I developed it on/for the Raspberry Pi running Arch Linux for ARM. The Pi has GPIO pins with SPI. If your device needs to control the pins and/or SPI differently, the relevant code is simple and not very hard to change. The majority of gorf24 code deals with the transceiver logic according to the official specification and will work if you can make the gpio and spi code work for you.
 
-Copyright 2013, Raphael Estrada
-Licensed under the GNU General Public License verison 3
+## HOW TO INSTALL
+```
+$> go get github.com/galaktor/gorf24
+```
 
-```This program is free software: you can redistribute it and/or modify
+TODO: setup details with Arch on Pi
+
+# COPYRIGHT AND LICENSE
+
+Copyright 2013, 2014 Raphael Estrada
+
+Licensed under the [GNU General Public License verison 3](http://www.gnu.org/licenses/gpl-3.0.txt "GNU GPL v3")
+
+```
+This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
@@ -22,12 +33,11 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.```
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+```
 
 
-**************************
-  THE GIANTS' SHOULDERS
-**************************
+# THE GIANTS' SHOULDERS
 I wrote the current version of gorf24 entirely from
 scratch, mostly based on the following sources:
 
