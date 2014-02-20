@@ -1,10 +1,18 @@
-# Radio-fy your Raspberry Pi
-It's software that allows you to control the low-cost Nordic Semiconductor nRF24L01+ radio transceiver.
+(this readme is very work-in-progress, bear with me)
 
+# Radio-fy your Raspberry Pi
+It's software that allows you to control the low-cost Nordic Semiconductor nRF24L01+ radio transceiver. It's written and tested on/for Raspberry Pi, but can be slightly modified to work for other end devices as well.
+
+## Changing GPIO and SPI access
 It works or can be modified to make it work on any system that satisfies the following conditions:
 * Linux OS
 * SPI
-* Go programming language
+
+gorf24 is written using the Go programming language, which was a tool very well suited for the task. Your target device does NOT need to have go installed, as Go allows you to cross-compile for other platforms quite easily. You can develop your application on another machine and deploy the single-executable application to your target devices later. For the Pi, you can compile your app for ARM and it should work just fine.
+
+As these devices are usually fairly low-end they often do not make good development environments anway. That said, I do occasionally develop on my (over-clocked) Pi, even though the compile times are obviously longer than on my dev box.
+
+As for testing, I will be looking at writing simulation tools and/or integration tests that mock GPIO and SPI that do not require actual working GPIO on the dev machine. This is a big TODO however, and I might be naive in thinking that I can pull it off. We will see...until then, you need to know your device and it's GPIO/SPI interface via the OS.
 
 I developed it on/for the Raspberry Pi running Arch Linux for ARM. The Pi has GPIO pins with SPI. If your device needs to control the pins and/or SPI differently, the relevant code is simple and not very hard to change. The majority of gorf24 code deals with the transceiver logic according to the official specification and will work if you can make the gpio and spi code work for you.
 
