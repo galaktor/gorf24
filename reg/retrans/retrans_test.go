@@ -8,7 +8,19 @@ import (
 	"testing"
 
 	"github.com/galaktor/gorf24/util"
+	"github.com/galaktor/gorf24/reg/addr"
 )
+
+func TestNew_RegisterAddress_IsSETUP_RETR(t *testing.T) {
+	r := New(0)
+	expected := addr.SETUP_RETR
+
+	actual := r.Address()
+
+	if actual != expected {
+		t.Errorf("expected '%b' but found '%b' with retrans '%v'", expected, actual, r)
+	}
+}
 
 func TestSetCount_Zero_FlipsRightBits(t *testing.T) {
 	r := New(util.B("11111111"))

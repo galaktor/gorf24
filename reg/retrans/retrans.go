@@ -62,7 +62,7 @@ func (r *R) GetCount() uint8 {
 	return r.Byte() & 0x0F
 }
 
-/* ARD
+/* ARD (bits 7:4)
    Auto Retransmit Delay
    ‘0000xxxx’ – Wait 250μS
    ‘0001xxxx’ – Wait 500μS
