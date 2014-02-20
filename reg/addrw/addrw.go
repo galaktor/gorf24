@@ -44,7 +44,7 @@ func New(flags byte) *AW {
    '11' – 5 bytes
    LSByte is used if address width is below 5 bytes */
 func (a *AW) Set(w Width) error {
-	if w == 0 || w&0xFC > 0 {
+	if w == 0 || w > 3 {
 		return errors.New(fmt.Sprintf("value outside of legal range: %v. only values 1 - 3 allowed.", w))
 	}
 
