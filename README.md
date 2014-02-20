@@ -53,7 +53,7 @@ scratch, mostly based on the following sources:
 * RPi gpio tutorial:       <https://sites.google.com/site/semilleroadt/raspberry-pi-tutorials/gpio>
 * nRF24L01+ specification: <http://www.nordicsemi.com/eng/Products/2.4GHz-RF/nRF24L01P>
 
-Early versions of gorf24 dynamically liked to the RF24
+Early versions of gorf24 dynamically linked to the RF24
 library for Raspberry Pi by Stanley Seow. Some of the
 comments in the code pointed me in the right direction,
 most notably with regards to timing.
