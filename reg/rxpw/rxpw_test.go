@@ -26,6 +26,17 @@ func TestNew_RegisterAddress_AllPipes_HasRightRegister(t *testing.T) {
 	}
 }
 
+func TestNew_ReservedBitsOne_StoresZeroes(t *testing.T) {
+	w := New(pipe.P0, util.B("11111111"))
+	expected := util.B("00111111")
+
+	actual := w.Byte()
+
+	if actual != expected {
+		t.Errorf("expected '%b' but found '%b' with rxpw '%v'", expected, actual, w)
+	}
+}
+
 func TestSet_Zero_FlipsRelevantBits(t *testing.T) {
 	w := New(pipe.P0, util.B("00111111"))
 	expected := util.B("00000000")

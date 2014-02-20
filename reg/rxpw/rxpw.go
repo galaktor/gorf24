@@ -28,8 +28,11 @@ type W struct {
 	reg.R
 }
 
+const RES_MASK byte = 0x3F
+
 func New(p pipe.P, flags byte) *W {
-	return &W{reg.New(addr.RX_PW(p), flags)}
+	masked := flags & RES_MASK
+	return &W{reg.New(addr.RX_PW(p), masked)}
 }
 
 /* RX_PWx (bits 5:0) */
