@@ -20,8 +20,11 @@ type DP struct {
 	reg.R
 }
 
+const RES_MASK byte = 0x3F // 00111111
+
 func New(flags byte) *DP {
-	return &DP{reg.New(addr.DYNPD, flags)}
+	masked := flags & RES_MASK
+	return &DP{reg.New(addr.DYNPD, masked)}
 }
 
 /* DPL_Px

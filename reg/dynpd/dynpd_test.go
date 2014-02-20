@@ -12,11 +12,22 @@ import (
 	"github.com/galaktor/gorf24/util"
 )
 
-func TestNewDynamicPayload_RegisterAddress_IsDYNPD(t *testing.T) {
+func TestNew_RegisterAddress_IsDYNPD(t *testing.T) {
 	d := New(0)
 	expected := addr.DYNPD
 
 	actual := d.Address()
+
+	if actual != expected {
+		t.Errorf("expected '%b' but found '%b' with dynpd '%v'", expected, actual, d)
+	}
+}
+
+func TestNew_ReservedBitsSet_StoresZeroes(t *testing.T) {
+	d := New(util.B("11111111"))
+	expected := util.B("00111111")
+
+	actual := d.Byte()
 
 	if actual != expected {
 		t.Errorf("expected '%b' but found '%b' with dynpd '%v'", expected, actual, d)
