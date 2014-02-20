@@ -17,8 +17,11 @@ type E struct {
 	reg.R
 }
 
+const RES_MASK byte = 0x3F // 00111111
+
 func New(flags byte) *E {
-	return &E{reg.New(addr.EN_RXADDR, flags)}
+	masked := flags & RES_MASK
+	return &E{reg.New(addr.EN_RXADDR, masked)}
 }
 
 /* ERX_Px

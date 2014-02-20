@@ -8,8 +8,31 @@ import (
 	"testing"
 
 	"github.com/galaktor/gorf24/util"
+	"github.com/galaktor/gorf24/reg/addr"
 	"github.com/galaktor/gorf24/pipe"
 )
+
+func TestNew_RegisterAddress_IsEN_RXADDR(t *testing.T) {
+	e := New(0)
+	expected := addr.EN_RXADDR
+
+	actual := e.Address()
+
+	if actual != expected {
+		t.Errorf("expected '%v' but found '%v' with enRxaddr '%v'", expected, actual, e)
+	}
+}
+
+func TestNew_ReservedBitsOne_StoresZeroes(t *testing.T) {
+	e := New(util.B("11111111"))
+	expected := util.B("00111111")
+
+	actual := e.Byte()
+
+	if actual != expected {
+		t.Errorf("expected '%v' but found '%v' with enRxaddr '%v'", expected, actual, e)
+	}
+}
 
 func TestIsEnabled_Pipe0_FlagZero_ReturnsFalse(t *testing.T) {
 	e := New(util.B("11111110"))
@@ -143,10 +166,7 @@ func TestIsEnabled_Pipe5_FlagOne_ReturnsTrue(t *testing.T) {
 	}
 }
 
-/****** test func name conflict becaus all this stuff is in same pkg "reg"
-        need to split it out more! */
-
-func TestSet_Enable_RxAddr_Pipe0_FlipsCorrectBit(t *testing.T) {
+func TestSet_Enable_Pipe0_FlipsCorrectBit(t *testing.T) {
 	e := New(util.B("00000000"))
 	expected := util.B("00000001")
 
@@ -158,9 +178,9 @@ func TestSet_Enable_RxAddr_Pipe0_FlipsCorrectBit(t *testing.T) {
 	}
 }
 
-func TestSet_Disable_RxAddr_Pipe0_FlipsCorrectBit(t *testing.T) {
-	e := New(util.B("11111111"))
-	expected := util.B("11111110")
+func TestSet_Disable_Pipe0_FlipsCorrectBit(t *testing.T) {
+	e := New(util.B("00111111"))
+	expected := util.B("00111110")
 
 	e.Set(pipe.P0, false)
 
@@ -170,7 +190,7 @@ func TestSet_Disable_RxAddr_Pipe0_FlipsCorrectBit(t *testing.T) {
 	}
 }
 
-func TestSet_Enable_RxAddr_Pipe1_FlipsCorrectBit(t *testing.T) {
+func TestSet_Enable_Pipe1_FlipsCorrectBit(t *testing.T) {
 	e := New(util.B("00000000"))
 	expected := util.B("00000010")
 
@@ -182,9 +202,9 @@ func TestSet_Enable_RxAddr_Pipe1_FlipsCorrectBit(t *testing.T) {
 	}
 }
 
-func TestSet_Disable_RxAddr_Pipe1_FlipsCorrectBit(t *testing.T) {
-	e := New(util.B("11111111"))
-	expected := util.B("11111101")
+func TestSet_Disable_Pipe1_FlipsCorrectBit(t *testing.T) {
+	e := New(util.B("00111111"))
+	expected := util.B("00111101")
 
 	e.Set(pipe.P1, false)
 
@@ -194,7 +214,7 @@ func TestSet_Disable_RxAddr_Pipe1_FlipsCorrectBit(t *testing.T) {
 	}
 }
 
-func TestSet_Enable_RxAddr_Pipe2_FlipsCorrectBit(t *testing.T) {
+func TestSet_Enable_Pipe2_FlipsCorrectBit(t *testing.T) {
 	e := New(util.B("00000000"))
 	expected := util.B("00000100")
 
@@ -206,9 +226,9 @@ func TestSet_Enable_RxAddr_Pipe2_FlipsCorrectBit(t *testing.T) {
 	}
 }
 
-func TestSet_Disable_RxAddr_Pipe2_FlipsCorrectBit(t *testing.T) {
-	e := New(util.B("11111111"))
-	expected := util.B("11111011")
+func TestSet_Disable_Pipe2_FlipsCorrectBit(t *testing.T) {
+	e := New(util.B("00111111"))
+	expected := util.B("00111011")
 
 	e.Set(pipe.P2, false)
 
@@ -218,7 +238,7 @@ func TestSet_Disable_RxAddr_Pipe2_FlipsCorrectBit(t *testing.T) {
 	}
 }
 
-func TestSet_Enable_RxAddr_Pipe3_FlipsCorrectBit(t *testing.T) {
+func TestSet_Enable_Pipe3_FlipsCorrectBit(t *testing.T) {
 	e := New(util.B("00000000"))
 	expected := util.B("00001000")
 
@@ -230,9 +250,9 @@ func TestSet_Enable_RxAddr_Pipe3_FlipsCorrectBit(t *testing.T) {
 	}
 }
 
-func TestSet_Disable_RxAddr_Pipe3_FlipsCorrectBit(t *testing.T) {
-	e := New(util.B("11111111"))
-	expected := util.B("11110111")
+func TestSet_Disable_Pipe3_FlipsCorrectBit(t *testing.T) {
+	e := New(util.B("00111111"))
+	expected := util.B("00110111")
 
 	e.Set(pipe.P3, false)
 
@@ -242,7 +262,7 @@ func TestSet_Disable_RxAddr_Pipe3_FlipsCorrectBit(t *testing.T) {
 	}
 }
 
-func TestSet_Enable_RxAddr_Pipe4_FlipsCorrectBit(t *testing.T) {
+func TestSet_Enable_Pipe4_FlipsCorrectBit(t *testing.T) {
 	e := New(util.B("00000000"))
 	expected := util.B("00010000")
 
@@ -254,9 +274,9 @@ func TestSet_Enable_RxAddr_Pipe4_FlipsCorrectBit(t *testing.T) {
 	}
 }
 
-func TestSet_Disable_RxAddr_Pipe4_FlipsCorrectBit(t *testing.T) {
-	e := New(util.B("11111111"))
-	expected := util.B("11101111")
+func TestSet_Disable_Pipe4_FlipsCorrectBit(t *testing.T) {
+	e := New(util.B("00111111"))
+	expected := util.B("00101111")
 
 	e.Set(pipe.P4, false)
 
@@ -266,7 +286,7 @@ func TestSet_Disable_RxAddr_Pipe4_FlipsCorrectBit(t *testing.T) {
 	}
 }
 
-func TestSet_Enable_RxAddr_Pipe5_FlipsCorrectBit(t *testing.T) {
+func TestSet_Enable_Pipe5_FlipsCorrectBit(t *testing.T) {
 	e := New(util.B("00000000"))
 	expected := util.B("00100000")
 
@@ -278,9 +298,9 @@ func TestSet_Enable_RxAddr_Pipe5_FlipsCorrectBit(t *testing.T) {
 	}
 }
 
-func TestSet_Disable_RxAddr_Pipe5_FlipsCorrectBit(t *testing.T) {
-	e := New(util.B("11111111"))
-	expected := util.B("11011111")
+func TestSet_Disable_Pipe5_FlipsCorrectBit(t *testing.T) {
+	e := New(util.B("00111111"))
+	expected := util.B("00011111")
 
 	e.Set(pipe.P5, false)
 
