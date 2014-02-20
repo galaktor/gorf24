@@ -22,6 +22,18 @@ func TestNew_RegisterAddress_IsSETUP_RETR(t *testing.T) {
 	}
 }
 
+func TestDisableCount_Enabled_SetsBitsToZero(t *testing.T) {
+	r := New(util.B("11111111"))
+	expected := util.B("11110000")
+
+	r.DisableCount()
+
+	actual := r.Byte()
+	if actual != expected {
+		t.Errorf("expected '%b' but found '%b' with retrans '%v'", expected, actual, r)
+	}
+}
+
 func TestSetCount_Zero_FlipsRightBits(t *testing.T) {
 	r := New(util.B("11111111"))
 	expected := util.B("11110000")

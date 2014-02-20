@@ -58,6 +58,9 @@ func (r *R) SetCount(c uint8) error {
 	r.R.Set((r.Byte() & 0xF0) | c)
 	return nil
 }
+func (r *R) DisableCount() {
+	r.SetCount(0)
+}
 func (r *R) GetCount() uint8 {
 	return r.Byte() & 0x0F
 }
