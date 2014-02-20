@@ -14,11 +14,11 @@ package xaddr
    xxxxxxxxxxxxxxxxxxxxxxxx1111111111111111111111111111111111111111 */
 type A uint64
 
-const res_mask uint64 = 0x000000FFFFFFFFFF
+const RES_MASK uint64 = 0x000000FFFFFFFFFF
 
 func New(flags uint64) A {
 	// mask out first 3 bytes
-	return A(flags & res_mask)
+	return A(flags & RES_MASK)
 }
 
 func (a A) Byte() uint64 {

@@ -19,7 +19,7 @@ type R struct {
 	reg.R
 }
 
-const RES_MASK byte = 0x01
+const RES_MASK byte = 0x01 // 00000001
 
 func New(flags byte) *R {
 	masked := flags & RES_MASK

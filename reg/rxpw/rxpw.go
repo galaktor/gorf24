@@ -28,7 +28,7 @@ type W struct {
 	reg.R
 }
 
-const RES_MASK byte = 0x3F
+const RES_MASK byte = 0x3F // 00111111
 
 func New(p pipe.P, flags byte) *W {
 	masked := flags & RES_MASK

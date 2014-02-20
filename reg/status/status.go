@@ -22,7 +22,7 @@ type S struct {
 	reg.R
 }
 
-const RES_MASK = 0x7F
+const RES_MASK = 0x7F // 01111111
 
 func New(flags byte) *S {
 	masked := flags & RES_MASK // reset reserved bits
