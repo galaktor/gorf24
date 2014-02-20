@@ -50,7 +50,6 @@ func New(flags byte) *F {
    xxxxxx11 -> empty AND full? INVALID!
 */
 func (f *F) Rx() Usage {
-
 	return Usage(f.Byte() & 3)
 }
 
@@ -70,7 +69,6 @@ func (f *F) Rx() Usage {
    xx10xxxx -> full
    xx11xxxx -> empty AND full? INVALID! */
 func (f *F) Tx() Usage {
-
 	return Usage((f.Byte() >> 4) & 3)
 }
 
