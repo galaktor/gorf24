@@ -8,7 +8,30 @@ import (
 	"testing"
 
 	"github.com/galaktor/gorf24/util"
+	"github.com/galaktor/gorf24/reg/addr"
 )
+
+func TestNew_RegisterAddress_IsCONFIG(t *testing.T) {
+	c := New(0)
+	expected := addr.CONFIG
+
+	actual := c.Address()
+
+	if actual != expected {
+		t.Errorf("expected '%b' but found '%b' with configreg '%v'", expected, actual, c)
+	}
+}
+
+func TestNew_ReservedBitsSet_StoresZeroes(t *testing.T) {
+	c := New(util.B("11111111"))
+	expected := util.B("01111111")
+	
+	actual := c.Byte()
+
+	if actual != expected {
+		t.Errorf("expected '%b' but found '%b' with configreg '%v'", expected, actual, c)
+	}
+}
 
 func TestSetPrimaryReceiver_RelevantFlagZero_SetsFlagToOne(t *testing.T) {
 	c := New(util.B("00000000"))
@@ -23,8 +46,8 @@ func TestSetPrimaryReceiver_RelevantFlagZero_SetsFlagToOne(t *testing.T) {
 }
 
 func TestSetPrimaryReceiver_DoesNotFlipOtherBits(t *testing.T) {
-	c := New(util.B("10101010"))
-	expected := util.B("10101011")
+	c := New(util.B("00101010"))
+	expected := util.B("00101011")
 
 	c.SetPrimaryReceiver()
 
@@ -35,7 +58,7 @@ func TestSetPrimaryReceiver_DoesNotFlipOtherBits(t *testing.T) {
 }
 
 func TestIsPrimaryReceiver_FlagZero_ReturnsFalse(t *testing.T) {
-	c := New(util.B("11111110"))
+	c := New(util.B("01111110"))
 	expected := false
 
 	actual := c.IsPrimaryReceiver()
@@ -69,8 +92,8 @@ func TestSetPrimaryTransmitter_SetsBitToZero(t *testing.T) {
 }
 
 func TestSetPrimaryTransmitter_DoesntFlipOtherBits(t *testing.T) {
-	c := New(util.B("10101010"))
-	expected := util.B("10101010")
+	c := New(util.B("00101010"))
+	expected := util.B("00101010")
 
 	c.SetPrimaryTransmitter()
 
@@ -81,7 +104,7 @@ func TestSetPrimaryTransmitter_DoesntFlipOtherBits(t *testing.T) {
 }
 
 func TestIsPrimaryTransmitter_FlagZero_ReturnsTrue(t *testing.T) {
-	c := New(util.B("11111110"))
+	c := New(util.B("01111110"))
 	expected := true
 
 	actual := c.IsPrimaryTransmitter()
@@ -103,8 +126,8 @@ func TestIsPrimaryTransmitter_FlagOne_ReturnsFalse(t *testing.T) {
 }
 
 func TestSetPowerUp_True_SetsFlagToOne(t *testing.T) {
-	c := New(util.B("11111101"))
-	expected := util.B("11111111")
+	c := New(util.B("01111101"))
+	expected := util.B("01111111")
 
 	c.SetPowerUp(true)
 
@@ -147,7 +170,7 @@ func TestSetPowerUp_DoesNotFlipOtherBits(t *testing.T) {
 }
 
 func TestIsPowerUp_FlagZero_ReturnsFalse(t *testing.T) {
-	c := New(util.B("11111101"))
+	c := New(util.B("01111101"))
 	expected := false
 
 	actual := c.IsPowerUp()
@@ -169,8 +192,8 @@ func TestIsPowerUp_FlagOne_ReturnsTrue(t *testing.T) {
 }
 
 func TestSetCrcLength_To16bits_SetsFlagToOne(t *testing.T) {
-	c := New(util.B("11111011"))
-	expected := util.B("11111111")
+	c := New(util.B("01111011"))
+	expected := util.B("01111111")
 
 	c.SetCrcLength(CRC_16BIT)
 
@@ -237,8 +260,8 @@ func TestGetCrcLength_16bits_Returns16bits(t *testing.T) {
 }
 
 func TestSetCrcEnabled_True_SetsFlagToOne(t *testing.T) {
-	c := New(util.B("11110111"))
-	expected := util.B("11111111")
+	c := New(util.B("01110111"))
+	expected := util.B("01111111")
 
 	c.SetCrcEnabled(true)
 
@@ -281,7 +304,7 @@ func TestSetCrcEnabled_DoesNotFlipOtherBits(t *testing.T) {
 }
 
 func TestIsCrcEnabled_Disabled_ReturnsFalse(t *testing.T) {
-	c := New(util.B("11110111"))
+	c := New(util.B("01110111"))
 	expected := false
 
 	actual := c.IsCrcEnabled()
@@ -315,8 +338,8 @@ func TestSetMaxRtInterruptEnabled_True_SetsBitToZero(t *testing.T) {
 }
 
 func TestSetMaxRtInterruptEnabled_False_SetsBitToOne(t *testing.T) {
-	c := New(util.B("11101111"))
-	expected := util.B("11111111")
+	c := New(util.B("01101111"))
+	expected := util.B("01111111")
 
 	c.SetMaxRtInterruptEnabled(false)
 
@@ -327,9 +350,9 @@ func TestSetMaxRtInterruptEnabled_False_SetsBitToOne(t *testing.T) {
 }
 
 func TestSetMaxRtInterruptEnabled_DoesNotFlipOtherBits(t *testing.T) {
-	c := New(util.B("10101010"))
+	c := New(util.B("00101010"))
 
-	expected := util.B("10111010")
+	expected := util.B("00111010")
 	c.SetMaxRtInterruptEnabled(false)
 	actual := c.Byte()
 
@@ -337,7 +360,7 @@ func TestSetMaxRtInterruptEnabled_DoesNotFlipOtherBits(t *testing.T) {
 		t.Errorf("expected '%b' but found '%b' with configreg '%v'", expected, actual, c)
 	}
 
-	expected = util.B("10101010")
+	expected = util.B("00101010")
 	c.SetMaxRtInterruptEnabled(true)
 	actual = c.Byte()
 
@@ -358,7 +381,7 @@ func TestIsMaxRtInterruptEnabled_Disabled_ReturnsFalse(t *testing.T) {
 }
 
 func TestIsMaxRtInterruptEnabled_Enabled_ReturnsTrue(t *testing.T) {
-	c := New(util.B("11101111"))
+	c := New(util.B("01101111"))
 	expected := true
 
 	actual := c.IsMaxRtInterruptEnabled()
@@ -381,8 +404,8 @@ func TestSetTxDsInterruptEnabled_True_SetsBitToZero(t *testing.T) {
 }
 
 func TestSetTxDsInterruptEnabled_False_SetsBitToOne(t *testing.T) {
-	c := New(util.B("11011111"))
-	expected := util.B("11111111")
+	c := New(util.B("01011111"))
+	expected := util.B("01111111")
 
 	c.SetTxDsInterruptEnabled(false)
 
@@ -424,7 +447,7 @@ func TestIsTxDsInterruptEnabled_Disabled_ReturnsFalse(t *testing.T) {
 }
 
 func TestIsTxDsInterruptEnabled_Enabled_ReturnsTrue(t *testing.T) {
-	c := New(util.B("11011111"))
+	c := New(util.B("01011111"))
 	expected := true
 
 	actual := c.IsTxDsInterruptEnabled()
@@ -447,8 +470,8 @@ func TestSetRxDrInterruptEnabled_True_SetsBitToZero(t *testing.T) {
 }
 
 func TestSetRxDrInterruptEnabled_False_SetsBitToOne(t *testing.T) {
-	c := New(util.B("10111111"))
-	expected := util.B("11111111")
+	c := New(util.B("00111111"))
+	expected := util.B("01111111")
 
 	c.SetRxDrInterruptEnabled(false)
 
@@ -459,9 +482,9 @@ func TestSetRxDrInterruptEnabled_False_SetsBitToOne(t *testing.T) {
 }
 
 func TestSetRxDrInterruptEnabled_DoesNotFlipOtherBits(t *testing.T) {
-	c := New(util.B("10101010"))
+	c := New(util.B("00101010"))
 
-	expected := util.B("11101010")
+	expected := util.B("01101010")
 	c.SetRxDrInterruptEnabled(false)
 	actual := c.Byte()
 
@@ -469,7 +492,7 @@ func TestSetRxDrInterruptEnabled_DoesNotFlipOtherBits(t *testing.T) {
 		t.Errorf("expected '%b' but found '%b' with configreg '%v'", expected, actual, c)
 	}
 
-	expected = util.B("10101010")
+	expected = util.B("00101010")
 	c.SetRxDrInterruptEnabled(true)
 	actual = c.Byte()
 
@@ -490,7 +513,7 @@ func TestIsRxDrInterruptEnabled_Disabled_ReturnsFalse(t *testing.T) {
 }
 
 func TestIsRxDrInterruptEnabled_Enabled_ReturnsTrue(t *testing.T) {
-	c := New(util.B("10111111"))
+	c := New(util.B("00111111"))
 	expected := true
 
 	actual := c.IsRxDrInterruptEnabled()

@@ -24,8 +24,11 @@ type C struct {
 	reg.R
 }
 
+const RES_MASK byte = 0x7F // 01111111
+
 func New(flags byte) *C {
-	return &C{reg.New(addr.CONFIG, flags)}
+	masked := flags & RES_MASK
+	return &C{reg.New(addr.CONFIG, masked)}
 }
 
 /* PRIM_RX (bit 0)
