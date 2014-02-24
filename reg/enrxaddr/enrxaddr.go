@@ -17,11 +17,14 @@ type E struct {
 	reg.R
 }
 
-const RES_MASK byte = 0x3F // 00111111
+func New() *E {
+	return &E{reg.New(addr.EN_RXADDR, 0x3F)} // 00111111
+}
 
-func New(flags byte) *E {
-	masked := flags & RES_MASK
-	return &E{reg.New(addr.EN_RXADDR, masked)}
+func NewWith(flags byte) *E {
+	e := New()
+	e.R.Set(flags)
+	return e
 }
 
 /* ERX_Px
@@ -31,17 +34,17 @@ func (e *E) IsEnabled(p pipe.P) bool {
 
 	switch p {
 	case pipe.P0:
-		result = e.Byte()&1 == 1
+		result = e.R.Get()&1 == 1
 	case pipe.P1:
-		result = e.Byte()&2 == 2
+		result = e.R.Get()&2 == 2
 	case pipe.P2:
-		result = e.Byte()&4 == 4
+		result = e.R.Get()&4 == 4
 	case pipe.P3:
-		result = e.Byte()&8 == 8
+		result = e.R.Get()&8 == 8
 	case pipe.P4:
-		result = e.Byte()&16 == 16
+		result = e.R.Get()&16 == 16
 	case pipe.P5:
-		result = e.Byte()&32 == 32
+		result = e.R.Get()&32 == 32
 	}
 
 	return result
@@ -56,32 +59,32 @@ func (e *E) Set(p pipe.P, enabled bool) {
 func (e *E) enable(p pipe.P) {
 	switch p {
 	case pipe.P0:
-		e.R.Set(e.Byte() | 1)
+		e.R.Set(e.R.Get() | 1)
 	case pipe.P1:
-		e.R.Set(e.Byte() | 2)
+		e.R.Set(e.R.Get() | 2)
 	case pipe.P2:
-		e.R.Set(e.Byte() | 4)
+		e.R.Set(e.R.Get() | 4)
 	case pipe.P3:
-		e.R.Set(e.Byte() | 8)
+		e.R.Set(e.R.Get() | 8)
 	case pipe.P4:
-		e.R.Set(e.Byte() | 16)
+		e.R.Set(e.R.Get() | 16)
 	case pipe.P5:
-		e.R.Set(e.Byte() | 32)
+		e.R.Set(e.R.Get() | 32)
 	}
 }
 func (e *E) disable(p pipe.P) {
 	switch p {
 	case pipe.P0:
-		e.R.Set(e.Byte() & 0xFE)
+		e.R.Set(e.R.Get() & 0xFE)
 	case pipe.P1:
-		e.R.Set(e.Byte() & 0xFD)
+		e.R.Set(e.R.Get() & 0xFD)
 	case pipe.P2:
-		e.R.Set(e.Byte() & 0xFB)
+		e.R.Set(e.R.Get() & 0xFB)
 	case pipe.P3:
-		e.R.Set(e.Byte() & 0xF7)
+		e.R.Set(e.R.Get() & 0xF7)
 	case pipe.P4:
-		e.R.Set(e.Byte() & 0xEF)
+		e.R.Set(e.R.Get() & 0xEF)
 	case pipe.P5:
-		e.R.Set(e.Byte() & 0xDF)
+		e.R.Set(e.R.Get() & 0xDF)
 	}
 }
