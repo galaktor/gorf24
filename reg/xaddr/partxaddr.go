@@ -20,12 +20,14 @@ type Partial struct {
 }
 
 func NewPartial(a addr.A, root *Full, lsb byte) *Partial {
-	return &Partial{reg.New(a, lsb), root}
+	p := &Partial{reg.New(a, reg.NO_MASK), root}
+	p.Set(lsb)
+	return p
 }
 
 func (r *Partial) Get() A {
 	// use New method to force truncate
-	return New((r.root.Get().Byte() << 8) | uint64(r.R.Byte()))
+	return New((r.root.Get().Get() << 8) | uint64(r.R.Get()))
 }
 
 func (r *Partial) Set(lsb byte) {

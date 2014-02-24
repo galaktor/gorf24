@@ -18,7 +18,7 @@ type Full struct {
 }
 
 func NewFull(a addr.A, flags A) *Full {
-	return &Full{reg.New(a, 0), flags}
+	return &Full{reg.New(a, 0x00), flags}
 }
 
 func (r *Full) Get() A {

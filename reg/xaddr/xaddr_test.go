@@ -53,7 +53,7 @@ func TestByte_MixedOnesAndZeroes_ReturnsRightBits(t *testing.T) {
 	expected := uint64(0xAAAAAAAAAA)
 	a := New(expected)
 
-	actual := a.Byte()
+	actual := a.Get()
 
 	if actual != expected {
 		t.Errorf("expected '%b' but found '%b'", expected, actual)

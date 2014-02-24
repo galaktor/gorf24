@@ -21,6 +21,6 @@ func New(flags uint64) A {
 	return A(flags & RES_MASK)
 }
 
-func (a A) Byte() uint64 {
+func (a A) Get() uint64 {
 	return uint64(a)
 }
