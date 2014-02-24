@@ -12,7 +12,7 @@ import (
 )
 
 func TestNew_RegisterAddress_IsSETUP_RETR(t *testing.T) {
-	r := New(0)
+	r := New()
 	expected := addr.SETUP_RETR
 
 	actual := r.Address()
@@ -23,19 +23,19 @@ func TestNew_RegisterAddress_IsSETUP_RETR(t *testing.T) {
 }
 
 func TestDisableCount_Enabled_SetsBitsToZero(t *testing.T) {
-	r := New(util.B("11111111"))
+	r := NewWith(util.B("11111111"))
 	expected := util.B("11110000")
 
 	r.DisableCount()
 
-	actual := r.Byte()
+	actual := r.Get()
 	if actual != expected {
 		t.Errorf("expected '%b' but found '%b' with retrans '%v'", expected, actual, r)
 	}
 }
 
 func TestSetCount_Zero_FlipsRightBits(t *testing.T) {
-	r := New(util.B("11111111"))
+	r := NewWith(util.B("11111111"))
 	expected := util.B("11110000")
 
 	err := r.SetCount(0)
@@ -44,14 +44,14 @@ func TestSetCount_Zero_FlipsRightBits(t *testing.T) {
 		t.Errorf("unexpected error '%v'", err)
 	}
 
-	actual := r.Byte()
+	actual := r.Get()
 	if actual != expected {
 		t.Errorf("expected '%b' but found '%b' with retrans '%v'", expected, actual, r)
 	}
 }
 
 func TestSetCount_One_FlipsRightBits(t *testing.T) {
-	r := New(util.B("11110000"))
+	r := NewWith(util.B("11110000"))
 	expected := util.B("11110001")
 
 	err := r.SetCount(1)
@@ -60,14 +60,14 @@ func TestSetCount_One_FlipsRightBits(t *testing.T) {
 		t.Errorf("unexpected error '%v'", err)
 	}
 
-	actual := r.Byte()
+	actual := r.Get()
 	if actual != expected {
 		t.Errorf("expected '%b' but found '%b' with retrans '%v'", expected, actual, r)
 	}
 }
 
 func TestSetCount_One_ReturnsNoError(t *testing.T) {
-	r := New(util.B("11110000"))
+	r := NewWith(util.B("11110000"))
 
 	err := r.SetCount(1)
 
@@ -77,7 +77,7 @@ func TestSetCount_One_ReturnsNoError(t *testing.T) {
 }
 
 func TestSetCount_Two_FlipsRightBits(t *testing.T) {
-	r := New(util.B("11110000"))
+	r := NewWith(util.B("11110000"))
 	expected := util.B("11110010")
 
 	err := r.SetCount(2)
@@ -86,26 +86,26 @@ func TestSetCount_Two_FlipsRightBits(t *testing.T) {
 		t.Errorf("unexpected error '%v'", err)
 	}
 
-	actual := r.Byte()
+	actual := r.Get()
 	if actual != expected {
 		t.Errorf("expected '%b' but found '%b' with retrans '%v'", expected, actual, r)
 	}
 }
 
 func TestSetCount_Fifteen_FlipsRightBits(t *testing.T) {
-	r := New(util.B("11110000"))
+	r := NewWith(util.B("11110000"))
 	expected := util.B("11111111")
 
 	r.SetCount(15)
 
-	actual := r.Byte()
+	actual := r.Get()
 	if actual != expected {
 		t.Errorf("expected '%b' but found '%b' with retrans '%v'", expected, actual, r)
 	}
 }
 
 func TestSetCount_Sixteen_ReturnsError(t *testing.T) {
-	r := New(util.B("00000000"))
+	r := NewWith(util.B("00000000"))
 	expected := "value out of legal range: 16. Only values 0 - 15 allowed."
 	
 	err := r.SetCount(16)
@@ -122,7 +122,7 @@ func TestSetCount_Sixteen_ReturnsError(t *testing.T) {
 }
 
 func TestGetCount_Zero_ReturnsZero(t *testing.T) {
-	r := New(util.B("11110000"))
+	r := NewWith(util.B("11110000"))
 	expected := uint8(0)
 
 	actual := r.GetCount()
@@ -133,7 +133,7 @@ func TestGetCount_Zero_ReturnsZero(t *testing.T) {
 }
 
 func TestGetCount_One_ReturnsOne(t *testing.T) {
-	r := New(util.B("11110001"))
+	r := NewWith(util.B("11110001"))
 	expected := uint8(1)
 
 	actual := r.GetCount()
@@ -144,7 +144,7 @@ func TestGetCount_One_ReturnsOne(t *testing.T) {
 }
 
 func TestGetCount_Two_ReturnsTwo(t *testing.T) {
-	r := New(util.B("11110010"))
+	r := NewWith(util.B("11110010"))
 	expected := uint8(2)
 
 	actual := r.GetCount()
@@ -155,7 +155,7 @@ func TestGetCount_Two_ReturnsTwo(t *testing.T) {
 }
 
 func TestGetCount_Fifteen_ReturnsFifteen(t *testing.T) {
-	r := New(util.B("11111111"))
+	r := NewWith(util.B("11111111"))
 	expected := uint8(15)
 
 	actual := r.GetCount()
@@ -167,7 +167,7 @@ func TestGetCount_Fifteen_ReturnsFifteen(t *testing.T) {
 
 func TestGetDelay_ZeroToFifteen_ReturnsCorrectDelay(t *testing.T) {
 	for i := uint8(0); i <= 15; i++ {
-		r := New(i << 4) // iiii0000
+		r := NewWith(i << 4) // iiii0000
 		expected := Delay(i)
 
 		actual := r.GetDelay()
@@ -180,12 +180,12 @@ func TestGetDelay_ZeroToFifteen_ReturnsCorrectDelay(t *testing.T) {
 
 func TestSetDelay_ZeroToFifteen_FlipsRightBits(t *testing.T) {
 	for i := uint8(0); i <= 15; i++ {
-		r := New(util.B("00000000"))
+		r := NewWith(util.B("00000000"))
 		expected := byte(i << 4)
 
 		r.SetDelay(Delay(i))
 
-		actual := r.Byte()
+		actual := r.Get()
 		if actual != expected {
 			t.Errorf("expected '%b' but found '%b' with retrans '%v'", expected, actual, r)
 		}

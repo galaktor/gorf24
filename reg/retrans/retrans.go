@@ -40,8 +40,14 @@ type R struct {
 	reg.R
 }
 
-func New(flags byte) *R {
-	return &R{reg.New(addr.SETUP_RETR, flags)}
+func New() *R {
+	return &R{reg.New(addr.SETUP_RETR, reg.NO_MASK)}
+}
+
+func NewWith(flags byte) *R {
+	r := New()
+	r.Set(flags)
+	return r
 }
 
 /* ARC (bits 3:0)
@@ -55,14 +61,14 @@ func (r *R) SetCount(c uint8) error {
 		return errors.New(fmt.Sprintf("value out of legal range: %v. Only values 0 - 15 allowed.", c))
 	}
 
-	r.R.Set((r.Byte() & 0xF0) | c)
+	r.Set((r.Get() & 0xF0) | c)
 	return nil
 }
 func (r *R) DisableCount() {
 	r.SetCount(0)
 }
 func (r *R) GetCount() uint8 {
-	return r.Byte() & 0x0F
+	return r.Get() & 0x0F
 }
 
 /* ARD (bits 7:4)
@@ -94,8 +100,8 @@ func (r *R) GetCount() uint8 {
    In 250kbps mode (even when the payload is not in ACK)
    the ARD must be 500μS or more.*/
 func (r *R) GetDelay() Delay {
-	return Delay(r.Byte() >> 4)
+	return Delay(r.Get() >> 4)
 }
 func (r *R) SetDelay(d Delay) {
-	r.R.Set((r.Byte() & 0x0F) | (byte(d) << 4))
+	r.R.Set((r.Get() & 0x0F) | (byte(d) << 4))
 }
