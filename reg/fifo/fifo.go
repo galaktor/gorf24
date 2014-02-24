@@ -26,11 +26,14 @@ type F struct {
 	reg.R
 }
 
-const RES_MASK byte = 0x73 // 01110011
+func New() *F {
+	return &F{reg.New(addr.FIFO_STATUS, 0x73)} // 01110011
+}
 
-func New(flags byte) *F {
-	masked := flags & RES_MASK
-	return &F{reg.New(addr.FIFO_STATUS, masked)}
+func NewWith(flags byte) *F {
+	f := New()
+	f.R.Set(flags)
+	return f
 }
 
 /* RX_EMPTY (bit 0)
@@ -50,7 +53,7 @@ func New(flags byte) *F {
    xxxxxx11 -> empty AND full? INVALID!
 */
 func (f *F) Rx() Usage {
-	return Usage(f.Byte() & 3)
+	return Usage(f.Get() & 3)
 }
 
 /* TX_EMPTY (bit 4)
@@ -69,7 +72,7 @@ func (f *F) Rx() Usage {
    xx10xxxx -> full
    xx11xxxx -> empty AND full? INVALID! */
 func (f *F) Tx() Usage {
-	return Usage((f.Byte() >> 4) & 3)
+	return Usage((f.Get() >> 4) & 3)
 }
 
 /* TX_REUSE (bit 6)
@@ -84,5 +87,5 @@ func (f *F) Tx() Usage {
    x0xxxxxx -> disabled
    x1xxxxxx -> enabled */
 func (f *F) IsTxPayloadReuseEnabled() bool {
-	return f.Byte()&0x40 == 0x40
+	return f.Get()&0x40 == 0x40
 }
