@@ -51,7 +51,22 @@ func (r *R) WriteTo(w io.Writer) (n int64, err error) {
 
 // io.ReaderFrom
 func (r *R) ReadFrom(rd io.Reader) (n int64, err error) {
-	return 0,errors.New("not implemented")
+	bkup := r.Get()
+	n32,err := rd.Read(r.flags)
+	n = int64(n32)
+
+	if err != nil {
+		r.Set(bkup) // roll back value
+		return n,err
+	}
+
+	if n == 0 {
+		return n,errors.New("could not read from empty Reader")
+	}
+
+	r.Set(r.flags[0]) // will mask
+
+	return
 }
 
 /* Reader now implemented in r.reader (io.Reader)

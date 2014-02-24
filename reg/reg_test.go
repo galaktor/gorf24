@@ -92,7 +92,7 @@ func TestGet_FortyTwo_NoMask_ReturnsFortyTwo(t *testing.T) {
 	}
 }
 
-func TestWriteTo_WriterWithNoErrors_WritesOneByte_WithoutErrors(t *testing.T) {
+func TestWriteTo_WriterNoErrors_WritesOneByte_WithoutErrors(t *testing.T) {
 	expected := int64(1)
 	r := New(addr.A(0), NO_MASK)
 	w := FakeRW{Passes()}
@@ -108,11 +108,11 @@ func TestWriteTo_WriterWithNoErrors_WritesOneByte_WithoutErrors(t *testing.T) {
 	}
 }
 
-func TestWriteTo_WriterWithNoErrors_WritesFlags(t *testing.T) {
+func TestWriteTo_WriterNoErrors_WritesFlags(t *testing.T) {
 	expected := byte(42)
 	r := New(addr.A(0), NO_MASK)
 	buf := make([]byte, 2)
-	w := FakeRW{CopiesTo(buf)}
+	w := FakeRW{To(buf)}
 	r.Set(expected)
 
 	r.WriteTo(w)
@@ -123,11 +123,28 @@ func TestWriteTo_WriterWithNoErrors_WritesFlags(t *testing.T) {
 	}
 }
 
+func TestWriteTo_WriterFails_ReturnsUnderlyingValues(t *testing.T) {
+	expected := "some write error occurred"
+	r := New(addr.A(0), NO_MASK)
+	w := FakeRW{FailsWith(expected)}
+	
+	n,err := r.WriteTo(w)
+
+	if n != 0 {
+		t.Errorf("expected '%v' but found '%v'", 0, n)
+	}
+	
+	actual := err.Error()
+	if actual != expected {
+		t.Errorf("expected '%v' but found '%v'", expected, actual)
+	}
+}
+
 func TestWriteTo_Masked_WritesMaskedFlags(t *testing.T) {
 	expected := util.B("10101010")
 	r := New(addr.A(0), util.B("10101010"))
 	buf := make([]byte, 2)
-	w := FakeRW{CopiesTo(buf)}
+	w := FakeRW{To(buf)}
 	r.Set(util.B("11111111"))
 
 	r.WriteTo(w)
@@ -139,18 +156,97 @@ func TestWriteTo_Masked_WritesMaskedFlags(t *testing.T) {
 }
 
 func TestReadFrom_EmptyReader_FlagsUnchanged(t *testing.T) {
-	t.FailNow()
+	expected := util.B("11111111")
+	r := New(addr.A(0), NO_MASK)
+	rd := FakeRW{Passes()}
+	r.Set(util.B("11111111"))
+
+	r.ReadFrom(rd)
+
+	actual := r.Get()
+	if actual != expected {
+		t.Errorf("expected '%b' but found '%b' with reg '%v'", expected, actual, r)
+	}
 }
 
-func TestReadFrom_EmptyReader_ReturnsZeroWithError(t *testing.T) {
-	t.FailNow()
+func TestReadFrom_ReaderError_FlagsUnchanged(t *testing.T) {
+	expected := util.B("11111111")
+	r := New(addr.A(0), NO_MASK)
+	rd := FakeRW{From(0).Then(Fails())}
+	r.Set(util.B("11111111"))
+
+	r.ReadFrom(rd)
+
+	actual := r.Get()
+	if actual != expected {
+		t.Errorf("expected '%b' but found '%b' with reg '%v'", expected, actual, r)
+	}
+}
+
+func TestReadFrom_EmptyReader_ReturnsZeroAndError(t *testing.T) {
+	expected := "could not read from empty Reader"
+	r := New(addr.A(0), NO_MASK)
+	rd := FakeRW{PassesWith(0)}
+	
+	n,err := r.ReadFrom(rd)
+
+	if n != 0 {
+		t.Errorf("expected '%v' but found '%v'", 0, n)
+	}
+
+	actual := err.Error()
+	if actual != expected {
+		t.Errorf("expected '%v' but found '%v'", expected, actual)
+	}
+}
+
+func TestReadFrom_TwoBytes_SetsToFirstByte(t *testing.T) {
+	expected := byte(42)
+	r := New(addr.A(0), NO_MASK)
+	rd := FakeRW{From(42, 0xFF)}
+
+	r.ReadFrom(rd)
+
+	actual := r.Get()
+	if actual != expected {
+		t.Errorf("expected '%b' but found '%b' with reg '%v'", expected, actual, r)
+	}
+}
+
+func TestReadFrom_WithMask_MasksFirstByte(t *testing.T) {
+	expected := util.B("10101010")
+	r := New(addr.A(0), util.B("10101010"))
+	rd := FakeRW{From(util.B("11111111"))}
+	
+	r.ReadFrom(rd)
+
+	actual := r.Get()
+	if actual != expected {
+		t.Errorf("expected '%b' but found '%b' with reg '%v'", expected, actual, r)
+	}
+}
+
+func TestReadFrom_ReaderError_ReturnsUnderlyingValues(t *testing.T) {
+	expected := "some read error occurred"
+	r := New(addr.A(0), NO_MASK)
+	rd := FakeRW{FailsWith(expected)}
+	
+	n,err := r.ReadFrom(rd)
+
+	if n != 0 {
+		t.Errorf("expected '%v' but found '%v'", 0, n)
+	}
+
+	actual := err.Error()
+	if actual != expected {
+		t.Errorf("expected '%v' but found '%v'", expected, actual)
+	}
 }
 
 func TestReadFrom_ReaderNoErrors_MasksFirstByte(t *testing.T) {
 	expected := util.B("10101010")
 	r := New(addr.A(0), util.B("10101010"))
-	buf := []byte{42}
-	rd := FakeRW{CopiesFrom(buf)}
+	rd := FakeRW{From(util.B("11111111"))}
 
 	r.ReadFrom(rd)
 
@@ -191,14 +287,22 @@ func PassesWith(n int) RwFunc {
 	return func(p []byte) (int, error) { return n, nil }
 }
 
-func CopiesTo(out []byte) RwFunc {
+func (first RwFunc) Then(then RwFunc) RwFunc {
+	return func(p []byte) (n int, err error) {
+		n, err = first(p)
+		n, err = then(p)
+		return
+	}
+}
+
+func To(out []byte) RwFunc {
 	return func(p []byte) (int, error) {
 		copy(out, p)
 		return len(p), nil
 	}
 }
 
-func CopiesFrom(in []byte) RwFunc {
+func From(in ...byte) RwFunc {
 	return func(p []byte) (int, error) {
 		copy(p, in)
 		return len(p), nil
