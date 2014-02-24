@@ -12,7 +12,7 @@ import (
 )
 
 func TestNew_RegisterAddress_IsRF_CH(t *testing.T) {
-	c := New(0)
+	c := New()
 	expected := addr.RF_CH
 
 	actual := c.Address()
@@ -23,10 +23,10 @@ func TestNew_RegisterAddress_IsRF_CH(t *testing.T) {
 }
 
 func TestNew_ReservedBitsOne_StoresZeroes(t *testing.T) {
-	c := New(util.B("11111111"))
+	c := NewWith(util.B("11111111"))
 	expected := util.B("01111111")
 
-	actual := c.Byte()
+	actual := c.R.Get()
 
 	if actual != expected {
 		t.Errorf("expected '%b' but found '%b' on rfchan '%v'", expected, actual, c)
@@ -34,7 +34,7 @@ func TestNew_ReservedBitsOne_StoresZeroes(t *testing.T) {
 }
 
 func TestGet_Zeroes_ReturnsZero(t *testing.T) {
-	c := New(util.B("00000000"))
+	c := NewWith(util.B("00000000"))
 	expected := uint8(0)
 
 	actual := c.Get()
@@ -45,7 +45,7 @@ func TestGet_Zeroes_ReturnsZero(t *testing.T) {
 }
 
 func TestGet_Ones_ReturnsMaxChannel(t *testing.T) {
-	c := New(util.B("11111111"))
+	c := NewWith(util.B("11111111"))
 	expected := uint8(127)
 
 	actual := c.Get()
@@ -56,7 +56,7 @@ func TestGet_Ones_ReturnsMaxChannel(t *testing.T) {
 }
 
 func TestGet_FortyTwo_ReturnsFortyTwo(t *testing.T) {
-	c := New(byte(42))
+	c := NewWith(byte(42))
 	expected := uint8(42)
 
 	actual := c.Get()
@@ -67,7 +67,7 @@ func TestGet_FortyTwo_ReturnsFortyTwo(t *testing.T) {
 }
 
 func TestSet_Zero_FlipsRightBits(t *testing.T) {
-	c := New(util.B("11111111"))
+	c := NewWith(util.B("11111111"))
 	expected := util.B("00000000")
 
 	err := c.Set(0)
@@ -77,14 +77,14 @@ func TestSet_Zero_FlipsRightBits(t *testing.T) {
 		t.FailNow()
 	}
 
-	actual := c.Byte()
+	actual := c.R.Get()
 	if actual != expected {
 		t.Errorf("expected '%b' but found '%b' on rfchan '%v'", expected, actual, c)
 	}
 }
 
 func TestSet_FortyTwo_FlipsRightBits(t *testing.T) {
-	c := New(util.B("00000000"))
+	c := NewWith(util.B("00000000"))
 	expected := byte(42)
 
 	err := c.Set(42)
@@ -94,14 +94,14 @@ func TestSet_FortyTwo_FlipsRightBits(t *testing.T) {
 		t.FailNow()
 	}
 
-	actual := c.Byte()
+	actual := c.R.Get()
 	if actual != expected {
 		t.Errorf("expected '%b' but found '%b' on rfchan '%v'", expected, actual, c)
 	}
 }
 
 func TestSet_127_FlipsRightBits(t *testing.T) {
-	c := New(util.B("00000000"))
+	c := NewWith(util.B("00000000"))
 	expected := byte(util.B("01111111"))
 
 	err := c.Set(127)
@@ -111,14 +111,14 @@ func TestSet_127_FlipsRightBits(t *testing.T) {
 		t.FailNow()
 	}
 
-	actual := c.Byte()
+	actual := c.R.Get()
 	if actual != expected {
 		t.Errorf("expected '%b' but found '%b' on rfchan '%v'", expected, actual, c)
 	}
 }
 
 func TestSet_128_ReturnsError(t *testing.T) {
-	c := New(util.B("00000000"))
+	c := NewWith(util.B("00000000"))
 	expected := "value outside of legal range: 128. Only values 1 - 127 allowed."
 
 	err := c.Set(128)

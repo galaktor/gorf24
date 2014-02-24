@@ -19,17 +19,20 @@ type R struct {
 	reg.R
 }
 
-const RES_MASK byte = 0x7F // 01111111
+func New() *R {
+	return &R{reg.New(addr.RF_CH, 0x7F)} // 01111111
+}
 
-func New(flags byte) *R {
-	masked := flags & RES_MASK
-	return &R{reg.New(addr.RF_CH, masked)}
+func NewWith(flags byte) *R {
+	r := New()
+	r.R.Set(flags)
+	return r
 }
 
 /* RF_CH (bits 6:0)
    Sets the frequency channel nRF24L01+ operates on */
 func (c *R) Get() uint8 {
-	return c.Byte() & 0x7F // ignore bit 7
+	return c.R.Get() & 0x7F // ignore bit 7
 }
 func (c *R) Set(ch uint8) error {
 	if ch > 127 {
