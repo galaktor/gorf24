@@ -24,11 +24,14 @@ type C struct {
 	reg.R
 }
 
-const RES_MASK byte = 0x7F // 01111111
+func New() *C {
+	return &C{reg.New(addr.CONFIG, 0x7F)} // 01111111
+}
 
-func New(flags byte) *C {
-	masked := flags & RES_MASK
-	return &C{reg.New(addr.CONFIG, masked)}
+func NewWith(flags byte) *C {
+	c := New()
+	c.Set(flags)
+	return c
 }
 
 /* PRIM_RX (bit 0)
@@ -36,16 +39,16 @@ func New(flags byte) *C {
    xxxxxxx0: PTX
    xxxxxxx1: PRX */
 func (c *C) SetPrimaryReceiver() {
-	c.R.Set(c.Byte() | 1)
+	c.R.Set(c.Get() | 1)
 }
 func (c *C) IsPrimaryReceiver() bool {
-	return c.Byte()&1 == 1
+	return c.Get()&1 == 1
 }
 func (c *C) SetPrimaryTransmitter() {
-	c.R.Set(c.Byte() & 0xFE)
+	c.R.Set(c.Get() & 0xFE)
 }
 func (c *C) IsPrimaryTransmitter() bool {
-	return c.Byte()&1 == 0
+	return c.Get()&1 == 0
 }
 
 /* PWR_UP (bit 1)
@@ -53,14 +56,14 @@ func (c *C) IsPrimaryTransmitter() bool {
    xxxxxx1x: POWER UP */
 func (c *C) SetPowerUp(up bool) {
 	if up {
-		c.R.Set(c.Byte() | 2)
+		c.R.Set(c.Get() | 2)
 	} else {
-		c.R.Set(c.Byte() & 0xFD)
+		c.R.Set(c.Get() & 0xFD)
 	}
 
 }
 func (c *C) IsPowerUp() bool {
-	return c.Byte()&2 == 2
+	return c.Get()&2 == 2
 }
 
 /* CRCO (bit 2)
@@ -70,13 +73,13 @@ func (c *C) IsPowerUp() bool {
 func (c *C) SetCrcLength(l CrcLength) {
 	switch l {
 	case CRC_8BIT:
-		c.Set(c.Byte() & 0xFB)
+		c.Set(c.Get() & 0xFB)
 	case CRC_16BIT:
-		c.Set(c.Byte() | 4)
+		c.Set(c.Get() | 4)
 	}
 }
 func (c *C) GetCrcLength() CrcLength {
-	if c.Byte()&4 == 4 {
+	if c.Get()&4 == 4 {
 		return CRC_16BIT
 	} else {
 		return CRC_8BIT
@@ -91,13 +94,13 @@ func (c *C) GetCrcLength() CrcLength {
    xxxx1xxx - enabled */
 func (c *C) SetCrcEnabled(enable bool) {
 	if enable {
-		c.R.Set(c.Byte() | 8)
+		c.R.Set(c.Get() | 8)
 	} else {
-		c.R.Set(c.Byte() & 0xF7)
+		c.R.Set(c.Get() & 0xF7)
 	}
 }
 func (c *C) IsCrcEnabled() bool {
-	return c.Byte()&8 == 8
+	return c.Get()&8 == 8
 }
 
 /* MASK_MAX_RT (bit 4)
@@ -107,13 +110,13 @@ func (c *C) IsCrcEnabled() bool {
    xxx1xxxx: Interrupt not reflected on the IRQ pin  */
 func (c *C) SetMaxRtInterruptEnabled(enable bool) {
 	if enable {
-		c.R.Set(c.Byte() & 0xEF)
+		c.R.Set(c.Get() & 0xEF)
 	} else {
-		c.R.Set(c.Byte() | 16)
+		c.R.Set(c.Get() | 16)
 	}
 }
 func (c *C) IsMaxRtInterruptEnabled() bool {
-	return c.Byte()&16 == 0
+	return c.Get()&16 == 0
 }
 
 /* MASK_TX_DS (bit 5)
@@ -123,13 +126,13 @@ func (c *C) IsMaxRtInterruptEnabled() bool {
    xx1xxxxx: Interrupt not reflected on the IRQ pin*/
 func (c *C) SetTxDsInterruptEnabled(enable bool) {
 	if enable {
-		c.R.Set(c.Byte() & 0xDF)
+		c.R.Set(c.Get() & 0xDF)
 	} else {
-		c.R.Set(c.Byte() | 32)
+		c.R.Set(c.Get() | 32)
 	}
 }
 func (c *C) IsTxDsInterruptEnabled() bool {
-	return c.Byte()&32 == 0
+	return c.Get()&32 == 0
 }
 
 /* MASK_RX_DR (bit 6)
@@ -139,11 +142,11 @@ func (c *C) IsTxDsInterruptEnabled() bool {
    x1xxxxxx: Interrupt not reflected on the IRQ pin */
 func (c *C) SetRxDrInterruptEnabled(enable bool) {
 	if enable {
-		c.R.Set(c.Byte() & 0xBF)
+		c.R.Set(c.Get() & 0xBF)
 	} else {
-		c.R.Set(c.Byte() | 64)
+		c.R.Set(c.Get() | 64)
 	}
 }
 func (c *C) IsRxDrInterruptEnabled() bool {
-	return c.Byte()&64 == 0
+	return c.Get()&64 == 0
 }
