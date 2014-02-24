@@ -29,11 +29,14 @@ type AW struct {
 	reg.R
 }
 
-const RES_MASK byte = 0x03 // 00000011
+func New() *AW {
+	return &AW{reg.New(addr.SETUP_AW, 0x03)} // 00000011
+}
 
-func New(flags byte) *AW {
-	masked := flags & RES_MASK
-	return &AW{reg.New(addr.SETUP_AW, masked)}
+func NewWith(flags byte) *AW {
+	a := New()
+	a.R.Set(flags)
+	return a
 }
 
 /* AW (bits 1:0)
@@ -52,5 +55,5 @@ func (a *AW) Set(w Width) error {
 	return nil
 }
 func (a *AW) Get() Width {
-	return Width(a.Byte())
+	return Width(a.R.Get())
 }
