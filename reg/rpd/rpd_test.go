@@ -12,7 +12,7 @@ import (
 )
 
 func TestNew_RegisterAddress_IsRPD(t *testing.T) {
-	r := New(0)
+	r := New()
 	expected := addr.RPD
 
 	actual := r.Address()
@@ -23,10 +23,10 @@ func TestNew_RegisterAddress_IsRPD(t *testing.T) {
 }
 
 func TestNew_ReservedBitsOne_StoresZeroes(t *testing.T) {
-	r := New(util.B("11111111"))
+	r := NewWith(util.B("11111111"))
 	expected := util.B("00000001")
 	
-	actual := r.Byte()
+	actual := r.Get()
 
 	if actual != expected {
 		t.Errorf("expected '%b' but found '%b' with rpd '%v'", expected, actual, r)
@@ -34,7 +34,7 @@ func TestNew_ReservedBitsOne_StoresZeroes(t *testing.T) {
 }
 
 func TestTriggered_BitZero_ReturnsFalse(t *testing.T) {
-	r := New(util.B("11111110"))
+	r := NewWith(util.B("11111110"))
 	expected := false
 
 	actual := r.Triggered()
@@ -45,7 +45,7 @@ func TestTriggered_BitZero_ReturnsFalse(t *testing.T) {
 }
 
 func TestTriggered_BitOne_ReturnsTrue(t *testing.T) {
-	r := New(util.B("00000001"))
+	r := NewWith(util.B("00000001"))
 	expected := true
 
 	actual := r.Triggered()

@@ -19,11 +19,14 @@ type R struct {
 	reg.R
 }
 
-const RES_MASK byte = 0x01 // 00000001
+func New() *R {
+	return &R{reg.New(addr.RPD, 0x01)} // 00000001
+}
 
-func New(flags byte) *R {
-	masked := flags & RES_MASK
-	return &R{reg.New(addr.RPD, masked)}
+func NewWith(flags byte) *R {
+	r := New()
+	r.Set(flags)
+	return r
 }
 
 /* RPD (bit 0)
@@ -31,5 +34,5 @@ func New(flags byte) *R {
    are present in the RF channel you receive on. If the
    received power is less than -64 dBm, [sic] RDP = 0.*/
 func (r *R) Triggered() bool {
-	return r.Byte()&1 == 1
+	return r.Get()&1 == 1
 }
