@@ -12,7 +12,7 @@ import (
 )
 
 func TestNew_RegisterAddress_IsOBSERVE_TX(t *testing.T) {
-	o := New(0)
+	o := New()
 	expected := addr.OBSERVE_TX
 
 	actual := o.Address()
@@ -23,7 +23,7 @@ func TestNew_RegisterAddress_IsOBSERVE_TX(t *testing.T) {
 }
 
 func TestRetransmittedPacketCount_Zero_ReturnsZero(t *testing.T) {
-	o := New(util.B("11110000"))
+	o := NewWith(util.B("11110000"))
 	expected := uint8(0)
 
 	actual := o.RetransmittedPacketCount()
@@ -34,7 +34,7 @@ func TestRetransmittedPacketCount_Zero_ReturnsZero(t *testing.T) {
 }
 
 func TestRetransmittedPacketCount_AllOnes_Returns31(t *testing.T) {
-	o := New(util.B("00001111"))
+	o := NewWith(util.B("00001111"))
 	expected := uint8(15)
 
 	actual := o.RetransmittedPacketCount()
@@ -45,7 +45,7 @@ func TestRetransmittedPacketCount_AllOnes_Returns31(t *testing.T) {
 }
 
 func TestRetransmittedPacketCount_Seven_Returns7(t *testing.T) {
-	o := New(byte(7))
+	o := NewWith(byte(7))
 	expected := uint8(7)
 
 	actual := o.RetransmittedPacketCount()
@@ -56,7 +56,7 @@ func TestRetransmittedPacketCount_Seven_Returns7(t *testing.T) {
 }
 
 func TestLostPacketCount_Zero_ReturnsZero(t *testing.T) {
-	o := New(util.B("00001111"))
+	o := NewWith(util.B("00001111"))
 	expected := uint8(0)
 
 	actual := o.LostPacketCount()
@@ -67,7 +67,7 @@ func TestLostPacketCount_Zero_ReturnsZero(t *testing.T) {
 }
 
 func TestLostPacketCount_AllOnes_ReturnsZero(t *testing.T) {
-	o := New(util.B("11110000"))
+	o := NewWith(util.B("11110000"))
 	expected := uint8(15)
 
 	actual := o.LostPacketCount()
@@ -78,7 +78,7 @@ func TestLostPacketCount_AllOnes_ReturnsZero(t *testing.T) {
 }
 
 func TestLostPacketCount_Seven_ReturnsSeven(t *testing.T) {
-	o := New(util.B("01110000"))
+	o := NewWith(util.B("01110000"))
 	expected := uint8(7)
 
 	actual := o.LostPacketCount()

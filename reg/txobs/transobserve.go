@@ -15,8 +15,14 @@ type O struct {
 	reg.R
 }
 
-func New(flags byte) *O {
-	return &O{reg.New(addr.OBSERVE_TX, flags)}
+func New() *O {
+	return &O{reg.New(addr.OBSERVE_TX, reg.NO_MASK)}
+}
+
+func NewWith(flags byte) *O {
+	o := New()
+	o.Set(flags)
+	return o
 }
 
 /* ARC_CNT (bits 3:0)
@@ -24,7 +30,7 @@ func New(flags byte) *O {
    when transmission of a new packet starts. */
 func (o *O) RetransmittedPacketCount() uint8 {
 	// mask out 4 MSbits
-	return o.Byte() & 0x0F
+	return o.Get() & 0x0F
 }
 
 /* PLOS_CNT (bits 7:4)
@@ -33,5 +39,5 @@ func (o *O) RetransmittedPacketCount() uint8 {
    The counter is reset by writing to RF_CH. */
 func (o *O) LostPacketCount() uint8 {
 	// dump 4 LSbits
-	return (o.Byte() & 0xF0) >> 4
+	return (o.Get() & 0xF0) >> 4
 }
