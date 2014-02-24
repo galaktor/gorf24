@@ -18,11 +18,14 @@ type AA struct {
 	reg.R
 }
 
-const RES_MASK byte = 0x3F // 00111111
+func New() *AA {
+	return &AA{reg.New(addr.EN_AA, 0x3F)} // 00111111
+}
 
-func New(flags byte) *AA {
-	masked := flags & RES_MASK
-	return &AA{reg.New(addr.EN_AA, masked)}
+func NewWith(flags byte) *AA {
+	a :=  New()
+	a.R.Set(flags)
+	return a
 }
 
 // TODO: if pipe const value was byte, could just do
@@ -40,33 +43,33 @@ func (a *AA) Set(p pipe.P, enabled bool) {
 func (a *AA) enable(p pipe.P) {
 	switch p {
 	case pipe.P0:
-		a.R.Set(a.Byte() | 1)
+		a.R.Set(a.R.Get() | 1)
 	case pipe.P1:
-		a.R.Set(a.Byte() | 2)
+		a.R.Set(a.R.Get() | 2)
 	case pipe.P2:
-		a.R.Set(a.Byte() | 4)
+		a.R.Set(a.R.Get() | 4)
 	case pipe.P3:
-		a.R.Set(a.Byte() | 8)
+		a.R.Set(a.R.Get() | 8)
 	case pipe.P4:
-		a.R.Set(a.Byte() | 16)
+		a.R.Set(a.R.Get() | 16)
 	case pipe.P5:
-		a.R.Set(a.Byte() | 32)
+		a.R.Set(a.R.Get() | 32)
 	}
 }
 func (a *AA) disable(p pipe.P) {
 	switch p {
 	case pipe.P0:
-		a.R.Set(a.Byte() & 0xFE)
+		a.R.Set(a.R.Get() & 0xFE)
 	case pipe.P1:
-		a.R.Set(a.Byte() & 0xFD)
+		a.R.Set(a.R.Get() & 0xFD)
 	case pipe.P2:
-		a.R.Set(a.Byte() & 0xFB)
+		a.R.Set(a.R.Get() & 0xFB)
 	case pipe.P3:
-		a.R.Set(a.Byte() & 0xF7)
+		a.R.Set(a.R.Get() & 0xF7)
 	case pipe.P4:
-		a.R.Set(a.Byte() & 0xEF)
+		a.R.Set(a.R.Get() & 0xEF)
 	case pipe.P5:
-		a.R.Set(a.Byte() & 0xDF)
+		a.R.Set(a.R.Get() & 0xDF)
 	}
 }
 func (a *AA) IsEnabled(p pipe.P) bool {
@@ -74,17 +77,17 @@ func (a *AA) IsEnabled(p pipe.P) bool {
 
 	switch p {
 	case pipe.P0:
-		result = a.Byte()&1 == 1
+		result = a.R.Get()&1 == 1
 	case pipe.P1:
-		result = a.Byte()&2 == 2
+		result = a.R.Get()&2 == 2
 	case pipe.P2:
-		result = a.Byte()&4 == 4
+		result = a.R.Get()&4 == 4
 	case pipe.P3:
-		result = a.Byte()&8 == 8
+		result = a.R.Get()&8 == 8
 	case pipe.P4:
-		result = a.Byte()&16 == 16
+		result = a.R.Get()&16 == 16
 	case pipe.P5:
-		result = a.Byte()&32 == 32
+		result = a.R.Get()&32 == 32
 	}
 
 	return result
