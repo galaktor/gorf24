@@ -38,11 +38,14 @@ type R struct {
 	reg.R
 }
 
-const RES_MASK byte = 0xBE // 10111110
+func New() *R {
+	return &R{reg.New(addr.RF_SETUP, 0xBE)} // 10111110
+}
 
-func New(flags byte) *R {
-	masked := flags & RES_MASK
-	return &R{reg.New(addr.RF_SETUP, masked)}
+func NewWith(flags byte) *R {
+	s := New()
+	s.R.Set(flags)
+	return s
 }
 
 /* RF_PWR (bits 2:1)
@@ -52,14 +55,14 @@ func New(flags byte) *R {
    'xxxxx10x' – -6dBm
    'xxxxx11x' –  0dBm */
 func (s *R) GetPowerLevel() PowerLevel {
-	return PowerLevel((s.Byte() & 0x6) >> 1)
+	return PowerLevel((s.Get() & 0x6) >> 1)
 }
 func (s *R) SetPowerLevel(p PowerLevel) error {
 	if p > 3 {
 		return errors.New(fmt.Sprintf("Value out of legal range: %v. Allowed value from 0 -3.", p))
 	}
 
-	s.R.Set(s.Byte()&0xF9 | (byte(p) << 1))
+	s.R.Set(s.Get()&0xF9 | (byte(p) << 1))
 	return nil
 }
 
@@ -79,7 +82,7 @@ func (s *R) SetPowerLevel(p PowerLevel) error {
 func (s *R) GetDatarate() Datarate {
 	var result Datarate
 
-	switch val := s.Byte() & 0x28; val {
+	switch val := s.Get() & 0x28; val {
 	case 0x0: // xx0x0xxx
 		result = RATE_1MBPS
 	case 0x8: // xx0x1xxx
@@ -97,11 +100,11 @@ func (s *R) SetDataRate(d Datarate) (err error) {
 
 	switch d {
 	case RATE_1MBPS: // xx0x0xxx
-		s.R.Set(s.Byte() & 0xD7)
+		s.R.Set(s.Get() & 0xD7)
 	case RATE_2MBPS: // xx0x1xxx
-		s.R.Set((s.Byte() & 0xDF) | 8)
+		s.R.Set((s.Get() & 0xDF) | 8)
 	case RATE_250KBPS: // xx1x0xxx
-		s.R.Set((s.Byte() & 0xF7) | 32)
+		s.R.Set((s.Get() & 0xF7) | 32)
 	default:
 		err = errors.New(fmt.Sprintf("unsupported Datarate: %v. allowed values 0 - 2", d))
 	}
@@ -116,25 +119,25 @@ func (s *R) SetDataRate(d Datarate) (err error) {
    xxx0xxxx - disabled
    xxx1xxxx - enabled */
 func (s *R) IsPllLockEnabled() bool {
-	return s.Byte()&16 == 16
+	return s.Get()&16 == 16
 }
 func (s *R) SetPllLock(enabled bool) {
 	if enabled {
-		s.R.Set(s.Byte() | 0x10)
+		s.R.Set(s.Get() | 0x10)
 	} else {
-		s.R.Set(s.Byte() & 0xEF)
+		s.R.Set(s.Get() & 0xEF)
 	}
 }
 
 /* CONT_WAVE
    Enables continuous carrier transmit when high. */
 func (s *R) IsContinuousCarrierTransmitEnabled() bool {
-	return s.Byte()&0x80 == 0x80 // 1xxxxxxx
+	return s.Get()&0x80 == 0x80 // 1xxxxxxx
 }
 func (s *R) SetContinuousCarrierTransmit(enabled bool) {
 	if enabled {
-		s.R.Set(s.Byte() | 0x80) // 1xxxxxxx
+		s.R.Set(s.Get() | 0x80) // 1xxxxxxx
 	} else {
-		s.R.Set(s.Byte() & 0x7F) // 0xxxxxxx
+		s.R.Set(s.Get() & 0x7F) // 0xxxxxxx
 	}
 }
