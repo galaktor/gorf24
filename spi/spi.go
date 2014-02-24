@@ -119,22 +119,33 @@ func (s *SPI) Transfer(tx byte) (rx byte, err error) {
 	return s.rxBuf,nil
 }
 
-/*
-
+// THIS IS LSBYTE FIRST
+// not very generic, because LSbyte first is rf24 specific and might not apply to other spi protocols...
+// but screw that cause this is for rf24; deal with it :-P
 func (s *SPI) Write(p []byte) (n int, err error) {
-	
+	n = 0
+	err = nil
+	for i := len(p); i >= 0; i-- {
+		// WRITE ONLY: discards duplex results
+		_, err = s.Transfer(p[i])
+		if err != nil {
+			return
+		}
+		n++
+	}
+	return
 }
 
 func (s *SPI) Read(p []byte) (n int, err error) {
-
+	n = 0
+	err = nil
+	for i := len(p); i >= 0; i-- {
+		// READ ONLY: sends garbage
+		p[i], err = s.Transfer(0x00)
+		if err != nil {
+			return
+		}
+		n++
+	}
+	return
 }
-
-*/
-
-
-
-
-
-
-
-
