@@ -22,11 +22,14 @@ type S struct {
 	reg.R
 }
 
-const RES_MASK = 0x7F // 01111111
+func New() *S {
+	return &S{reg.New(addr.STATUS, 0x7F)} // 01111111
+}
 
-func New(flags byte) *S {
-	masked := flags & RES_MASK // reset reserved bits
-	return &S{reg.New(addr.STATUS, masked)}
+func NewWith(flags byte) *S {
+	s := New()
+	s.Set(flags)
+	return s
 }
 
 /* TX_FULL (bit 0)
@@ -37,7 +40,7 @@ func New(flags byte) *S {
    tempted to return FifoUsage here like for FIFO_STATUS
    but the data here really *is* boolean */
 func (s *S) TxFull() bool {
-	return (s.Byte() & 1) == 1
+	return (s.Get() & 1) == 1
 }
 
 /* RX_P_NO (bits 3:1)
@@ -47,7 +50,7 @@ func (s *S) TxFull() bool {
    110: Not Used
    111: RX FIFO Empty */
 func (s *S) RxPipeNumber() (pipe.P, error) {
-	val := (s.Byte() >> 1) & 7
+	val := (s.Get() >> 1) & 7
 
 	switch {
 	case val < 6:
@@ -73,10 +76,10 @@ func (s *S) RxFifoEmpty() bool {
    Write 1 to clear bit. If MAX_RT is asserted it must
    be cleared to enable further communication. */
 func (s *S) MaxTxRetransmits() bool {
-	return (s.Byte() & 8) == 8
+	return (s.Get() & 8) == 8
 }
 func (s *S) ClearMaxTxRetransmits() {
-	s.R.Set(s.Byte() | 8)
+	s.R.Set(s.Get() | 8)
 }
 
 /* TX_DS (bit 5)
@@ -86,10 +89,10 @@ func (s *S) ClearMaxTxRetransmits() {
    vated, this bit is set high only when ACK is
    received. */
 func (s *S) TxDataSent() bool {
-	return (s.Byte() & 16) == 16
+	return (s.Get() & 16) == 16
 }
 func (s *S) ClearTxDataSent() {
-	s.R.Set(s.Byte() | 16)
+	s.R.Set(s.Get() | 16)
 }
 
 /* RX_DR (bit 6)
@@ -97,8 +100,8 @@ func (s *S) ClearTxDataSent() {
    Data Ready RX FIFO interrupt. Asserted when
    new data arrives RX FIFO. */
 func (s *S) RxDataReady() bool {
-	return (s.Byte() & 32) == 32
+	return (s.Get() & 32) == 32
 }
 func (s *S) ClearRxDataReady() {
-	s.R.Set(s.Byte() | 32)
+	s.R.Set(s.Get() | 32)
 }
