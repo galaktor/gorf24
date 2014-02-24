@@ -28,11 +28,14 @@ type W struct {
 	reg.R
 }
 
-const RES_MASK byte = 0x3F // 00111111
+func New(p pipe.P) *W {
+	return &W{reg.New(addr.RX_PW(p), 0x3F)} // 00111111
+}
 
-func New(p pipe.P, flags byte) *W {
-	masked := flags & RES_MASK
-	return &W{reg.New(addr.RX_PW(p), masked)}
+func NewWith(p pipe.P, flags byte) *W {
+	r := New(p)
+	r.R.Set(flags)
+	return r
 }
 
 /* RX_PWx (bits 5:0) */
@@ -41,13 +44,15 @@ func (r *W) Set(w uint8) error {
 		return errors.New(fmt.Sprintf("value out of legal range: %v. allowed values from 0 - %v", w, MAX))
 	}
 
-	r.R.Set((r.Byte() & 0) | w)
+	r.R.Set((r.R.Get() & 0) | w)
 	return nil
 }
 func (r *W) Get() uint8 {
-	if r.Byte() > MAX {
+	if r.R.Get() > MAX {
 		return MAX
 	}
 
-	return r.Byte()
+	return r.R.Get()
 }
+
+
