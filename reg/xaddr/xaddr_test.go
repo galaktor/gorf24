@@ -121,9 +121,9 @@ func TestB5ToI_Ones_ReturnsMaxBytes(t *testing.T) {
 }
 
 func TestB5ToI_MixedZeroesAndOnes_ReturnsRightBytes(t *testing.T) {
-	expected := uint64(0xAAAAAAAAAA)
+	expected := uint64(0xAABBCCDDEE)
 
-	actual := b5ToI([5]byte{0xAA, 0xAA, 0xAA, 0xAA, 0xAA})
+	actual := b5ToI([5]byte{0xAA, 0xBB, 0xCC, 0xDD, 0xEE})
 
 	if actual != expected {
 		t.Errorf("expected '%b' but found '%b'", expected, actual)
