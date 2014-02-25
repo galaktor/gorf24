@@ -5,13 +5,7 @@
 package xaddr
 
 /* used for Rx and Tx addresses; hence 'x' address
-   max 5 bytes
-   using 64bits for simple storage, but will truncate
-   first 3 bytes to limit to 5 bytes
-
-   64bits
-   <-- ignored -----------><-- used ------------------------------>
-   xxxxxxxxxxxxxxxxxxxxxxxx1111111111111111111111111111111111111111 */
+   max 5 bytes  */
 type A [5]byte
 
 func New(flags [5]byte) A {
