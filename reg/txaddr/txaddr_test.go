@@ -12,7 +12,7 @@ import (
 )
 
 func TestNew_RegisterAddress_IsTX_ADDR(t *testing.T) {
-	a := New(xaddr.New(0))
+	a := New(xaddr.NewFromI(0))
 	expected := addr.TX_ADDR
 
 	actual := a.Address()
