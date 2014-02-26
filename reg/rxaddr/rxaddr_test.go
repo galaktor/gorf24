@@ -5,80 +5,77 @@
 package rxaddr
 
 import (
+	"errors"
 	"testing"
 
+	"github.com/galaktor/gorf24/pipe"
 	"github.com/galaktor/gorf24/reg/addr"
 	"github.com/galaktor/gorf24/reg/xaddr"
-	"github.com/galaktor/gorf24/pipe"
 )
-
-func someFullRxAddr(flags uint64) *xaddr.Full {
-	return NewFull(pipe.P0, xaddr.A(flags))
-}
 
 func TestNewFull_Pipe0_HasP0RegisterAddress(t *testing.T) {
 	expected := addr.RX_ADDR(pipe.P0)
-	a := NewFull(pipe.P0, xaddr.A(0))
+	a := NewFull(pipe.P0, xaddr.NewFromI(0))
 
 	actual := a.Address()
 
 	if actual != expected {
 		t.Errorf("expected '%b' but found '%b' for fulladdr '%v'", expected, actual, a)
 	}
-	
+
 }
 
 func TestNewFull_Pipe1_HasP0RegisterAddress(t *testing.T) {
 	expected := addr.RX_ADDR(pipe.P1)
-	a := NewFull(pipe.P1, xaddr.A(0))
+	a := NewFull(pipe.P1, xaddr.NewFromI(0))
 
 	actual := a.Address()
 
 	if actual != expected {
 		t.Errorf("expected '%b' but found '%b' for fulladdr '%v'", expected, actual, a)
 	}
-	
+
 }
 
 func TestNewFull_Pipe2_HasP0RegisterAddress(t *testing.T) {
 	expected := addr.RX_ADDR(pipe.P2)
-	a := NewFull(pipe.P2, xaddr.A(0))
+	a := NewFull(pipe.P2, xaddr.NewFromI(0))
 
 	actual := a.Address()
 
 	if actual != expected {
 		t.Errorf("expected '%b' but found '%b' for fulladdr '%v'", expected, actual, a)
 	}
-	
+
 }
 
 func TestNewFull_Pipe3_HasP0RegisterAddress(t *testing.T) {
 	expected := addr.RX_ADDR(pipe.P3)
-	a := NewFull(pipe.P3, xaddr.A(0))
+	a := NewFull(pipe.P3, xaddr.NewFromI(0))
 
 	actual := a.Address()
 
 	if actual != expected {
 		t.Errorf("expected '%b' but found '%b' for fulladdr '%v'", expected, actual, a)
 	}
-	
+
 }
 
 func TestNewFull_Pipe4_HasP0RegisterAddress(t *testing.T) {
 	expected := addr.RX_ADDR(pipe.P4)
-	a := NewFull(pipe.P4, xaddr.A(0))
+	a := NewFull(pipe.P4, xaddr.NewFromI(0))
 
 	actual := a.Address()
 
 	if actual != expected {
 		t.Errorf("expected '%b' but found '%b' for fulladdr '%v'", expected, actual, a)
 	}
-	
+
 }
 
 func TestNewFull_Pipe5_HasP0RegisterAddress(t *testing.T) {
 	expected := addr.RX_ADDR(pipe.P5)
-	a := NewFull(pipe.P5, xaddr.A(0))
+	a := NewFull(pipe.P5, xaddr.NewFromI(0))
 
 	actual := a.Address()
 
@@ -86,7 +83,6 @@ func TestNewFull_Pipe5_HasP0RegisterAddress(t *testing.T) {
 		t.Errorf("expected '%b' but found '%b' for fulladdr '%v'", expected, actual, a)
 	}
 }
-
 
 func TestNewPartial_Pipe0_HasRightRegAddress(t *testing.T) {
 	expected := addr.RX_ADDR(pipe.P0)
@@ -151,5 +147,74 @@ func TestNewPartial_Pipe5_HasRightRegAddress(t *testing.T) {
 
 	if actual != expected {
 		t.Errorf("expected '%b' but found '%b' with partaddr '%v'", expected, actual, a)
+	}
+}
+
+func TestReadFrom_Full_FiveBytes_StoresAllBytes(t *testing.T) {
+	expected := xaddr.NewFromB5([5]byte{0x01, 0x02, 0x03, 0x04, 0x05})
+	f := NewFull(pipe.P0, xaddr.NewFromI(0))
+	
+	f.ReadFrom(FakeRW{From(1, 2, 3, 4, 5)})
+
+	actual := f.Get()
+	if actual != expected {
+		t.Errorf("expected '%b' but found '%b' with partaddr '%v'", expected, actual, f)
+	}
+}
+
+func someFullRxAddr(flags uint64) *xaddr.Full {
+	return NewFull(pipe.P0, xaddr.NewFromI(flags))
+}
+
+/***** FAKES *****/
+type RwFunc func(p []byte) (n int, err error)
+
+type FakeRW struct {
+	cb RwFunc
+}
+
+func (f FakeRW) Read(p []byte) (int, error) {
+	return f.cb(p)
+}
+
+func (f FakeRW) Write(p []byte) (int, error) {
+	return f.cb(p)
+}
+
+func Fails() RwFunc {
+	return FailsWith("this call is failing deliberately.")
+}
+
+func FailsWith(msg string) RwFunc {
+	return func(p []byte) (int, error) { return 0, errors.New(msg) }
+}
+
+func Passes() RwFunc {
+	return func(p []byte) (int, error) { return len(p), nil }
+}
+
+func PassesWith(n int) RwFunc {
+	return func(p []byte) (int, error) { return n, nil }
+}
+
+func (first RwFunc) Then(then RwFunc) RwFunc {
+	return func(p []byte) (n int, err error) {
+		n, err = first(p)
+		n, err = then(p)
+		return
+	}
+}
+
+func To(out []byte) RwFunc {
+	return func(p []byte) (int, error) {
+		copy(out, p)
+		return len(p), nil
+	}
+}
+
+func From(in ...byte) RwFunc {
+	return func(p []byte) (int, error) {
+		copy(p, in)
+		return len(p), nil
 	}
 }
