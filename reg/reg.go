@@ -13,6 +13,13 @@ import (
 	"github.com/galaktor/gorf24/reg/addr"
 )
 
+type Register interface {
+	io.ReaderFrom
+	io.WriterTo
+
+	Address() addr.A
+}
+
 /* a register with a one-byte address and one-byte data */
 type R struct {
 	a     addr.A
