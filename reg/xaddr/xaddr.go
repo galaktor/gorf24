@@ -14,23 +14,11 @@ func NewFromB5(flags [5]byte) A {
 
 func NewFromB(src []byte) A {
 	a := [5]byte{}
-	l := len(src)
-	pad := 0
-
-	// for  more/less than 5 bytes, take LSBytes
-	switch {
-	case l > 5:
-		src = src[l-5:]
-		l = 5
-	case l < 5:
-		pad = 5-l
+	end := 5
+	if len(src) < 5 {
+		end = len(src)
 	}
-
-	// copy
-	for i := l-1; i >= 0; i-- {
-		a[i+pad] = src[i]
-	}
-
+	copy(a[:], src[:end])
 	return NewFromB5(a)
 }
 

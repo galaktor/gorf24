@@ -68,8 +68,8 @@ func TestNewFromB_MixedOnesAndZeroes_ReturnsRightBits(t *testing.T) {
 	}
 }
 
-func TestNewFromB_LessThanFiveBytes_SetLSBytes(t *testing.T) {
-	expected := [5]byte{0x00, 0x00, 0xAA, 0xBB, 0xCC}
+func TestNewFromB_LessThanFiveBytes_SetsMSBytes(t *testing.T) {
+	expected := [5]byte{0xAA, 0xBB, 0xCC, 0x00, 0x00}
 	
 	actual := NewFromB([]byte{0xAA, 0xBB, 0xCC})
 
@@ -78,8 +78,8 @@ func TestNewFromB_LessThanFiveBytes_SetLSBytes(t *testing.T) {
 	} 
 }
 
-func TestNewFromB_MoreThanFiveBytes_UsesOnlyLastFiveBytes(t *testing.T) {
-	expected := [5]byte{0xBB, 0xCC, 0xDD, 0xEE, 0xFF} // 5 bytes
+func TestNewFromB_MoreThanFiveBytes_UsesOnlyFirstFiveBytes(t *testing.T) {
+	expected := [5]byte{0xAA, 0xBB, 0xCC, 0xDD, 0xEE} // 5 bytes
 
 	actual := NewFromB([]byte{0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF}) // 6 bytes
 
