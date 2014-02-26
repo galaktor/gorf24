@@ -8,13 +8,34 @@ package xaddr
    max 5 bytes  */
 type A [5]byte
 
-func New(flags [5]byte) A {
+func NewFromB5(flags [5]byte) A {
 	return A(flags)
 }
 
+func NewFromB(src []byte) A {
+	a := [5]byte{}
+	l := len(src)
+	pad := 0
+
+	// for  more/less than 5 bytes, take LSBytes
+	switch {
+	case l > 5:
+		src = src[l-5:]
+		l = 5
+	case l < 5:
+		pad = 5-l
+	}
+
+	// copy
+	for i := l-1; i >= 0; i-- {
+		a[i+pad] = src[i]
+	}
+
+	return NewFromB5(a)
+}
+
 func NewFromI(flags uint64) A {
-	// iToB5 will shift out first 3 bytes, effectively masking them out
-	return New(iToB5(flags))
+	return NewFromB5(iToB5(flags))
 }
 
 func (a A) ToB5() [5]byte {
@@ -36,9 +57,9 @@ func iToB5(bits uint64) [5]byte {
 }
 
 func b5ToI(b [5]byte) uint64 {
-	return uint64(b[0]) << 32 |
-	       uint64(b[1]) << 24 |
-	       uint64(b[2]) << 16 |
-	       uint64(b[3]) << 8 |
-	       uint64(b[4])
+	return uint64(b[0])<<32 |
+		uint64(b[1])<<24 |
+		uint64(b[2])<<16 |
+		uint64(b[3])<<8 |
+		uint64(b[4])
 }
