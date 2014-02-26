@@ -132,45 +132,7 @@ func TestB5_Overflow5Bytes_ReturnsTruncated(t *testing.T) {
 
 
 
-func TestItoB5_Zeroes_ReturnsZeroes(t *testing.T) {
-	expected := [5]byte{0, 0, 0, 0, 0}
 
-	actual := ItoB5(0x0000000000)
-
-	if actual != expected {
-		t.Errorf("expected '%v' but found '%v'", expected, actual)
-	}
-}
-
-func TestItoB5_Ones_ReturnsMaxBytes(t *testing.T) {
-	expected := [5]byte{0xFF, 0xFF, 0xFF, 0xFF, 0xFF}
-
-	actual := ItoB5(0xFFFFFFFFFF)
-
-	if actual != expected {
-		t.Errorf("expected '%v' but found '%v'", expected, actual)
-	}
-}
-
-func TestItoB5_MixedZeroesAndOnes_ReturnsRightBytes(t *testing.T) {
-	expected := [5]byte{0xAA, 0xAA, 0xAA, 0xAA, 0xAA}
-
-	actual := ItoB5(0xAAAAAAAAAA)
-
-	if actual != expected {
-		t.Errorf("expected '%v' but found '%v'", expected, actual)
-	}
-}
-
-func TestItoB5_Overflow5Bytes_ReturnsTruncated(t *testing.T) {
-	expected := [5]byte{0xFF, 0xFF, 0xFF, 0xFF, 0xFF}
-
-	actual := ItoB5(0xFFFFFFFFFFFF) // 6 bytes
-
-	if actual != expected {
-		t.Errorf("expected '%v' but found '%v'", expected, actual)
-	}
-}
 
 
 
