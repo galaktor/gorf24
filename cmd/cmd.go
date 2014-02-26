@@ -30,11 +30,11 @@ const (
 	W_TX_PAYLOAD_NOACK = C(0xB0) // 1011 0000
 )
 
-func R_REGISTER(r *reg.R) C {
+func R_REGISTER(r reg.Register) C {
 	return C(0x1F & r.Address())
 }
 
-func W_REGISTER(r *reg.R) C {
+func W_REGISTER(r reg.Register) C {
 	return C(0x20 | (0x1F & r.Address()))
 }
 

@@ -36,6 +36,8 @@ import (
 
 const RF24_PAYLOAD_SIZE = 32
 
+var EMPTY = make([]byte,0,0) // used when sending 'nothing'
+
 type R struct {
 	/*** I/O ***/
 	spi *spi.SPI
@@ -77,32 +79,32 @@ type R struct {
 
 func New(spidevice string, spispeed uint32, cepin, csnpin uint8) (r *R, err error) {
 	r = &R{}
-	r.config = config.New(0)
-	r.autoAck = autoack.New(0)
-	r.enRxAddr = enrxaddr.New(0)
-	r.addrWid = addrw.New(0)
-	r.retrans = retrans.New(0)
-	r.rfchan = rfchan.New(0)
-	r.rfsetup = rfsetup.New(0)
-	r.status = status.New(0)
-	r.trans = txobs.New(0)
-	r.rpd = rpd.New(0)
-	r.rxAddrP0 = rxaddr.NewFull(pipe.P0, 0)
-	r.rxAddrP1 = rxaddr.NewFull(pipe.P1, 0)
+	r.config = config.New()
+	r.autoAck = autoack.New()
+	r.enRxAddr = enrxaddr.New()
+	r.addrWid = addrw.New()
+	r.retrans = retrans.New()
+	r.rfchan = rfchan.New()
+	r.rfsetup = rfsetup.New()
+	r.status = status.New()
+	r.trans = txobs.New()
+	r.rpd = rpd.New()
+	r.rxAddrP0 = rxaddr.NewFull(pipe.P0, xaddr.NewFromI(0))
+	r.rxAddrP1 = rxaddr.NewFull(pipe.P1, xaddr.NewFromI(0))
 	r.rxAddrP2 = rxaddr.NewPartial(pipe.P2, r.rxAddrP1, 0)
 	r.rxAddrP3 = rxaddr.NewPartial(pipe.P3, r.rxAddrP1, 0)
 	r.rxAddrP4 = rxaddr.NewPartial(pipe.P4, r.rxAddrP1, 0)
 	r.rxAddrP5 = rxaddr.NewPartial(pipe.P5, r.rxAddrP1, 0)
-	r.txAddr = txaddr.New(0)
-	r.rxPwP0 = rxpw.New(pipe.P0, 0)
-	r.rxPwP1 = rxpw.New(pipe.P1, 0)
-	r.rxPwP2 = rxpw.New(pipe.P2, 0)
-	r.rxPwP3 = rxpw.New(pipe.P3, 0)
-	r.rxPwP4 = rxpw.New(pipe.P4, 0)
-	r.rxPwP5 = rxpw.New(pipe.P5, 0)
-	r.fifo = fifo.New(0)
-	r.dynpd = dynpd.New(0)
-	r.feat = feature.New(0)
+	r.txAddr = txaddr.New(xaddr.NewFromI(0))
+	r.rxPwP0 = rxpw.New(pipe.P0)
+	r.rxPwP1 = rxpw.New(pipe.P1)
+	r.rxPwP2 = rxpw.New(pipe.P2)
+	r.rxPwP3 = rxpw.New(pipe.P3)
+	r.rxPwP4 = rxpw.New(pipe.P4)
+	r.rxPwP5 = rxpw.New(pipe.P5)
+	r.fifo = fifo.New()
+	r.dynpd = dynpd.New()
+	r.feat = feature.New()
 
 	r.spi, err = spi.New(spidevice, 0, 8, spi.SPD_02MHz)
 	if err != nil {
@@ -138,55 +140,86 @@ func (r *R) Status() *status.S {
 	return r.status
 }
 
-// sends Command, then buf byte-by-byte over SPI
-// if buf is null, sends only command
-// WARNING: destructive - overwrites content of buf while pumping
-func (r *R) spiPump(c cmd.C, buf []byte) error {
-	r.csn.SetLow()
-	defer r.csn.SetHigh()
-
-	// send cmd first
-	s, err := r.spi.Transfer(c.Byte())
-	if err != nil {
-		return err
-	}
-	r.status = status.New(s)
-
-	if buf != nil {
-		// pump buf data, overwriting content with returned date
-		// RF24 SPI does LSByte first, so iterate backward
-		for n := len(buf); n >= 0; n-- {
-			buf[n], err = r.spi.Transfer(buf[n])
-			if err != nil {
-				return err
-			}
-		}
-	}
-
-	return nil
-}
-
-// ?TODO: cap data sizes allowed for []byte?
-
-// ?TODO: use buffer(s) pre-allocated on R?
-
-/*
-Read command and status registers. AAAAA =
-5 bit Register Map Address
-*/
-func (r *R) readRegister(rg reg.R, buf []byte) error {
-	return r.spiPump(cmd.R_REGISTER(rg), buf)
-}
-
 /*
 Write command and status registers. AAAAA = 5
 bit Register Map Address
 Executable in power down or standby modes
 only.
 */
-func (r *R) writeRegister(rg reg.R, buf []byte) error {
-	return r.spiPump(cmd.W_REGISTER(rg), buf)
+func (rf *R) write(r reg.Register) error {
+	rf.csn.SetLow()
+	defer rf.csn.SetHigh()
+
+	err := rf.sendCommand(cmd.W_REGISTER(r))
+	if err != nil {
+		return err
+	}
+
+	// write register bytes to spi, ignore what comes back
+	_, err = r.WriteTo(rf.spi)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
+
+/*
+Read command and status registers. AAAAA =
+5 bit Register Map Address
+*/
+func (rf *R) read(r reg.Register) error {
+	rf.csn.SetLow()
+	defer rf.csn.SetHigh()
+
+	err := rf.sendCommand(cmd.R_REGISTER(r))
+	if err != nil {
+		return err
+	}
+
+	// read register bytes from spi, send gibberish - only receive
+	_, err = r.WriteTo(rf.spi)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// WARNING: expects CSN to be low already
+// strictly just for use in func managing SPI already
+// TODO? check for (cached) CSN state without actual read?
+func (r *R) sendCommand(c cmd.C) error {
+	s, err := r.spi.Transfer(c.Byte())
+	if err != nil {
+		return err
+	}
+	r.status.Set(s)
+	return nil
+}
+
+func (r *R) writeCmd(c cmd.C, buf []byte) error {
+	r.csn.SetLow()
+	defer r.csn.SetHigh()
+
+	r.sendCommand(c)
+	_,err := r.spi.Write(buf)
+	return err
+}
+
+func (r *R) readCmd(c cmd.C, buf []byte) error {
+	r.csn.SetLow()
+	defer r.csn.SetHigh()
+
+	r.sendCommand(c)
+	_,err := r.spi.Write(buf)
+	return err
+}
+
+
+// TODO: check for payload widths? set to Tx/Rx modes when called?
+
+// TODO: have different interface for PRX and PTX radios?
 
 /*
 Read RX-payload: 1 – 32 bytes. A read operation
@@ -194,18 +227,20 @@ always starts at byte 0. Payload is deleted from
 FIFO after it is read. Used in RX mode
 */
 func (r *R) readPayload(buf []byte) error {
-	// ?TODO: set to RX mode?
-	return r.spiPump(cmd.R_RX_PAYLOAD, buf)
+	return r.readCmd(cmd.R_RX_PAYLOAD, buf)
 }
+
+
 
 /*
 Write TX-payload: 1 – 32 bytes. A write operation
 always starts at byte 0 used in TX payload.
 */
 func (r *R) writePayload(buf []byte) error {
-	// ?TODO: set to TX mode?
-	return r.spiPump(cmd.W_TX_PAYLOAD, buf)
+	return r.writeCmd(cmd.W_TX_PAYLOAD, buf)
 }
+
+
 
 // ?TODO: enum for modes, MD_RX and MD_TX?
 
@@ -213,8 +248,7 @@ func (r *R) writePayload(buf []byte) error {
 Flush TX FIFO, used in TX mode
 */
 func (r *R) flushTx() error {
-	// ?TODO: enforce/check mode?
-	return r.spiPump(cmd.FLUSH_TX, nil)
+	return r.writeCmd(cmd.FLUSH_TX, EMPTY)
 }
 
 /*
@@ -229,7 +263,7 @@ func (r *R) flushRx() error {
 	//   Should not be executed during transmission of
 	//   acknowledge, that is, acknowledge package will
 	//   not be completed.
-	return r.spiPump(cmd.FLUSH_RX, nil)
+	return r.writeCmd(cmd.FLUSH_RX, EMPTY)
 }
 
 /*
@@ -237,8 +271,7 @@ No Operation. Might be used to read the STATUS
 register
 */
 func (r *R) refreshStatus() (*status.S, error) {
-	// spiPump will update status on every cmd sent
-	err := r.spiPump(cmd.NOP, nil)
+	err := r.writeCmd(cmd.NOP, EMPTY)
 	return r.status, err
 }
 
@@ -263,5 +296,5 @@ registers again.
 */
 func (r *R) toggleActivate() error {
 	// TODO: keep activated bool state, make de/activate() funcs
-	return r.spiPump(cmd.ACTIVATE, []byte{0x73})
+	return r.writeCmd(cmd.ACTIVATE, []byte{0x73})
 }
