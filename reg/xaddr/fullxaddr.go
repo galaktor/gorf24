@@ -5,6 +5,8 @@
 package xaddr
 
 import (
+	"io"
+
 	"github.com/galaktor/gorf24/reg"
 	"github.com/galaktor/gorf24/reg/addr"
 )
@@ -14,17 +16,34 @@ import (
 type Full struct {
 	reg.R
 
-	flags A
+	flags []byte // 5 bytes
 }
 
 func NewFull(a addr.A, flags A) *Full {
-	return &Full{reg.New(a, 0x00), flags}
+	return &Full{reg.New(a, 0x00), flags[:5]}
 }
 
-func (r *Full) Get() A {
-	return r.flags
+func (f *Full) Get() A {
+	return NewFromB(f.flags)
 }
 
-func (r *Full) Set(a A) {
-	r.flags = a
+func (f *Full) Set(a A) {
+	f.flags = a[:5]
+//	f.sliced = f.flags[:]
 }
+
+// io.ReaderFrom
+func (f *Full) ReadFrom(r io.Reader) (n int64, err error) {
+	n32,err := r.Read(f.flags)
+	return int64(n32),nil
+}
+
+
+
+
+
+
+
+
+
+

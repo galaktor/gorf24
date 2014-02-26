@@ -10,12 +10,8 @@ import (
 	"github.com/galaktor/gorf24/reg/addr"
 )
  
-func someFullXAddr(flags uint64) *Full {
-	return NewFull(addr.A(0), New(flags))
-}
-
 func TestByte_ParentMSBytesZero_FirstFourBytesZero(t *testing.T) {
-	expected := A(0x00000000FF)
+	expected := [5]byte{0x00, 0x00, 0x00, 0x00, 0xFF}
 	root := someFullXAddr(0x0000000000)
 	a := NewPartial(addr.A(0), root, 0xFF)
 
@@ -27,7 +23,7 @@ func TestByte_ParentMSBytesZero_FirstFourBytesZero(t *testing.T) {
 }
 
 func TestByte_ParentMSBytesOnes_FirstFourBytesOnes(t *testing.T) {
-	expected := A(0xFFFFFFFFAA)
+	expected := [5]byte{0xFF, 0xFF, 0xFF, 0xFF, 0xAA}
 	root := someFullXAddr(0xFFFFFFFFFF)
 	a := NewPartial(addr.A(0), root, 0xAA)
 
@@ -39,14 +35,18 @@ func TestByte_ParentMSBytesOnes_FirstFourBytesOnes(t *testing.T) {
 }
 
 func TestByte_ParentMSByteChanges_ByteMsbChangesWithParent(t *testing.T) {
-	expected := A(0xFFFFFFFFA1)
+	expected := [5]byte{0xFF, 0xFF, 0xFF, 0xFF, 0xA1}
 	root := someFullXAddr(0x0000000000)
 	a := NewPartial(addr.A(0), root, 0xA1)
 	
-	root.Set(New(0xFFFFFFFFFF))
+	root.Set(NewFromB5([5]byte{0xFF, 0xFF, 0xFF, 0xFF, 0xFF}))
 	actual := a.Get()
 
 	if actual != expected {
 		t.Errorf("expected '%b' but found '%b' with partaddr '%v'", expected, actual, a)
 	}
+}
+
+func someFullXAddr(flags uint64) *Full {
+	return NewFull(addr.A(0), NewFromI(flags))
 }
