@@ -61,7 +61,7 @@ func TestR_REGISTER_AllZero_ReturnsZero(t *testing.T) {
 	r := someReg(util.B("00000000"))
 	expected := util.B("00000000")
 
-	result := R_REGISTER(r).Byte()
+	result := R_REGISTER(&r).Byte()
 
 	if result != expected {
 		t.Errorf("expected '%b' but found '%b' with register '%b'", expected, result, r)
@@ -72,7 +72,7 @@ func TestR_REGISTER_AllOnes_ReturnsLastFiveBits(t *testing.T) {
 	r := someReg(util.B("11111111"))
 	expected := util.B("00011111")
 
-	result := R_REGISTER(r).Byte()
+	result := R_REGISTER(&r).Byte()
 
 	if result != expected {
 		t.Errorf("expected '%b' but found '%b' with register '%b'", expected, result, r)
@@ -83,7 +83,7 @@ func TestW_REGISTER_ZeroBits_SetsWriteRegFlag(t *testing.T) {
 	r := someReg(util.B("00000000"))
 	expected := util.B("00100000")
 
-	result := W_REGISTER(r).Byte()
+	result := W_REGISTER(&r).Byte()
 
 	if result != expected {
 		t.Errorf("expected '%b' but found '%b' with register '%b'", expected, result, r)
@@ -94,7 +94,7 @@ func TestW_REGISTER_AllOnes_MasksTwoMSBits(t *testing.T) {
 	r := someReg(util.B("11111111"))
 	expected := util.B("00111111")
 
-	result := W_REGISTER(r).Byte()
+	result := W_REGISTER(&r).Byte()
 
 	if result != expected {
 		t.Errorf("expected '%b' but found '%b' with register '%b'", expected, result, r)
