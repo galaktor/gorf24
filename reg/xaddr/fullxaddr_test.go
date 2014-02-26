@@ -69,6 +69,114 @@ func TestReadFrom_MixedBytes_SetsToThoseBytes(t *testing.T) {
 	}
 }
 
+func TestReadFrom_MoreThan5Bytes_SetsToFiveMSBytes(t *testing.T) {
+	expected := [5]byte{0xAA, 0xBB, 0xCC, 0xDD, 0xEE} // 5 bytes
+	a := NewFull(addr.A(0), NewFromI(0))
+
+	a.ReadFrom(FakeRW{From(0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF)}) // 6 bytes
+
+	actual := a.Get()
+	if actual != expected {
+		t.Errorf("expected '%b' but found '%b' for fulladdr '%v'", expected, actual, a)
+	}
+}
+
+func TestReadFrom_LessThan5Bytes_SetsToMSBytes(t *testing.T) {
+	expected := [5]byte{0xAA, 0xBB, 0xCC, 0x00, 0x00} // 5 bytes
+	a := NewFull(addr.A(0), NewFromI(0))
+
+	a.ReadFrom(FakeRW{From(0xAA, 0xBB, 0xCC)}) // 6 bytes
+
+	actual := a.Get()
+	if actual != expected {
+		t.Errorf("expected '%b' but found '%b' for fulladdr '%v'", expected, actual, a)
+	}
+}
+
+func TestReadFrom_ReaderPasses_ReturnsReaderByteCount(t *testing.T) {
+	expected := int64(42)
+	a := NewFull(addr.A(0), NewFromI(0))
+
+	actual,err := a.ReadFrom(FakeRW{PassesWith(42)})
+
+	if err != nil {
+		t.Errorf("expected nil error but found '%v'", err)
+	}
+	
+	if actual != expected {
+		t.Errorf("expected '%v' but found '%v' with fulladdr '%v'", expected, actual, a)
+	}
+}
+
+func TestReadFrom_ReaderError_ReturnsUnderlyingReaderError(t *testing.T) {
+	expected := "some reader error occurred"
+	a := NewFull(addr.A(0), NewFromI(0))
+	
+	n,err := a.ReadFrom(FakeRW{FailsWith(expected)})
+
+	if n != 0 {
+		t.Errorf("expected '%v' but found '%v' with fulladdr '%v'", 0, n, a)
+	}
+
+	if err == nil {
+		t.Errorf("expected error '%v' but found nil", expected)
+		t.FailNow()
+	}
+	
+	actual := err.Error()
+	if actual != expected {
+		t.Errorf("expected '%v' but found '%v' with fulladr '%v'", expected, actual, a)
+	}
+}
+
+func TestWriteTo_Zeroes_WritesZeroes(t *testing.T) {
+	expected := [5]byte{0x00, 0x00, 0x00, 0x00, 0x00}
+	a := NewFull(addr.A(0), NewFromI(0))
+	actual := [5]byte{0xFF, 0xFF, 0xFF, 0xFF, 0xFF}
+
+	a.WriteTo(FakeRW{To(actual[:])})
+
+	if actual != expected {
+		t.Errorf("expected '%b' but found '%b' for fulladdr '%v'", expected, actual, a)
+	}
+}
+
+func TestWriteTo_WriterPasses_ReturnsWriterByteCount(t *testing.T) {
+	expected := int64(42)
+	a := NewFull(addr.A(0), NewFromI(0))
+
+	actual,err := a.WriteTo(FakeRW{PassesWith(42)})
+
+	if err != nil {
+		t.Errorf("expected nil error but found '%v'", err)
+	}
+	
+	if actual != expected {
+		t.Errorf("expected '%v' but found '%v' with fulladdr '%v'", expected, actual, a)
+	}
+}
+
+func TestWriteTo_WriterError_ReturnsUnderlyingWriterError(t *testing.T) {
+	expected := "some reader error occurred"
+	a := NewFull(addr.A(0), NewFromI(0))
+	
+	n,err := a.WriteTo(FakeRW{FailsWith(expected)})
+
+	if n != 0 {
+		t.Errorf("expected '%v' but found '%v' with fulladdr '%v'", 0, n, a)
+	}
+
+	if err == nil {
+		t.Errorf("expected error '%v' but found nil", expected)
+		t.FailNow()
+	}
+	
+	actual := err.Error()
+	if actual != expected {
+		t.Errorf("expected '%v' but found '%v' with fulladr '%v'", expected, actual, a)
+	}
+}
+
 /***** FAKES *****/
 type RwFunc func(p []byte) (n int, err error)
 

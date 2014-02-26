@@ -33,10 +33,25 @@ func (f *Full) Set(a A) {
 }
 
 // io.ReaderFrom
-func (f *Full) ReadFrom(r io.Reader) (n int64, err error) {
+func (f *Full) ReadFrom(r io.Reader) (int64, error) {
 	n32,err := r.Read(f.flags)
-	return int64(n32),nil
+	return int64(n32),err
 }
+
+// io.WriterTo
+func (f *Full) WriteTo(w io.Writer) (int64, error) {
+	n32,err := w.Write(f.flags)
+	return int64(n32),err
+}
+
+
+
+
+
+
+
+
+
 
 
 
