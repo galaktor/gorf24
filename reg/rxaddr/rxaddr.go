@@ -31,5 +31,5 @@ func NewFull(p pipe.P, flags xaddr.A) *xaddr.Full {
    Only LSB. MSBytes
    are equal to RX_ADDR_P1[39:8] */
 func NewPartial(p pipe.P, root *xaddr.Full, lsb byte) *xaddr.Partial {
-	return xaddr.NewPartial(addr.RX_ADDR(p), root, lsb)
+	return xaddr.NewPartialFrom(addr.RX_ADDR(p), root, lsb)
 }
