@@ -6,8 +6,6 @@ package reg
 
 import (
 	"errors"
-//	"fmt"
-//	"bytes"
 	"io"
 
 	"github.com/galaktor/gorf24/reg/addr"
@@ -16,8 +14,7 @@ import (
 type Register interface {
 	io.ReaderFrom
 	io.WriterTo
-
-	Address() addr.A
+	addr.IHaveAddress
 }
 
 /* a register with a one-byte address and one-byte data */
@@ -75,32 +72,3 @@ func (r *R) ReadFrom(rd io.Reader) (n int64, err error) {
 
 	return
 }
-
-/* Reader now implemented in r.reader (io.Reader)
-// IO.WRITER
-func (r *R) Write(p []byte) (n int, err error) {
-	if len(p) == 1 {
-		r.Set(p[0])
-		return 1,nil
-	}
-
-	return 0,errors.New(fmt.Sprintf("cannot write %v bytes. register can only store exactly 1 byte", len(p)))
-}
-
-// IO.READER
-func (r *R) Read(p []byte) (n int, err error) {
-	if len(p) == 0 {
-		return 0,errors.New("cannot read into zero-length buffer. Register requires 1 byte.")
-	}
-
-	p[0] = r.flags
-	return 1,nil
-}
-*/
-
-
-
-
-
-
-

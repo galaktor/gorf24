@@ -10,6 +10,10 @@ import (
 
 type A byte
 
+type IHaveAddress interface {
+	Address() A
+}
+
 func (a A) Byte() byte {
 	return byte(a)
 }
