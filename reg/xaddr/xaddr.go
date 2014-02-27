@@ -39,15 +39,15 @@ func iToB5(bits uint64) [5]byte {
 		byte(bits >> 32),
 		byte(bits >> 24),
 		byte(bits >> 16),
-		byte(bits >> 8),
+		byte(bits >>  8),
 		byte(bits),
 	}
 }
 
 func b5ToI(b [5]byte) uint64 {
-	return uint64(b[0])<<32 |
-		uint64(b[1])<<24 |
-		uint64(b[2])<<16 |
-		uint64(b[3])<<8 |
-		uint64(b[4])
+	return uint64(b[0]) << 32 |
+	       uint64(b[1]) << 24 |
+	       uint64(b[2]) << 16 |
+	       uint64(b[3]) <<  8 |
+	       uint64(b[4])
 }

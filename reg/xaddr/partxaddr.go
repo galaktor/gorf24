@@ -18,25 +18,21 @@ type Partial struct {
 
 	root *Full
 }
+func NewPartial(a addr.A, root *Full) *Partial {
+	return &Partial{reg.New(a, reg.NO_MASK), root}
+}
 
-// TODO: store slice of 5 bytes; use in ReadFrom and WriteTo
-
-func NewPartial(a addr.A, root *Full, lsb byte) *Partial {
+func NewPartialFrom(a addr.A, root *Full, lsb byte) *Partial {
 	p := &Partial{reg.New(a, reg.NO_MASK), root}
 	p.Set(lsb)
 	return p
 }
 
-// TODO: this certainly can be done more efficiently...
 func (r *Partial) Get() A {
 	// use New method to force truncate
-	return NewFromI((r.root.Get().ToI() << 8) | uint64(r.R.Get()))
+	return NewFromB(append(r.root.flags[:4], r.R.Get()))
 }
 
 func (r *Partial) Set(lsb byte) {
 	r.R.Set(lsb)
 }
-
-// io.ReaderFrom
-
-// io.WriterTo
