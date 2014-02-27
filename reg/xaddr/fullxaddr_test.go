@@ -177,6 +177,26 @@ func TestWriteTo_WriterError_ReturnsUnderlyingWriterError(t *testing.T) {
 	}
 }
 
+func TestWriteTo_FourByteTarget_WritesFourMSBytes(t *testing.T) {
+	expected := [4]byte{0xAA, 0xBB, 0xCC, 0xDD}
+	a := NewFull(addr.A(0), NewFromI(0xAABBCCDDEE))
+	actual := [4]byte{}
+
+	n,err := a.WriteTo(FakeRW{To(actual[:4]).Then(PassesWith(4))})
+
+	if n != 4 {
+		t.Errorf("expected '%v' but found '%v' with fulladdr '%v'", 4, n, a)
+	}
+
+	if err != nil {
+		t.Errorf("unexpected error '%v'", err)
+	}
+	
+	if actual != expected {
+		t.Errorf("expected '%b' but found '%b' with fulladdr '%v'", expected, actual, a)
+	}
+}
+
 /***** FAKES *****/
 type RwFunc func(p []byte) (n int, err error)
 
