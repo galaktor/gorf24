@@ -140,6 +140,64 @@ func (r *R) Status() *status.S {
 	return r.status
 }
 
+// just for first messing around with reg<->spi code for now
+func (r *R) ReadAllRegisters() {
+	r.read(r.config)
+	r.read(r.autoAck)
+	r.read(r.enRxAddr)
+	r.read(r.addrWid)
+	r.read(r.retrans)
+	r.read(r.rfchan)
+	r.read(r.rfsetup)
+	r.read(r.status)
+	r.read(r.trans)
+	r.read(r.rpd)
+	r.read(r.rxAddrP0)
+	r.read(r.rxAddrP1)
+	r.read(r.rxAddrP2)
+	r.read(r.rxAddrP3)
+	r.read(r.rxAddrP4)
+	r.read(r.rxAddrP5)
+	r.read(r.txAddr)
+	r.read(r.rxPwP0)
+	r.read(r.rxPwP1)
+	r.read(r.rxPwP2)
+	r.read(r.rxPwP3)
+	r.read(r.rxPwP4)
+	r.read(r.rxPwP5)
+	r.read(r.fifo)
+	r.read(r.dynpd)
+	r.read(r.feat)
+}
+func (r *R) WriteAllRegisters() {
+	r.write(r.config)
+	r.write(r.autoAck)
+	r.write(r.enRxAddr)
+	r.write(r.addrWid)
+	r.write(r.retrans)
+	r.write(r.rfchan)
+	r.write(r.rfsetup)
+	r.write(r.status)
+	r.write(r.trans)
+	r.write(r.rpd)
+	r.write(r.rxAddrP0)
+	r.write(r.rxAddrP1)
+	r.write(r.rxAddrP2)
+	r.write(r.rxAddrP3)
+	r.write(r.rxAddrP4)
+	r.write(r.rxAddrP5)
+	r.write(r.txAddr)
+	r.write(r.rxPwP0)
+	r.write(r.rxPwP1)
+	r.write(r.rxPwP2)
+	r.write(r.rxPwP3)
+	r.write(r.rxPwP4)
+	r.write(r.rxPwP5)
+	r.write(r.fifo)
+	r.write(r.dynpd)
+	r.write(r.feat)
+}
+
 /*
 Write command and status registers. AAAAA = 5
 bit Register Map Address
@@ -178,7 +236,7 @@ func (rf *R) read(r reg.Register) error {
 	}
 
 	// read register bytes from spi, send gibberish - only receive
-	_, err = r.WriteTo(rf.spi)
+	_, err = r.ReadFrom(rf.spi)
 	if err != nil {
 		return err
 	}
