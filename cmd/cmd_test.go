@@ -13,14 +13,6 @@ import (
 	"github.com/galaktor/gorf24/util"
 )
 
-func TestFail_Deliberately(t *testing.T) {
-	t.Errorf("this was on purpose! hello, travis CI!")
-}
-
-
-
-
-
 func TestByte_Zero_ReturnsZero(t *testing.T) {
 	c := C(util.B("00000000"))
 	expected := util.B("00000000")
