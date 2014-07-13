@@ -40,9 +40,9 @@ var EMPTY = make([]byte,0,0) // used when sending 'nothing'
 
 type R struct {
 	/*** I/O ***/
-	spi *spi.SPI
-	ce  *gpio.Pin
-	csn *gpio.Pin
+	spi spi.SPI
+	ce  gpio.Pin
+	csn gpio.Pin
 
 	/*** REGISTERS ***/
 	/* in order of appearance in spec for now */
@@ -77,7 +77,17 @@ type R struct {
 	feat  *feature.F
 }
 
-func New(spidevice string, spispeed uint32, cepin, csnpin uint8) (r *R, err error) {
+/*** TODO: have constructors for convenience which create SPI/GPIOpins for caller?
+     injection primarily for testing/mocking purposes ***/
+//func New(spidevice string, cepin, csnpin uint8) (r *R, err error) {
+// create spi/pins
+// call other "New" ctor and inject, return
+//}
+
+// spi.New(spidevice, 0, 8, spi.SPD_02MHz)
+// gpio.Open(cepin, gpio.OUT)
+// gpio.Open(csnpin, gpio.OUT)
+func New(spi spi.SPI, cepin, csnpin gpio.Pin) (r *R, err error) {
 	r = &R{}
 	r.config = config.New()
 	r.autoAck = autoack.New()
@@ -106,23 +116,12 @@ func New(spidevice string, spispeed uint32, cepin, csnpin uint8) (r *R, err erro
 	r.dynpd = dynpd.New()
 	r.feat = feature.New()
 
-	r.spi, err = spi.New(spidevice, 0, 8, spi.SPD_02MHz)
-	if err != nil {
-		return
-	}
+	r.spi = spi
+	r.ce = cepin
+	r.csn = csnpin
 
-	r.ce, err = gpio.Open(cepin, gpio.OUT)
-	if err != nil {
-		return
-	}
-
-	r.csn, err = gpio.Open(csnpin, gpio.OUT)
-	if err != nil {
-		return
-	}
-
-	r.ce.SetLow()
-	r.csn.SetHigh()
+	r.ce.Set(gpio.LOW)
+	r.csn.Set(gpio.HIGH)
 
 	// ** FROM RF24.cpp **
 	// Must allow the radio time to settle else configuration bits will not necessarily stick.
@@ -205,8 +204,8 @@ Executable in power down or standby modes
 only.
 */
 func (rf *R) write(r reg.Register) error {
-	rf.csn.SetLow()
-	defer rf.csn.SetHigh()
+	rf.csn.Set(gpio.LOW)
+	defer rf.csn.Set(gpio.HIGH)
 
 	err := rf.sendCommand(cmd.W_REGISTER(r))
 	if err != nil {
@@ -227,8 +226,8 @@ Read command and status registers. AAAAA =
 5 bit Register Map Address
 */
 func (rf *R) read(r reg.Register) error {
-	rf.csn.SetLow()
-	defer rf.csn.SetHigh()
+	rf.csn.Set(gpio.LOW)
+	defer rf.csn.Set(gpio.HIGH)
 
 	err := rf.sendCommand(cmd.R_REGISTER(r))
 	if err != nil {
@@ -248,7 +247,7 @@ func (rf *R) read(r reg.Register) error {
 // strictly just for use in func managing SPI already
 // TODO? check for (cached) CSN state without actual read?
 func (r *R) sendCommand(c cmd.C) error {
-	s, err := r.spi.Transfer(c.Byte())
+	s, err := r.spi.Pump(c.Byte())
 	if err != nil {
 		return err
 	}
@@ -257,8 +256,8 @@ func (r *R) sendCommand(c cmd.C) error {
 }
 
 func (r *R) writeCmd(c cmd.C, buf []byte) error {
-	r.csn.SetLow()
-	defer r.csn.SetHigh()
+	r.csn.Set(gpio.LOW)
+	defer r.csn.Set(gpio.HIGH)
 
 	r.sendCommand(c)
 	_,err := r.spi.Write(buf)
@@ -266,8 +265,8 @@ func (r *R) writeCmd(c cmd.C, buf []byte) error {
 }
 
 func (r *R) readCmd(c cmd.C, buf []byte) error {
-	r.csn.SetLow()
-	defer r.csn.SetHigh()
+	r.csn.Set(gpio.LOW)
+	defer r.csn.Set(gpio.HIGH)
 
 	r.sendCommand(c)
 	_,err := r.spi.Write(buf)

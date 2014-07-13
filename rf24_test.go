@@ -7,6 +7,8 @@ package gorf24
 import (
 	"testing"
 
+	"github.com/galaktor/gorf24/gpio"
+	"github.com/galaktor/gorf24/spi"
 	"github.com/galaktor/gorf24/util"
 )
 
@@ -53,3 +55,41 @@ func TestB_FortyTwo_ReturnsFortyTwo(t *testing.T) {
 		t.Errorf("expected '%b' but found '%b' with command '%s'", expected, result, bits)
 	}
 }
+
+func TestNew_ReadAllRegisters_SpiFullOfOnes_AllRegistersReadOnes(t *testing.T) {
+	s := spi.NewFake(util.B("1111111"))
+	ce := &gpio.Fake{}
+	csn := &gpio.Fake{}
+
+	r, err := New(s, ce, csn)
+
+	if err != nil {
+		t.Errorf("unexpected error: '%s'", err)
+	}
+
+	r.ReadAllRegisters()
+
+	// check config
+	if r.config.Get() != util.B("1111111") {
+		t.Errorf("wrong bits! spi: %v  config: %v", s, r.config)
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

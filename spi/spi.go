@@ -21,6 +21,7 @@ import "C"
 
 import (
 	"errors"
+	"io"
 	"fmt"
 	"os"
 	"unsafe"
@@ -35,7 +36,17 @@ const (
 	SPD_16MHz  SpiSpeed = 16000000
 )
 
-type SPI struct {
+type Pumper interface {
+	Pump(b byte) (byte,error)
+}
+
+type SPI interface {
+	Pumper
+	io.Reader
+	io.Writer
+}
+
+type S struct {
 	bitsPerWord byte
 	speedHz     SpiSpeed
 	mode        byte
@@ -45,31 +56,43 @@ type SPI struct {
 	tr *C.struct_spi_ioc_transfer
 }
 
-func New(d string, m byte, b byte, s SpiSpeed) (*SPI, error) {
+func New(d string, m byte, b byte, s SpiSpeed) (SPI, error) {
 	// try simple open; might need os.OpenFile, or syscall.Open
 	f, err := os.Open(d)
 	if err != nil {
 		return nil, err
 	}
-	spi := &SPI{device: f, tr: &C.struct_spi_ioc_transfer{}}
+	f.Write([]byte("foo"))
+	spi := &S{device: f, tr: &C.struct_spi_ioc_transfer{}}
 	spi.tr.rx_buf = C.__u64(uintptr(unsafe.Pointer(&spi.rxBuf)))
 
-	spi.setMode(m)
-	spi.setBitsPerWord(b)
-	spi.setSpeed(s)
+	err = spi.setMode(m)
+	if err != nil {
+		return nil, err
+	}
+
+	err = spi.setBitsPerWord(b)
+	if err != nil {
+		return nil, err
+	}
+
+	err = spi.setSpeed(s)
+	if err != nil {
+		return nil, err
+	}
 
 	return spi,nil
 }
 
-func (s *SPI) Delete() {
+func (s *S) Delete() {
 	s.device.Close()
 }
 
-func (s *SPI) getDevice() string {
+func (s *S) getDevice() string {
 	return s.device.Name()
 }
 
-func (s *SPI) setMode(m byte) error {
+func (s *S) setMode(m byte) error {
 	if int(C.Ioctl(C.int(s.device.Fd()), C.SPI_IOC_RD_MODE, unsafe.Pointer(&m))) == -1 {
 		return errors.New(fmt.Sprintf("error setting SPI write mode on %s to %v", s.getDevice(), m))
 	}
@@ -81,7 +104,7 @@ func (s *SPI) setMode(m byte) error {
 	return nil
 }
 
-func (s *SPI) setBitsPerWord(b byte) error {
+func (s *S) setBitsPerWord(b byte) error {
 	if int(C.Ioctl(C.int(s.device.Fd()), C.SPI_IOC_RD_BITS_PER_WORD, unsafe.Pointer(&b))) == -1 {
 		return errors.New(fmt.Sprintf("error setting SPI read bits on %s to %v", s.getDevice(), b))
 	}
@@ -92,7 +115,7 @@ func (s *SPI) setBitsPerWord(b byte) error {
 	return nil
 }
 
-func (s *SPI) setSpeed(spd SpiSpeed) error {
+func (s *S) setSpeed(spd SpiSpeed) error {
 	if int(C.Ioctl(C.int(s.device.Fd()), C.SPI_IOC_RD_MAX_SPEED_HZ, unsafe.Pointer(&spd))) == -1 {
 		return errors.New(fmt.Sprintf("error setting SPI read speed on %s to %v", s.getDevice(), spd))
 	}
@@ -103,7 +126,8 @@ func (s *SPI) setSpeed(spd SpiSpeed) error {
 	return nil
 }
 
-func (s *SPI) Transfer(tx byte) (rx byte, err error) {
+// implements interface: spi.Pumper
+func (s *S) Pump(tx byte) (rx byte, err error) {
 	// address -> pointer -> unsigned pointer -> cast to unsigned long
 	s.tr.tx_buf = C.__u64(uintptr(unsafe.Pointer(&tx)))
 	s.tr.len = 1
@@ -119,15 +143,16 @@ func (s *SPI) Transfer(tx byte) (rx byte, err error) {
 	return s.rxBuf,nil
 }
 
+// implements interface: io.Writer
 // THIS IS LSBYTE FIRST
 // not very generic, because LSbyte first is rf24 specific and might not apply to other spi protocols...
 // but screw that cause this is for rf24; deal with it :-P
-func (s *SPI) Write(p []byte) (n int, err error) {
+func (s *S) Write(p []byte) (n int, err error) {
 	n = 0
 	err = nil
 	for i := len(p); i >= 0; i-- {
 		// WRITE ONLY: discards duplex results
-		_, err = s.Transfer(p[i])
+		_, err = s.Pump(p[i])
 		if err != nil {
 			return
 		}
@@ -136,12 +161,13 @@ func (s *SPI) Write(p []byte) (n int, err error) {
 	return
 }
 
-func (s *SPI) Read(p []byte) (n int, err error) {
+// implements interface: io.Reader
+func (s *S) Read(p []byte) (n int, err error) {
 	n = 0
 	err = nil
 	for i := len(p); i >= 0; i-- {
 		// READ ONLY: sends garbage
-		p[i], err = s.Transfer(0x00)
+		p[i], err = s.Pump(0x00)
 		if err != nil {
 			return
 		}
