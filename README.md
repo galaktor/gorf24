@@ -1,5 +1,8 @@
 (this readme is very work-in-progress, bear with me)
 
+# Travis CI build status
+[![Build Status](https://travis-ci.org/galaktor/gorf24.svg?branch=port)](https://travis-ci.org/galaktor/gorf24)
+
 # Radio-fy your Raspberry Pi
 It's software that allows you to control the low-cost Nordic Semiconductor nRF24L01+ radio transceiver. It's written and tested on/for Raspberry Pi, but can be slightly modified to work for other end devices as well.
 
