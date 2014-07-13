@@ -6,7 +6,7 @@ for pkg in ../gorf24 ./cmd ./reg ./reg/addr ./reg/addrw ./reg/autoack ./reg/conf
 do
 	echo "***** TESTING PACKAGE: '$pkg' *****"
 	cd $pkg
-	go test #-v
+	go test -v
 	echo ""
 	cd $root
 done
