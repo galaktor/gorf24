@@ -47,7 +47,7 @@ type R struct {
 	/*** REGISTERS ***/
 	/* in order of appearance in spec for now */
 	config   *config.C
-	autoAck  *autoack.AA // ?new on nRF24L01+
+	autoAck  *autoack.AA
 	enRxAddr *enrxaddr.E
 	addrWid  *addrw.AW
 	retrans  *retrans.R
@@ -333,6 +333,7 @@ func (r *R) refreshStatus() (*status.S, error) {
 }
 
 /*
+TODO figure out if this was from p-variant or L01!?
 This write command followed by data 0x73 acti-
 vates the following features:
 • R_RX_PL_WID
