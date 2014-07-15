@@ -30,7 +30,9 @@ func NewWith(flags byte) *R {
 }
 
 /* RF_CH (bits 6:0)
-   Sets the frequency channel nRF24L01+ operates on */
+   Sets the frequency channel nRF24L01+ operates on 
+     250Kbps & 1Mbps = 1MHz increments
+     2Mbps = 2Mhz increments */
 func (c *R) Get() uint8 {
 	return c.R.Get() & 0x7F // ignore bit 7
 }
