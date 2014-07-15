@@ -27,31 +27,31 @@ func New() *Radio {
 
 /* REGISTERS */
 // implement StandbyRegGetter
-func (r *Radio) GetConfig() config.C        { return config.C{} }
-func (r *Radio) GetAutoAck() autoack.AA     { return autoack.AA{} }
-func (r *Radio) GetEnRxAddr() enrxaddr.E    { return enrxaddr.E{} }
-func (r *Radio) GetAddrWid() addrw.AW       { return addrw.AW{} }
-func (r *Radio) GetRetrans() retrans.R      { return retrans.R{} }
-func (r *Radio) GetRfchan() rfchan.R        { return rfchan.R{} }
-func (r *Radio) GetRfsetup() rfsetup.R      { return rfsetup.R{} }
-func (r *Radio) GetStatus() status.S        { return status.S{} }
-func (r *Radio) GetTrans() txobs.O          { return txobs.O{} }
-func (r *Radio) GetRxAddrP0() xaddr.Full    { return xaddr.Full{} }
-func (r *Radio) GetRxAddrP1() xaddr.Full    { return xaddr.Full{} }
-func (r *Radio) GetRxAddrP2() xaddr.Partial { return xaddr.Partial{} }
-func (r *Radio) GetRxAddrP3() xaddr.Partial { return xaddr.Partial{} }
-func (r *Radio) GetRxAddrP4() xaddr.Partial { return xaddr.Partial{} }
-func (r *Radio) GetRxAddrP5() xaddr.Partial { return xaddr.Partial{} }
-func (r *Radio) GetTxAddr() xaddr.Full      { return xaddr.Full{} }
-func (r *Radio) GetRxPwP0() rxpw.W          { return rxpw.W{} }
-func (r *Radio) GetRxPwP1() rxpw.W          { return rxpw.W{} }
-func (r *Radio) GetRxPwP2() rxpw.W          { return rxpw.W{} }
-func (r *Radio) GetRxPwP3() rxpw.W          { return rxpw.W{} }
-func (r *Radio) GetRxPwP4() rxpw.W          { return rxpw.W{} }
-func (r *Radio) GetRxPwP5() rxpw.W          { return rxpw.W{} }
-func (r *Radio) GetFifo() fifo.F            { return fifo.F{} }
-func (r *Radio) GetDynpd() dynpd.DP         { return dynpd.DP{} }
-func (r *Radio) GetFeat() feature.F         { return feature.F{} }
+func (r *Radio) GetConfig() (config.C, error)        { return config.C{}, nil }
+func (r *Radio) GetAutoAck() (autoack.AA, error)     { return autoack.AA{}, nil }
+func (r *Radio) GetEnRxAddr() (enrxaddr.E, error)    { return enrxaddr.E{}, nil }
+func (r *Radio) GetAddrWid() (addrw.AW, error)       { return addrw.AW{}, nil }
+func (r *Radio) GetRetrans() (retrans.R, error)      { return retrans.R{}, nil }
+func (r *Radio) GetRfchan() (rfchan.R, error)        { return rfchan.R{}, nil }
+func (r *Radio) GetRfsetup() (rfsetup.R, error)      { return rfsetup.R{}, nil }
+func (r *Radio) GetStatus() (status.S, error)        { return status.S{}, nil }
+func (r *Radio) GetTrans() (txobs.O, error)          { return txobs.O{}, nil }
+func (r *Radio) GetRxAddrP0() (xaddr.Full, error)    { return xaddr.Full{}, nil }
+func (r *Radio) GetRxAddrP1() (xaddr.Full, error)    { return xaddr.Full{}, nil }
+func (r *Radio) GetRxAddrP2() (xaddr.Partial, error) { return xaddr.Partial{}, nil }
+func (r *Radio) GetRxAddrP3() (xaddr.Partial, error) { return xaddr.Partial{}, nil }
+func (r *Radio) GetRxAddrP4() (xaddr.Partial, error) { return xaddr.Partial{}, nil }
+func (r *Radio) GetRxAddrP5() (xaddr.Partial, error) { return xaddr.Partial{}, nil }
+func (r *Radio) GetTxAddr() (xaddr.Full, error)      { return xaddr.Full{}, nil }
+func (r *Radio) GetRxPwP0() (rxpw.W, error)          { return rxpw.W{}, nil }
+func (r *Radio) GetRxPwP1() (rxpw.W, error)          { return rxpw.W{}, nil }
+func (r *Radio) GetRxPwP2() (rxpw.W, error)          { return rxpw.W{}, nil }
+func (r *Radio) GetRxPwP3() (rxpw.W, error)          { return rxpw.W{}, nil }
+func (r *Radio) GetRxPwP4() (rxpw.W, error)          { return rxpw.W{}, nil }
+func (r *Radio) GetRxPwP5() (rxpw.W, error)          { return rxpw.W{}, nil }
+func (r *Radio) GetFifo() (fifo.F, error)            { return fifo.F{}, nil }
+func (r *Radio) GetDynpd() (dynpd.DP, error)         { return dynpd.DP{}, nil }
+func (r *Radio) GetFeat() (feature.F, error)         { return feature.F{}, nil }
 
 // implement StandbyRegSetter
 func (r *Radio) SetConfig(f func(c *config.C)) error        { return nil }

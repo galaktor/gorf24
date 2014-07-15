@@ -35,32 +35,32 @@ type StandbyMode interface {
 
 /* for immutability, provides values, not pointers */
 type StandbyRegGetter interface {
-	GetConfig() config.C
-	GetAutoAck() autoack.AA
-	GetEnRxAddr() enrxaddr.E
-	GetAddrWid() addrw.AW
-	GetRetrans() retrans.R
-	GetRfchan() rfchan.R
-	GetRfsetup() rfsetup.R
-	GetStatus() status.S
-	GetTrans() txobs.O
+	GetConfig() (config.C, error)
+	GetAutoAck() (autoack.AA, error)
+	GetEnRxAddr() (enrxaddr.E, error)
+	GetAddrWid() (addrw.AW, error)
+	GetRetrans() (retrans.R, error)
+	GetRfchan() (rfchan.R, error)
+	GetRfsetup() (rfsetup.R, error)
+	GetStatus() (status.S, error)
+	GetTrans() (txobs.O, error)
 	// reading RPD only makes sense when in Rx mode
-	GetRxAddrP0() xaddr.Full
-	GetRxAddrP1() xaddr.Full
-	GetRxAddrP2() xaddr.Partial
-	GetRxAddrP3() xaddr.Partial
-	GetRxAddrP4() xaddr.Partial
-	GetRxAddrP5() xaddr.Partial
-	GetTxAddr() xaddr.Full
-	GetRxPwP0() rxpw.W
-	GetRxPwP1() rxpw.W
-	GetRxPwP2() rxpw.W
-	GetRxPwP3() rxpw.W
-	GetRxPwP4() rxpw.W
-	GetRxPwP5() rxpw.W
-	GetFifo() fifo.F
-	GetDynpd() dynpd.DP
-	GetFeat() feature.F
+	GetRxAddrP0() (xaddr.Full, error)
+	GetRxAddrP1() (xaddr.Full, error)
+	GetRxAddrP2() (xaddr.Partial, error)
+	GetRxAddrP3() (xaddr.Partial, error)
+	GetRxAddrP4() (xaddr.Partial, error)
+	GetRxAddrP5() (xaddr.Partial, error)
+	GetTxAddr() (xaddr.Full, error)
+	GetRxPwP0() (rxpw.W, error)
+	GetRxPwP1() (rxpw.W, error)
+	GetRxPwP2() (rxpw.W, error)
+	GetRxPwP3() (rxpw.W, error)
+	GetRxPwP4() (rxpw.W, error)
+	GetRxPwP5() (rxpw.W, error)
+	GetFifo() (fifo.F, error)
+	GetDynpd() (dynpd.DP, error)
+	GetFeat() (feature.F, error)
 }
 
 type StandbyRegSetter interface {
@@ -118,5 +118,5 @@ type RxMode interface {
 type RxRegGetter interface {
 	StandbyRegGetter
 
-	GetRpd() rpd.R // was 'CD' before nRF24L01+
+	GetRpd() (rpd.R, error) // was 'CD' before nRF24L01+
 }
