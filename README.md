@@ -4,7 +4,7 @@
 [![Build Status](https://travis-ci.org/galaktor/gorf24.svg?branch=port)](https://travis-ci.org/galaktor/gorf24)
 
 # Radio-fy your Raspberry Pi
-It's software that allows you to control the low-cost Nordic Semiconductor nRF24L01+ radio transceiver. It's written and tested on/for Raspberry Pi, but can be slightly modified to work for other end devices as well.
+It's software that allows you to control the low-cost Nordic Semiconductor nRF24L01+ radio transceiver. It's written and tested on/for Raspberry Pi, but can be slightly modified to work for other end devices as well. Since it's written in Go, and controls rf24 type radios... I dubbed it "gorf24". Also, considering my screen name, similarities to certain Galactic [Orbiting Robot Forces](https://en.wikipedia.org/wiki/Gorf) are not entirely coincidental.
 
 ## Changing GPIO and SPI access
 It works or can be modified to make it work on any system that satisfies the following conditions:
